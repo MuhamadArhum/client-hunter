@@ -24,7 +24,13 @@
       "Bash(sed -i 's/text-warning font-weight-bold/text-info font-weight-bold/g' pages/LeadsPage.jsx)",
       "Bash(sed -i 's/className=\"text-warning\"/className=\"text-info\"/g' pages/LeadDetailPage.jsx pages/LoginPage.jsx pages/RegisterPage.jsx)",
       "Bash(sed -i 's/border-left border-warning/border-left border-info/g' pages/LeadDetailPage.jsx)",
-      "Bash(sed -i 's/className=\"text-warning font-weight-bold\"/className=\"text-info font-weight-bold\"/g' pages/LeadDetailPage.jsx)"
+      "Bash(sed -i 's/className=\"text-warning font-weight-bold\"/className=\"text-info font-weight-bold\"/g' pages/LeadDetailPage.jsx)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(grep -E \"\\(app|index|server\\)\\\\.js$\")",
+      "Bash(curl -s http://localhost:5173/src/pages/Dashboard.tsx)",
+      "Bash(git -C /d/client-hunter remote -v)"
     ]
   }
 }

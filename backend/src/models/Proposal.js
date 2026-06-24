@@ -23,7 +23,7 @@ const proposalSchema = new mongoose.Schema(
     },
     generatedBy: {
       type: String,
-      enum: ['openai', 'manual'],
+      enum: ['openai', 'groq', 'manual'],
       default: 'manual',
     },
   },

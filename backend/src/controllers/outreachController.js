@@ -170,4 +170,29 @@ const scheduleFollowUp = async (req, res) => {
   }
 };
 
-module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp };
+// @desc    Get all outreach logs with optional filters
+// @route   GET /api/outreach
+// @access  Private
+const getAllOutreachLogs = async (req, res) => {
+  try {
+    const { page = 1, limit = 20, leadId, type, status } = req.query;
+    const query = {};
+    if (leadId) query.lead = leadId;
+    if (type) query.type = type;
+    if (status) query.status = status;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [logs, total] = await Promise.all([
+      OutreachLog.find(query)
+        .populate('lead', 'companyName email phone')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      OutreachLog.countDocuments(query),
+    ]);
+    res.status(200).json({ success: true, data: logs, pagination: { total, page: parseInt(page), limit: parseInt(limit) } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp, getAllOutreachLogs };

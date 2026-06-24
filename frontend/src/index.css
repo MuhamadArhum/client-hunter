@@ -1,11 +1,105 @@
-body {
-  margin: 0;
-  padding: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 20% 98%;
+  --foreground: 222 47% 11%;
+
+  --muted: 210 16% 93%;
+  --muted-foreground: 215 16% 47%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --border: 214 20% 88%;
+  --input: 214 20% 88%;
+
+  /* #1DD2D7 — cyan teal primary */
+  --primary: 182 76% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  /* #9F8DD4 — soft purple secondary */
+  --secondary: 255 45% 69%;
+  --secondary-foreground: 0 0% 100%;
+
+  --accent: 182 60% 90%;
+  --accent-foreground: 182 76% 30%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --ring: 182 76% 48%;
+  --radius: 0.6rem;
+
+  /* #1DD7CE — slightly greener teal for charts/logo */
+  --chart-1: 177 76% 48%;
+  --chart-2: 255 45% 69%;
+  --chart-3: 182 76% 48%;
+  --chart-4: 31 97% 55%;
+  --chart-5: 340 82% 52%;
+
+  /* #3F4D67 sidebar */
+  --sidebar-background: 219 24% 33%;
+  --sidebar-foreground: 210 30% 92%;
+  --sidebar-primary: 182 76% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 219 24% 40%;
+  --sidebar-accent-foreground: 210 30% 96%;
+  --sidebar-border: 219 24% 26%;
+  --sidebar-ring: 182 76% 48%;
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-  display: block;
-  text-align: left;
+.dark {
+  --background: 222 47% 6%;
+  --foreground: 210 20% 96%;
+
+  --muted: 222 40% 12%;
+  --muted-foreground: 215 16% 55%;
+
+  --popover: 222 47% 8%;
+  --popover-foreground: 210 20% 96%;
+
+  --card: 222 47% 9%;
+  --card-foreground: 210 20% 96%;
+
+  --border: 222 40% 16%;
+  --input: 222 40% 16%;
+
+  --primary: 182 76% 52%;
+  --primary-foreground: 222 47% 8%;
+
+  --secondary: 255 45% 65%;
+  --secondary-foreground: 0 0% 100%;
+
+  --accent: 182 50% 15%;
+  --accent-foreground: 182 76% 70%;
+
+  --destructive: 0 62% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --ring: 182 76% 52%;
+
+  --chart-1: 177 76% 52%;
+  --chart-2: 255 45% 65%;
+  --chart-3: 182 76% 52%;
+  --chart-4: 31 97% 60%;
+  --chart-5: 340 82% 60%;
+
+  --sidebar-background: 219 24% 20%;
+  --sidebar-foreground: 210 30% 92%;
+  --sidebar-primary: 182 76% 52%;
+  --sidebar-primary-foreground: 222 47% 8%;
+  --sidebar-accent: 219 24% 27%;
+  --sidebar-accent-foreground: 210 30% 96%;
+  --sidebar-border: 219 24% 16%;
+  --sidebar-ring: 182 76% 52%;
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; }
 }

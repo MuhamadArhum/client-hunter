@@ -1,38 +1,27 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
+const getClient = () => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured in .env');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
 };
 
-// Send an email
+const FROM_ADDRESS = process.env.EMAIL_FROM || 'ClientHunter <onboarding@resend.dev>';
+
 const sendEmail = async ({ to, subject, html, text }) => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    throw new Error('Email credentials are not configured. Please set EMAIL_USER and EMAIL_PASS in .env');
-  }
+  const resend = getClient();
 
-  const transporter = createTransporter();
-
-  const mailOptions = {
-    from: `"AbyteHunt" <${process.env.EMAIL_USER}>`,
-    to,
+  const { data, error } = await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: Array.isArray(to) ? to : [to],
     subject,
+    html: html || `<p>${text || ''}</p>`,
     text: text || '',
-    html: html || text || '',
-  };
+  });
 
-  const info = await transporter.sendMail(mailOptions);
-  return info;
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 module.exports = { sendEmail };

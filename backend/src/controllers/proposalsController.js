@@ -1,6 +1,7 @@
 const Proposal = require('../models/Proposal');
 const Lead = require('../models/Lead');
-const openaiService = require('../services/openaiService');
+const openaiService = require('../services/groqService');
+const { notifyProposalGenerated } = require('../services/slackService');
 
 // @desc    Get all proposals with optional filters
 // @route   GET /api/proposals
@@ -62,7 +63,7 @@ const generateProposal = async (req, res) => {
       title,
       content,
       status: 'draft',
-      generatedBy: 'openai',
+      generatedBy: 'groq',
     });
 
     // Update lead status to proposal_sent if it was new or contacted
@@ -77,6 +78,8 @@ const generateProposal = async (req, res) => {
       message: 'Proposal generated successfully',
       data: proposal,
     });
+
+    notifyProposalGenerated(lead, proposal);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

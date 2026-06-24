@@ -30,7 +30,7 @@ const leadSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      enum: ['upwork', 'linkedin', 'manual', 'scraped'],
+      enum: ['upwork', 'linkedin', 'freelancer', 'crunchbase', 'clutch', 'manual', 'scraped'],
       default: 'manual',
     },
     status: {
@@ -61,6 +61,41 @@ const leadSchema = new mongoose.Schema(
     tags: {
       type: [String],
       default: [],
+    },
+    aiScore: {
+      type: Number,
+      min: 0,
+      max: 10,
+      default: null,
+    },
+    aiQualification: {
+      type: String,
+      enum: ['hot', 'warm', 'cold', null],
+      default: null,
+    },
+    aiRecommendedService: {
+      type: String,
+      default: '',
+    },
+    aiPainPoints: {
+      type: [String],
+      default: [],
+    },
+    aiSummary: {
+      type: String,
+      default: '',
+    },
+    followUpScheduled: {
+      type: Date,
+      default: null,
+    },
+    followUpSent: {
+      type: Boolean,
+      default: false,
+    },
+    notes: {
+      type: String,
+      default: '',
     },
   },
   { timestamps: true }
