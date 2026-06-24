@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(unzip -p srs.docx word/document.xml)",
+      "Bash(mkdir -p D:/client-hunter/backend/src/config D:/client-hunter/backend/src/models D:/client-hunter/backend/src/middleware D:/client-hunter/backend/src/controllers D:/client-hunter/backend/src/services D:/client-hunter/backend/src/routes)",
+      "Bash(mkdir -p D:/client-hunter/frontend/src/components/Layout D:/client-hunter/frontend/src/pages D:/client-hunter/frontend/src/context D:/client-hunter/frontend/src/services)",
+      "Bash(node *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(grep -n \"miniSidebar {$\\\\|#content {$\\\\|custom-container {\" D:/client-hunter/frontend/public/theme.css)",
+      "Bash(npx gulp *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(npx vite *)"
+    ]
+  }
+}
