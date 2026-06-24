@@ -14,7 +14,17 @@
       "Bash(npx gulp *)",
       "Bash(npx tailwindcss *)",
       "Bash(curl -s http://localhost:5173)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(npm create *)",
+      "Bash(npx create-vite@latest *)",
+      "Bash(cp -r /d/client-hunter/chameleon-admin-master/theme-assets /d/client-hunter/frontend/public/)",
+      "Bash(cp -r /d/client-hunter/chameleon-admin-master/assets /d/client-hunter/frontend/public/)",
+      "Bash(taskkill /f /im node.exe)",
+      "Bash(sed -i 's/btn-warning/btn-info/g' pages/LeadsPage.jsx pages/ProposalsPage.jsx pages/OutreachPage.jsx pages/LeadDetailPage.jsx pages/LoginPage.jsx pages/RegisterPage.jsx)",
+      "Bash(sed -i 's/text-warning font-weight-bold/text-info font-weight-bold/g' pages/LeadsPage.jsx)",
+      "Bash(sed -i 's/className=\"text-warning\"/className=\"text-info\"/g' pages/LeadDetailPage.jsx pages/LoginPage.jsx pages/RegisterPage.jsx)",
+      "Bash(sed -i 's/border-left border-warning/border-left border-info/g' pages/LeadDetailPage.jsx)",
+      "Bash(sed -i 's/className=\"text-warning font-weight-bold\"/className=\"text-info font-weight-bold\"/g' pages/LeadDetailPage.jsx)"
     ]
   }
 }
