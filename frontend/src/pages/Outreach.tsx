@@ -1,28 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Mail, MessageSquare } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
 
@@ -49,6 +35,22 @@ interface Pagination {
   pages: number;
 }
 
+function Alert({ type, msg }: { type: 'success' | 'error'; msg: string }) {
+  return (
+    <div className={cn(
+      'flex items-center gap-2.5 text-sm rounded-xl p-3 border',
+      type === 'success'
+        ? 'bg-cyan-50 text-cyan-700 border-cyan-200'
+        : 'bg-rose-50 text-rose-700 border-rose-200',
+    )}>
+      {type === 'success'
+        ? <CheckCircle className="h-4 w-4 shrink-0" />
+        : <XCircle className="h-4 w-4 shrink-0" />}
+      {msg}
+    </div>
+  );
+}
+
 export default function Outreach() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState('');
@@ -70,8 +72,7 @@ export default function Outreach() {
   const [histLoading, setHistLoading] = useState(false);
 
   useEffect(() => {
-    api
-      .get('/leads', { params: { limit: 100 } })
+    api.get('/leads', { params: { limit: 100 } })
       .then((res) => setLeads(Array.isArray(res.data?.data) ? res.data.data : []))
       .catch(console.error);
   }, []);
@@ -82,8 +83,7 @@ export default function Outreach() {
 
   const fetchHistory = useCallback(() => {
     setHistLoading(true);
-    api
-      .get('/outreach', { params: { page: histPage, limit: 10 } })
+    api.get('/outreach', { params: { page: histPage, limit: 10 } })
       .then((res) => {
         setHistory(Array.isArray(res.data?.data) ? res.data.data : []);
         setHistPagination(res.data?.pagination || { total: 0, page: 1, limit: 10, pages: 1 });
@@ -94,265 +94,220 @@ export default function Outreach() {
 
   const handleSendEmail = async () => {
     if (!selectedLeadId) { setEmailAlert({ type: 'error', msg: 'Please select a lead.' }); return; }
-    if (!emailSubject.trim() || !emailMessage.trim()) {
-      setEmailAlert({ type: 'error', msg: 'Subject and message are required.' });
-      return;
-    }
-    setEmailLoading(true);
-    setEmailAlert(null);
+    if (!emailSubject.trim() || !emailMessage.trim()) { setEmailAlert({ type: 'error', msg: 'Subject and message are required.' }); return; }
+    setEmailLoading(true); setEmailAlert(null);
     try {
-      await api.post('/outreach/email', {
-        leadId: selectedLeadId,
-        subject: emailSubject,
-        message: emailMessage,
-      });
+      await api.post('/outreach/email', { leadId: selectedLeadId, subject: emailSubject, message: emailMessage });
       setEmailAlert({ type: 'success', msg: 'Email sent successfully!' });
-      setEmailSubject('');
-      setEmailMessage('');
+      setEmailSubject(''); setEmailMessage('');
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setEmailAlert({ type: 'error', msg: err?.response?.data?.message || 'Failed to send email.' });
-    } finally {
-      setEmailLoading(false);
-    }
+    } finally { setEmailLoading(false); }
   };
 
   const handleSendWhatsApp = async () => {
     if (!selectedLeadId) { setWaAlert({ type: 'error', msg: 'Please select a lead.' }); return; }
-    if (!waMessage.trim()) {
-      setWaAlert({ type: 'error', msg: 'Message is required.' });
-      return;
-    }
-    setWaLoading(true);
-    setWaAlert(null);
+    if (!waMessage.trim()) { setWaAlert({ type: 'error', msg: 'Message is required.' }); return; }
+    setWaLoading(true); setWaAlert(null);
     try {
-      await api.post('/outreach/whatsapp', {
-        leadId: selectedLeadId,
-        message: waMessage,
-        to: waPhone,
-      });
+      await api.post('/outreach/whatsapp', { leadId: selectedLeadId, message: waMessage, to: waPhone });
       setWaAlert({ type: 'success', msg: 'WhatsApp message sent successfully!' });
       setWaMessage('');
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setWaAlert({ type: 'error', msg: err?.response?.data?.message || 'Failed to send message.' });
-    } finally {
-      setWaLoading(false);
-    }
+    } finally { setWaLoading(false); }
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <h1 className="text-2xl font-bold">Outreach</h1>
+    <div className="space-y-5 p-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Outreach</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Send emails and WhatsApp messages to your leads</p>
+      </div>
 
       <Tabs defaultValue="send">
-        <TabsList>
-          <TabsTrigger value="send">Send Outreach</TabsTrigger>
-          <TabsTrigger value="history" onClick={fetchHistory}>History</TabsTrigger>
+        <TabsList className="h-10 rounded-xl bg-muted/60 p-1 gap-1">
+          <TabsTrigger value="send" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <Send className="mr-2 h-3.5 w-3.5" /> Send Outreach
+          </TabsTrigger>
+          <TabsTrigger value="history" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm" onClick={fetchHistory}>
+            <Clock className="mr-2 h-3.5 w-3.5" /> History
+          </TabsTrigger>
         </TabsList>
 
-        {/* Send Outreach Tab */}
-        <TabsContent value="send" className="mt-6">
-          <div className="space-y-6 max-w-2xl">
-            <div className="space-y-1">
-              <Label>Select Lead</Label>
+        {/* Send Tab */}
+        <TabsContent value="send" className="mt-5">
+          <div className="max-w-2xl space-y-4">
+            {/* Lead Selector */}
+            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-4 space-y-1.5">
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Select Lead</Label>
               <Select value={selectedLeadId} onValueChange={setSelectedLeadId}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 rounded-xl border-border/60 text-sm">
                   <SelectValue placeholder="Choose a lead to contact..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   {leads.map((lead) => (
                     <SelectItem key={lead._id} value={lead._id}>
-                      {lead.companyName}
+                      <span className="font-medium">{lead.companyName}</span>
+                      {lead.email && <span className="text-muted-foreground ml-2 text-xs">{lead.email}</span>}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {selectedLead?.email && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5 pt-0.5">
+                  <Mail className="h-3 w-3" /> {selectedLead.email}
+                </p>
+              )}
             </div>
 
-            <Card>
-              <CardContent className="p-0">
-                <Tabs defaultValue="email">
-                  <CardHeader className="pb-0">
-                    <TabsList>
-                      <TabsTrigger value="email">
-                        <Mail className="mr-2 h-4 w-4" />
-                        Email
-                      </TabsTrigger>
-                      <TabsTrigger value="whatsapp">
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        WhatsApp
-                      </TabsTrigger>
-                    </TabsList>
-                  </CardHeader>
+            {/* Channel Tabs */}
+            <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+              <Tabs defaultValue="email">
+                <div className="border-b border-border/60 px-4 pt-4 pb-0">
+                  <TabsList className="h-9 rounded-lg bg-muted/60 p-1 gap-1">
+                    <TabsTrigger value="email" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <Mail className="h-3.5 w-3.5" /> Email
+                    </TabsTrigger>
+                    <TabsTrigger value="whatsapp" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-                  <TabsContent value="email" className="p-6 pt-4 space-y-4">
-                    {emailAlert && (
-                      <p className={cn(
-                        'text-sm rounded p-2',
-                        emailAlert.type === 'success'
-                          ? 'text-cyan-700 bg-cyan-50'
-                          : 'text-destructive bg-destructive/10',
-                      )}>
-                        {emailAlert.msg}
-                      </p>
-                    )}
-                    <div className="space-y-1">
-                      <Label>Subject</Label>
-                      <Input
-                        placeholder="Email subject..."
-                        value={emailSubject}
-                        onChange={(e) => setEmailSubject(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label>Message</Label>
-                      <Textarea
-                        rows={8}
-                        placeholder="Write your email message..."
-                        value={emailMessage}
-                        onChange={(e) => setEmailMessage(e.target.value)}
-                      />
-                    </div>
-                    <Button onClick={handleSendEmail} disabled={emailLoading}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      {emailLoading ? 'Sending...' : 'Send Email'}
-                    </Button>
-                  </TabsContent>
+                <TabsContent value="email" className="p-5 space-y-4">
+                  {emailAlert && <Alert type={emailAlert.type} msg={emailAlert.msg} />}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject</Label>
+                    <Input className="h-10 rounded-xl border-border/60 text-sm" placeholder="Your email subject..." value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
+                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your email message..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
+                  </div>
+                  <Button
+                    className="h-10 rounded-xl text-sm font-semibold text-white gap-2 shadow-glow-teal"
+                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                    onClick={handleSendEmail}
+                    disabled={emailLoading}
+                  >
+                    {emailLoading
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                      : <><Mail className="h-3.5 w-3.5" /> Send Email</>}
+                  </Button>
+                </TabsContent>
 
-                  <TabsContent value="whatsapp" className="p-6 pt-4 space-y-4">
-                    {waAlert && (
-                      <p className={cn(
-                        'text-sm rounded p-2',
-                        waAlert.type === 'success'
-                          ? 'text-cyan-700 bg-cyan-50'
-                          : 'text-destructive bg-destructive/10',
-                      )}>
-                        {waAlert.msg}
-                      </p>
-                    )}
-                    <div className="space-y-1">
-                      <Label>Phone Number</Label>
-                      <Input
-                        placeholder="+1234567890"
-                        value={waPhone}
-                        onChange={(e) => setWaPhone(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label>Message</Label>
-                      <Textarea
-                        rows={8}
-                        placeholder="Write your WhatsApp message..."
-                        value={waMessage}
-                        onChange={(e) => setWaMessage(e.target.value)}
-                      />
-                    </div>
-                    <Button onClick={handleSendWhatsApp} disabled={waLoading}>
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      {waLoading ? 'Sending...' : 'Send WhatsApp'}
-                    </Button>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+                <TabsContent value="whatsapp" className="p-5 space-y-4">
+                  {waAlert && <Alert type={waAlert.type} msg={waAlert.msg} />}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone Number</Label>
+                    <Input className="h-10 rounded-xl border-border/60 text-sm" placeholder="+1234567890" value={waPhone} onChange={(e) => setWaPhone(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
+                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your WhatsApp message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
+                  </div>
+                  <Button
+                    className="h-10 rounded-xl text-sm font-semibold gap-2"
+                    style={{ background: 'linear-gradient(135deg, #9F8DD4, #b8a8e4)', color: 'white' }}
+                    onClick={handleSendWhatsApp}
+                    disabled={waLoading}
+                  >
+                    {waLoading
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                      : <><MessageSquare className="h-3.5 w-3.5" /> Send WhatsApp</>}
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </TabsContent>
 
         {/* History Tab */}
-        <TabsContent value="history" className="mt-6 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Outreach History</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Sent At</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {histLoading ? (
-                    [...Array(5)].map((_, i) => (
-                      <TableRow key={i}>
-                        {[...Array(5)].map((__, j) => (
-                          <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : history.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
-                        No outreach history yet.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    history.map((item) => (
-                      <TableRow key={item._id}>
-                        <TableCell className="font-medium">
-                          {item.leadId?.companyName || '—'}
-                        </TableCell>
-                        <TableCell>
-                          <span className="flex items-center gap-1.5 capitalize">
-                            {item.type === 'email' ? (
-                              <Mail className="h-3.5 w-3.5 text-cyan-500" />
-                            ) : (
-                              <MessageSquare className="h-3.5 w-3.5 text-violet-500" />
-                            )}
-                            {item.type}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={cn(
-                            'text-xs',
-                            item.status === 'sent'
-                              ? 'bg-cyan-100 text-cyan-700'
-                              : 'bg-rose-100 text-rose-700',
-                          )}>
-                            {item.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm max-w-xs truncate">
-                          {item.subject || '—'}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {new Date(item.createdAt).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+        <TabsContent value="history" className="mt-5 space-y-4">
+          <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+            <div className="px-5 py-4 border-b border-border/60">
+              <h3 className="text-sm font-semibold text-foreground">Outreach History</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{histPagination.total} total records</p>
+            </div>
+
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ borderBottom: '1px solid hsl(var(--border) / 0.6)', background: 'hsl(var(--muted) / 0.4)' }}>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Company</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Type</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Status</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Subject</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Sent At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {histLoading ? (
+                  [...Array(5)].map((_, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid hsl(var(--border) / 0.4)' }}>
+                      {[...Array(5)].map((__, j) => (
+                        <td key={j} className="px-5 py-3"><Skeleton className="h-4 w-full" /></td>
+                      ))}
+                    </tr>
+                  ))
+                ) : history.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-16">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
+                          <Send className="h-5 w-5 text-muted-foreground/40" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">No outreach history yet</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  history.map((item, idx) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-muted/30 transition-colors"
+                      style={{ borderBottom: idx === history.length - 1 ? 'none' : '1px solid hsl(var(--border) / 0.4)' }}
+                    >
+                      <td className="px-5 py-3 font-medium text-sm">{item.leadId?.companyName || '—'}</td>
+                      <td className="px-5 py-3">
+                        <span className={cn(
+                          'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',
+                          item.type === 'email' ? 'bg-cyan-50 text-cyan-700' : 'bg-violet-50 text-violet-700',
+                        )}>
+                          {item.type === 'email'
+                            ? <Mail className="h-3 w-3" />
+                            : <MessageSquare className="h-3 w-3" />}
+                          {item.type}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className={cn(
+                          'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full',
+                          item.status === 'sent' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700',
+                        )}>
+                          <span className={cn('h-1.5 w-1.5 rounded-full', item.status === 'sent' ? 'bg-emerald-400' : 'bg-rose-400')} />
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-muted-foreground max-w-xs truncate">{item.subject || '—'}</td>
+                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
+                        {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
           {histPagination.pages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Page {histPagination.page} of {histPagination.pages}
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={histPage <= 1}
-                  onClick={() => { setHistPage((p) => p - 1); fetchHistory(); }}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={histPage >= histPagination.pages}
-                  onClick={() => { setHistPage((p) => p + 1); fetchHistory(); }}
-                >
-                  Next
-                </Button>
+              <p className="text-sm text-muted-foreground">Page {histPage} of {histPagination.pages}</p>
+              <div className="flex gap-1.5">
+                <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs border-border/60" disabled={histPage <= 1} onClick={() => setHistPage((p) => p - 1)}>Previous</Button>
+                <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs border-border/60" disabled={histPage >= histPagination.pages} onClick={() => setHistPage((p) => p + 1)}>Next</Button>
               </div>
             </div>
           )}

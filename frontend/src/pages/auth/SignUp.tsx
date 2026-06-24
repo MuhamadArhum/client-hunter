@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Zap } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Eye, EyeOff, Zap, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -42,96 +40,159 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30 p-4">
-      <div className="w-full max-w-md space-y-6">
-        {/* Brand */}
-        <div className="flex flex-col items-center text-center">
-          <div className="rounded-2xl bg-primary p-3 mb-4">
-            <Zap className="h-8 w-8 text-primary-foreground" />
+    <div
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #1a2233 0%, #2d3748 50%, #1e2a3a 100%)' }}
+    >
+      {/* Background orbs */}
+      <div
+        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, #1DD2D7 0%, transparent 70%)', transform: 'translate(30%, -30%)' }}
+      />
+      <div
+        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, #9F8DD4 0%, transparent 70%)', transform: 'translate(-30%, 30%)' }}
+      />
+
+      <div className="w-full max-w-sm relative z-10">
+        {/* Logo */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <div
+            className="relative flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
+            style={{ background: 'linear-gradient(135deg, #1DD2D7 0%, #9F8DD4 100%)' }}
+          >
+            <Zap className="h-7 w-7 text-white" fill="white" />
+            <div
+              className="absolute inset-0 rounded-2xl blur-lg opacity-50"
+              style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+            />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">ClientHunter</h1>
-          <p className="text-sm text-muted-foreground mt-1">by Abyte Sol</p>
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{
+              background: 'linear-gradient(135deg, #1DD7CE 0%, #c4b8f0 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            ClientHunter
+          </h1>
+          <p className="text-sm mt-1" style={{ color: 'rgba(210,225,240,0.5)' }}>by Abyte Sol</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Create Account</CardTitle>
-            <CardDescription>Sign up to start finding and managing leads.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className={cn(
-                  'text-sm rounded-md p-3 border',
-                  'text-destructive bg-destructive/10 border-destructive/20',
-                )}>
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="John Smith"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Min. 6 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pr-10"
-                    autoComplete="new-password"
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Creating account...' : 'Create Account'}
-              </Button>
-            </form>
-
-            <p className="mt-5 text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign in
-              </Link>
+        {/* Card */}
+        <div
+          className="rounded-2xl p-6 space-y-5"
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
+          }}
+        >
+          <div>
+            <h2 className="text-lg font-semibold text-white">Create account</h2>
+            <p className="text-sm mt-0.5" style={{ color: 'rgba(210,225,240,0.5)' }}>
+              Start finding and closing clients with AI
             </p>
-          </CardContent>
-        </Card>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div
+                className="text-sm rounded-xl p-3"
+                style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', color: '#fca5a5' }}
+              >
+                {error}
+              </div>
+            )}
+
+            {[
+              { id: 'name', label: 'Full Name', type: 'text', placeholder: 'John Smith', value: name, onChange: setName, autoComplete: 'name' },
+              { id: 'email', label: 'Email', type: 'email', placeholder: 'you@company.com', value: email, onChange: setEmail, autoComplete: 'email' },
+            ].map((field) => (
+              <div key={field.id} className="space-y-1.5">
+                <Label htmlFor={field.id} className="text-sm font-medium" style={{ color: 'rgba(210,225,240,0.7)' }}>
+                  {field.label}
+                </Label>
+                <Input
+                  id={field.id}
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  autoComplete={field.autoComplete}
+                  disabled={loading}
+                  className="h-10 rounded-xl text-sm"
+                  style={{
+                    background: 'rgba(255,255,255,0.07)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'rgba(230,240,255,0.9)',
+                  }}
+                />
+              </div>
+            ))}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium" style={{ color: 'rgba(210,225,240,0.7)' }}>
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 6 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-10 rounded-xl text-sm pr-10"
+                  autoComplete="new-password"
+                  disabled={loading}
+                  style={{
+                    background: 'rgba(255,255,255,0.07)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'rgba(230,240,255,0.9)',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: 'rgba(210,225,240,0.4)' }}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-10 rounded-xl font-semibold text-sm gap-2 text-white shadow-glow-teal transition-all duration-200 hover:opacity-90 hover:scale-[1.01]"
+              disabled={loading}
+              style={{ background: 'linear-gradient(135deg, #1DD2D7 0%, #1DD7CE 100%)', border: 'none' }}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating account...
+                </span>
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm" style={{ color: 'rgba(210,225,240,0.4)' }}>
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: '#1DD7CE' }}>
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -30,7 +30,11 @@
       "Bash(echo \"Exit: $?\")",
       "Bash(grep -E \"\\(app|index|server\\)\\\\.js$\")",
       "Bash(curl -s http://localhost:5173/src/pages/Dashboard.tsx)",
-      "Bash(git -C /d/client-hunter remote -v)"
+      "Bash(git -C /d/client-hunter remote -v)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(curl -s http://localhost:5000/api/health)",
+      "Bash(pkill -f \"node src/app.js\")"
     ]
   }
 }

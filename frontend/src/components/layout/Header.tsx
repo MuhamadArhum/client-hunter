@@ -8,15 +8,15 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
-  '/': { title: 'Dashboard', subtitle: 'Overview of your client acquisition pipeline' },
-  '/leads': { title: 'Leads', subtitle: 'Manage and track your leads' },
-  '/proposals': { title: 'Proposals', subtitle: 'AI-generated proposals for your leads' },
-  '/outreach': { title: 'Outreach', subtitle: 'Send emails and WhatsApp messages' },
-  '/analytics': { title: 'Analytics', subtitle: 'Performance metrics and insights' },
-  '/profile': { title: 'Profile', subtitle: 'Manage your account information' },
-  '/settings': { title: 'Settings', subtitle: 'App configuration and preferences' },
-  '/notifications': { title: 'Notifications', subtitle: 'Recent activity feed' },
+const PAGE_TITLES: Record<string, { title: string; subtitle: string; emoji: string }> = {
+  '/': { title: 'Dashboard', subtitle: 'Overview of your client acquisition pipeline', emoji: '📊' },
+  '/leads': { title: 'Leads', subtitle: 'Manage and track your leads', emoji: '👥' },
+  '/proposals': { title: 'Proposals', subtitle: 'AI-generated proposals for your leads', emoji: '📝' },
+  '/outreach': { title: 'Outreach', subtitle: 'Send emails and WhatsApp messages', emoji: '📤' },
+  '/analytics': { title: 'Analytics', subtitle: 'Performance metrics and insights', emoji: '📈' },
+  '/profile': { title: 'Profile', subtitle: 'Manage your account information', emoji: '👤' },
+  '/settings': { title: 'Settings', subtitle: 'App configuration and preferences', emoji: '⚙️' },
+  '/notifications': { title: 'Notifications', subtitle: 'Recent activity feed', emoji: '🔔' },
 };
 
 interface HeaderProps {
@@ -29,7 +29,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
 
   const basePath = '/' + pathname.split('/')[1];
-  const page = PAGE_TITLES[basePath] || { title: 'ClientHunter', subtitle: '' };
+  const page = PAGE_TITLES[basePath] || { title: 'ClientHunter', subtitle: '', emoji: '⚡' };
 
   const initials = user?.name
     ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
@@ -41,61 +41,84 @@ export default function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-6 py-4">
+    <header className="sticky top-0 z-10 bg-background/90 backdrop-blur-md px-6 py-3 relative">
+      {/* Gradient bottom separator */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px"
+        style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(182 76% 48% / 0.3) 30%, hsl(255 45% 69% / 0.3) 70%, transparent 100%)' }}
+      />
+
       <div className="flex items-center justify-between">
         {/* Left: mobile menu + title */}
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden hover:bg-muted/80"
             onClick={onMenuClick}
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">{page.title}</h1>
-            {page.subtitle && (
-              <p className="text-xs text-muted-foreground hidden sm:block">{page.subtitle}</p>
-            )}
+
+          <div className="flex items-center gap-2.5">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-foreground tracking-tight">{page.title}</h1>
+              </div>
+              {page.subtitle && (
+                <p className="text-xs text-muted-foreground hidden sm:block mt-0.5 font-medium">{page.subtitle}</p>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Right: actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {/* Notifications */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative"
+            className="relative h-9 w-9 hover:bg-muted/80 rounded-xl"
             onClick={() => navigate('/notifications')}
           >
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
+            <Bell className="h-4.5 w-4.5" />
+            <span
+              className="absolute top-2 right-2 h-2 w-2 rounded-full border border-background"
+              style={{ background: '#1DD2D7' }}
+            />
           </Button>
 
           {/* Account Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 px-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 px-2.5 h-9 hover:bg-muted/80 rounded-xl"
+              >
+                <Avatar className="h-7 w-7">
+                  <AvatarFallback
+                    className="text-xs font-bold text-white"
+                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                  >
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:block text-sm font-medium">{user?.name || 'Account'}</span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                <span className="hidden sm:block text-sm font-medium text-foreground">{user?.name || 'Account'}</span>
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => navigate('/profile')}>
-                <User className="mr-2 h-4 w-4" /> Profile
+            <DropdownMenuContent align="end" className="w-48 shadow-card-hover rounded-xl border-border/60">
+              <DropdownMenuItem onClick={() => navigate('/profile')} className="rounded-lg cursor-pointer">
+                <User className="mr-2 h-4 w-4 text-muted-foreground" /> Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/settings')}>
-                <Settings className="mr-2 h-4 w-4" /> Settings
+              <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-lg cursor-pointer">
+                <Settings className="mr-2 h-4 w-4 text-muted-foreground" /> Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive focus:text-destructive rounded-lg cursor-pointer"
+              >
                 <LogOut className="mr-2 h-4 w-4" /> Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
