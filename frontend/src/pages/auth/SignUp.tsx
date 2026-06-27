@@ -2,7 +2,19 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Zap, ArrowRight, Mail, Lock, User, XCircle, CheckCircle } from 'lucide-react';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
+
+const PARTICLES = [
+  { left: '6%',  bottom: '22%', delay: '0.4s', dur: '4.6s', size: 4, color: 'rgba(159,141,212,0.75)' },
+  { left: '18%', bottom: '48%', delay: '2.1s', dur: '3.9s', size: 3, color: 'rgba(29,210,215,0.65)'  },
+  { left: '28%', bottom: '15%', delay: '3.5s', dur: '5.1s', size: 2, color: 'rgba(159,141,212,0.5)'  },
+  { left: '75%', bottom: '18%', delay: '0.9s', dur: '4.4s', size: 5, color: 'rgba(159,141,212,0.55)' },
+  { left: '85%', bottom: '42%', delay: '3.1s', dur: '3.7s', size: 3, color: 'rgba(29,210,215,0.7)'   },
+  { left: '92%', bottom: '62%', delay: '1.3s', dur: '4.9s', size: 2, color: 'rgba(99,102,241,0.6)'   },
+  { left: '52%', bottom: '7%',  delay: '2.4s', dur: '4.1s', size: 4, color: 'rgba(99,102,241,0.55)'  },
+  { left: '65%', bottom: '58%', delay: '4.6s', dur: '5.3s', size: 2, color: 'rgba(159,141,212,0.4)'  },
+  { left: '38%', bottom: '75%', delay: '3.9s', dur: '3.6s', size: 3, color: 'rgba(29,210,215,0.45)'  },
+  { left: '12%', bottom: '68%', delay: '1.7s', dur: '4.7s', size: 2, color: 'rgba(159,141,212,0.35)' },
+];
 
 function PasswordStrength({ password }: { password: string }) {
   if (!password) return null;
@@ -16,8 +28,11 @@ function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3].map((l) => (
           <div
             key={l}
-            className="h-1 flex-1 rounded-full transition-all duration-300"
-            style={{ background: l <= s ? bars[s] : 'rgba(255,255,255,0.08)' }}
+            className="h-1 flex-1 rounded-full transition-all duration-400"
+            style={{
+              background: l <= s ? bars[s] : 'rgba(255,255,255,0.08)',
+              boxShadow: l <= s ? `0 0 6px ${bars[s]}` : 'none',
+            }}
           />
         ))}
       </div>
@@ -52,25 +67,35 @@ export default function SignUp() {
     } finally { setLoading(false); }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 48,
-    paddingLeft: 44, paddingRight: 16,
+  const inputBase: React.CSSProperties = {
+    width: '100%', height: 48, paddingLeft: 44, paddingRight: 16,
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.09)',
     borderRadius: 14,
     color: 'rgba(220,235,255,0.9)',
-    fontSize: 14,
-    outline: 'none',
-    transition: 'border-color 0.2s, box-shadow 0.2s',
+    fontSize: 14, outline: 'none',
+    transition: 'border-color 0.25s, box-shadow 0.25s, background 0.25s',
   };
 
-  const focusInput = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(159,141,212,0.5)';
-    e.target.style.boxShadow = '0 0 0 3px rgba(159,141,212,0.1)';
+  const focusPurple = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = 'rgba(159,141,212,0.55)';
+    e.target.style.boxShadow   = '0 0 0 3px rgba(159,141,212,0.1), 0 1px 4px rgba(159,141,212,0.15)';
+    e.target.style.background  = 'rgba(159,141,212,0.04)';
   };
-  const blurInput = (e: React.FocusEvent<HTMLInputElement>) => {
+  const blurReset = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.style.borderColor = 'rgba(255,255,255,0.09)';
-    e.target.style.boxShadow = 'none';
+    e.target.style.boxShadow   = 'none';
+    e.target.style.background  = 'rgba(255,255,255,0.05)';
+  };
+
+  const btnPress = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!loading) e.currentTarget.style.transform = 'translateY(1px) scale(0.98)';
+  };
+  const btnRelHover = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!loading) e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
+  };
+  const btnLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = 'translateY(0) scale(1)';
   };
 
   return (
@@ -85,62 +110,92 @@ export default function SignUp() {
           width: 650, height: 650, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(159,141,212,0.18) 0%, transparent 65%)',
           filter: 'blur(60px)',
+          animation: 'aurora-drift-2 20s ease-in-out infinite',
         }} />
         <div style={{
           position: 'absolute', bottom: '-10%', left: '-5%',
           width: 580, height: 580, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(29,210,215,0.14) 0%, transparent 65%)',
           filter: 'blur(60px)',
+          animation: 'aurora-drift-1 16s ease-in-out infinite',
         }} />
         <div style={{
           position: 'absolute', top: '35%', right: '55%',
           width: 360, height: 360, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 65%)',
           filter: 'blur(80px)',
+          animation: 'aurora-drift-3 24s ease-in-out infinite',
         }} />
       </div>
 
-      {/* ── Dot grid ── */}
+      {/* ── Floating particles ── */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {PARTICLES.map((p, i) => (
+          <div key={i} style={{
+            position: 'absolute', left: p.left, bottom: p.bottom,
+            width: p.size, height: p.size, borderRadius: '50%',
+            background: p.color,
+            boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
+            animation: `particle-rise ${p.dur} ${p.delay} ease-in-out infinite`,
+          }} />
+        ))}
+      </div>
+
+      {/* ── Dot grid (slow drift) ── */}
       <div className="pointer-events-none absolute inset-0" style={{
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
         backgroundSize: '32px 32px',
+        animation: 'bg-drift 15s linear infinite',
       }} />
 
       {/* ── Glass card ── */}
       <div
-        className="relative z-10 w-full"
+        className="auth-card relative z-10 w-full overflow-hidden"
         style={{
           maxWidth: 420,
-          background: 'rgba(10, 18, 32, 0.75)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(10, 18, 32, 0.78)',
+          border: '1px solid rgba(255,255,255,0.09)',
           borderRadius: 28,
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)',
-          boxShadow: '0 0 0 1px rgba(159,141,212,0.07), 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(44px)',
+          WebkitBackdropFilter: 'blur(44px)',
+          boxShadow: '0 0 0 1px rgba(159,141,212,0.08), 0 40px 100px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06)',
         }}
       >
         {/* Top glow line — purple variant */}
         <div style={{
           height: 1,
           background: 'linear-gradient(90deg, transparent 0%, #9F8DD4 35%, #1DD2D7 65%, transparent 100%)',
+          backgroundSize: '200% 100%',
           borderRadius: '28px 28px 0 0',
+          animation: 'shimmer-sweep 3s linear infinite',
         }} />
 
-        <div className="px-8 pt-8 pb-7">
+        {/* Scan line sweep — purple tint */}
+        <div className="scan-line pointer-events-none absolute left-0 right-0" style={{
+          height: 1,
+          background: 'linear-gradient(90deg, transparent 10%, rgba(159,141,212,0.35) 50%, transparent 90%)',
+          zIndex: 2,
+        }} />
+
+        <div className="px-8 pt-8 pb-7 relative z-10">
 
           {/* ── Logo block ── */}
-          <div className="flex flex-col items-center text-center mb-6">
+          <div className="auth-logo flex flex-col items-center text-center mb-6">
             <div className="relative mb-4">
-              <div style={{
-                position: 'absolute', inset: -8, borderRadius: 28,
-                background: 'linear-gradient(135deg, rgba(159,141,212,0.3), rgba(29,210,215,0.3))',
-                filter: 'blur(16px)', opacity: 0.7,
+              <div className="halo-pulse" style={{
+                position: 'absolute', inset: -10, borderRadius: 32,
+                background: 'linear-gradient(135deg, rgba(159,141,212,0.35), rgba(29,210,215,0.35))',
+                filter: 'blur(18px)', opacity: 0.75,
               }} />
               <div
-                className="relative flex h-16 w-16 items-center justify-center rounded-2xl"
+                className="logo-float relative flex h-16 w-16 items-center justify-center rounded-2xl"
                 style={{ background: 'linear-gradient(135deg, #9F8DD4 0%, #1DD2D7 100%)' }}
               >
                 <Zap className="h-8 w-8 text-white" fill="white" />
+                <div style={{
+                  position: 'absolute', inset: 0, borderRadius: 16,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)',
+                }} />
               </div>
             </div>
 
@@ -156,7 +211,7 @@ export default function SignUp() {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
+          <div className="auth-divider flex items-center gap-3 mb-5">
             <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
             <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(180,200,230,0.3)' }}>
               Create account
@@ -166,10 +221,14 @@ export default function SignUp() {
 
           {/* ── Success state ── */}
           {success ? (
-            <div className="flex flex-col items-center text-center py-6 gap-4">
+            <div className="flex flex-col items-center text-center py-6 gap-4" style={{ animation: 'badge-pop 0.5s cubic-bezier(0.34,1.56,0.64,1)' }}>
               <div
                 className="flex h-16 w-16 items-center justify-center rounded-2xl"
-                style={{ background: 'linear-gradient(135deg, rgba(52,211,153,0.2), rgba(29,210,215,0.2))' }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(52,211,153,0.2), rgba(29,210,215,0.2))',
+                  boxShadow: '0 0 30px rgba(52,211,153,0.2)',
+                  animation: 'glow-pulse 2s ease-in-out infinite',
+                }}
               >
                 <CheckCircle className="h-8 w-8 text-emerald-400" />
               </div>
@@ -183,15 +242,16 @@ export default function SignUp() {
           ) : (
             <>
               {/* ── Form ── */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="auth-form space-y-4">
 
                 {error && (
                   <div
                     className="flex items-center gap-2.5 text-sm rounded-2xl p-3"
                     style={{
                       background: 'rgba(248,113,113,0.08)',
-                      border: '1px solid rgba(248,113,113,0.2)',
+                      border: '1px solid rgba(248,113,113,0.22)',
                       color: '#fca5a5',
+                      animation: 'badge-pop 0.35s cubic-bezier(0.34,1.56,0.64,1)',
                     }}
                   >
                     <XCircle className="h-4 w-4 shrink-0" />
@@ -200,12 +260,12 @@ export default function SignUp() {
                 )}
 
                 {/* Full Name */}
-                <div className="space-y-1.5">
+                <div className="field-1 space-y-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(180,200,230,0.45)' }}>
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)' }} />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)', transition: 'color 0.2s' }} />
                     <input
                       type="text"
                       placeholder="John Smith"
@@ -213,20 +273,20 @@ export default function SignUp() {
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="name"
                       disabled={loading}
-                      style={inputStyle}
-                      onFocus={focusInput}
-                      onBlur={blurInput}
+                      style={inputBase}
+                      onFocus={focusPurple}
+                      onBlur={blurReset}
                     />
                   </div>
                 </div>
 
                 {/* Email */}
-                <div className="space-y-1.5">
+                <div className="field-2 space-y-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(180,200,230,0.45)' }}>
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)' }} />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)', transition: 'color 0.2s' }} />
                     <input
                       type="email"
                       placeholder="you@company.com"
@@ -234,20 +294,20 @@ export default function SignUp() {
                       onChange={(e) => setEmail(e.target.value)}
                       autoComplete="email"
                       disabled={loading}
-                      style={inputStyle}
-                      onFocus={focusInput}
-                      onBlur={blurInput}
+                      style={inputBase}
+                      onFocus={focusPurple}
+                      onBlur={blurReset}
                     />
                   </div>
                 </div>
 
                 {/* Password */}
-                <div className="space-y-1.5">
+                <div className="field-3 space-y-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(180,200,230,0.45)' }}>
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)' }} />
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)', transition: 'color 0.2s' }} />
                     <input
                       type={showPass ? 'text' : 'password'}
                       placeholder="Min. 6 characters"
@@ -255,9 +315,9 @@ export default function SignUp() {
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="new-password"
                       disabled={loading}
-                      style={{ ...inputStyle, paddingRight: 48 }}
-                      onFocus={focusInput}
-                      onBlur={blurInput}
+                      style={{ ...inputBase, paddingRight: 48 }}
+                      onFocus={focusPurple}
+                      onBlur={blurReset}
                     />
                     <button
                       type="button"
@@ -266,7 +326,10 @@ export default function SignUp() {
                       style={{
                         position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
                         color: 'rgba(180,200,230,0.35)', cursor: 'pointer', background: 'none', border: 'none', padding: 0,
+                        transition: 'color 0.2s',
                       }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(159,141,212,0.8)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(180,200,230,0.35)'; }}
                     >
                       {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -278,19 +341,20 @@ export default function SignUp() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 font-bold text-sm text-white"
+                  className={`w-full flex items-center justify-center gap-2 font-bold text-sm text-white ${!loading ? 'btn-breathe-purple' : ''}`}
                   style={{
                     height: 50, marginTop: 4,
                     borderRadius: 14,
                     background: loading
-                      ? 'rgba(159,141,212,0.4)'
+                      ? 'rgba(159,141,212,0.35)'
                       : 'linear-gradient(135deg, #9F8DD4 0%, #7c6fc4 50%, #1DD2D7 100%)',
-                    boxShadow: loading ? 'none' : '0 4px 28px rgba(159,141,212,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                     border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s',
+                    transition: 'transform 0.15s, background 0.2s',
                   }}
-                  onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; }}
+                  onMouseEnter={btnRelHover}
+                  onMouseLeave={btnLeave}
+                  onMouseDown={btnPress}
+                  onMouseUp={btnRelHover}
                 >
                   {loading ? (
                     <>
@@ -307,13 +371,15 @@ export default function SignUp() {
               </form>
 
               {/* Sign in link */}
-              <div className="mt-5 pt-5 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="auth-footer mt-5 pt-5 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                 <p className="text-sm" style={{ color: 'rgba(180,200,230,0.4)' }}>
                   Already have an account?{' '}
                   <Link
                     to="/login"
-                    className="font-semibold transition-opacity hover:opacity-75"
-                    style={{ color: '#b8a8e4' }}
+                    className="font-semibold"
+                    style={{ color: '#b8a8e4', transition: 'text-shadow 0.2s' }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.textShadow = '0 0 12px rgba(159,141,212,0.7)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.textShadow = 'none'; }}
                   >
                     Sign in
                   </Link>
@@ -321,7 +387,7 @@ export default function SignUp() {
               </div>
 
               {/* Bottom pills */}
-              <div className="flex items-center justify-center gap-2 mt-5 flex-wrap">
+              <div className="auth-pills flex items-center justify-center gap-2 mt-5 flex-wrap">
                 {['✦ Free to start', '🔒 Secure', '🤖 AI-Powered'].map((t) => (
                   <span
                     key={t}
@@ -330,6 +396,15 @@ export default function SignUp() {
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.07)',
                       color: 'rgba(180,200,230,0.4)',
+                      transition: 'border-color 0.2s, color 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLSpanElement).style.borderColor = 'rgba(159,141,212,0.3)';
+                      (e.currentTarget as HTMLSpanElement).style.color = 'rgba(180,200,230,0.75)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLSpanElement).style.borderColor = 'rgba(255,255,255,0.07)';
+                      (e.currentTarget as HTMLSpanElement).style.color = 'rgba(180,200,230,0.4)';
                     }}
                   >
                     {t}

@@ -1,6 +1,7 @@
-import { Menu, Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { Menu, Bell, ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -35,18 +36,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
     ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
+  const { theme, toggleTheme } = useTheme();
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
   return (
-    <header className="sticky top-0 z-10 bg-background/90 backdrop-blur-md px-6 py-3 relative">
-      {/* Gradient bottom separator */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(182 76% 48% / 0.3) 30%, hsl(255 45% 69% / 0.3) 70%, transparent 100%)' }}
-      />
+    <header className="sticky top-0 z-10 px-6 py-3 relative" style={{ background: 'hsl(var(--background) / 0.92)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid hsl(var(--border) / 0.5)' }}>
 
       <div className="flex items-center justify-between">
         {/* Left: mobile menu + title */}
@@ -74,6 +72,34 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right: actions */}
         <div className="flex items-center gap-1.5">
+          {/* Theme toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative h-9 w-9 hover:bg-muted/80 rounded-xl overflow-hidden"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <span
+              className="absolute inset-0 flex items-center justify-center transition-all duration-300"
+              style={{
+                opacity: theme === 'dark' ? 1 : 0,
+                transform: theme === 'dark' ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.5)',
+              }}
+            >
+              <Sun className="h-4 w-4 text-amber-400" />
+            </span>
+            <span
+              className="absolute inset-0 flex items-center justify-center transition-all duration-300"
+              style={{
+                opacity: theme === 'light' ? 1 : 0,
+                transform: theme === 'light' ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.5)',
+              }}
+            >
+              <Moon className="h-4 w-4 text-indigo-400" />
+            </span>
+          </Button>
+
           {/* Notifications */}
           <Button
             variant="ghost"

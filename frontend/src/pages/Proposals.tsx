@@ -41,7 +41,7 @@ function getCompanyName(lead: Proposal['leadId']): string {
 
 function ProposalCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-border/60 bg-white shadow-card p-5 space-y-3">
+    <div className="rounded-2xl border border-border/50 bg-card shadow-card p-5 space-y-3">
       <div className="flex items-start justify-between">
         <div className="space-y-2 flex-1">
           <Skeleton className="h-5 w-3/4" />
@@ -117,20 +117,28 @@ export default function Proposals() {
   return (
     <div className="space-y-5 p-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Proposals</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{proposals.length} proposal(s) generated</p>
+      <div className="page-header">
+        <div className="absolute inset-0 opacity-40 rounded-2xl"
+             style={{ backgroundImage: 'radial-gradient(rgba(159,141,212,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="relative flex items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FileText className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">AI-Generated</span>
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Proposals</h1>
+            <p className="text-sm text-muted-foreground font-medium">{proposals.length} proposal(s) generated</p>
+          </div>
+          <Button
+            size="sm"
+            className="h-9 rounded-xl gap-2 font-semibold text-sm text-white shadow-glow-teal shrink-0"
+            style={{ background: 'linear-gradient(135deg, #9F8DD4, #1DD2D7)' }}
+            onClick={handleOpenGenerate}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            Generate with AI
+          </Button>
         </div>
-        <Button
-          size="sm"
-          className="h-9 rounded-xl gap-2 font-semibold text-sm text-white shadow-glow-teal shrink-0"
-          style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
-          onClick={handleOpenGenerate}
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Generate with AI
-        </Button>
       </div>
 
       {/* Cards */}
@@ -169,7 +177,7 @@ export default function Proposals() {
             return (
               <div
                 key={proposal._id}
-                className="rounded-2xl border border-border/60 bg-white shadow-card hover:shadow-card-hover transition-all duration-200 flex flex-col overflow-hidden"
+                className="rounded-2xl border border-border/50 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 flex flex-col overflow-hidden"
               >
                 {/* Top accent */}
                 <div

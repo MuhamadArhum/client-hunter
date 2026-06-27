@@ -213,17 +213,24 @@ export default function Leads() {
   return (
     <div className="space-y-5 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {pagination.total} total leads
-            {hotLeads > 0 && <> · <span className="text-rose-500 font-medium">{hotLeads} hot</span></>}
-            {convertedLeads > 0 && <> · <span className="text-emerald-600 font-medium">{convertedLeads} converted</span></>}
-          </p>
-        </div>
+      <div className="page-header">
+        <div className="absolute inset-0 opacity-40 rounded-2xl"
+             style={{ backgroundImage: 'radial-gradient(rgba(29,210,215,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Pipeline</span>
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Leads</h1>
+            <p className="text-sm text-muted-foreground font-medium">
+              {pagination.total} total leads
+              {hotLeads > 0 && <> · <span className="text-rose-500 font-semibold">{hotLeads} 🔥 hot</span></>}
+              {convertedLeads > 0 && <> · <span className="text-emerald-600 font-semibold">{convertedLeads} converted</span></>}
+            </p>
+          </div>
 
-        <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
           {bulkEnrichMsg && (
             <span className="text-xs font-medium text-cyan-700 bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-xl self-center">
               {bulkEnrichMsg}
@@ -257,6 +264,7 @@ export default function Leads() {
             <Plus className="h-3.5 w-3.5" />
             Add Lead
           </Button>
+          </div>
         </div>
       </div>
 
@@ -266,13 +274,13 @@ export default function Leads() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
           <Input
             placeholder="Search by company, contact or email..."
-            className="pl-9 h-10 rounded-xl border-border/60 bg-white text-sm"
+            className="pl-9 h-10 rounded-xl border-border/60 bg-background text-sm"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-full sm:w-44 h-10 rounded-xl border-border/60 bg-white text-sm">
+          <SelectTrigger className="w-full sm:w-44 h-10 rounded-xl border-border/60 bg-background text-sm">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">

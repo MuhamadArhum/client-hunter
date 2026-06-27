@@ -122,17 +122,25 @@ export default function Outreach() {
 
   return (
     <div className="space-y-5 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Outreach</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Send emails and WhatsApp messages to your leads</p>
+      <div className="page-header">
+        <div className="absolute inset-0 opacity-40 rounded-2xl"
+             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-1">
+            <Send className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Automation</span>
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Outreach</h1>
+          <p className="text-sm text-muted-foreground font-medium">Send emails and WhatsApp messages to your leads</p>
+        </div>
       </div>
 
       <Tabs defaultValue="send">
         <TabsList className="h-10 rounded-xl bg-muted/60 p-1 gap-1">
-          <TabsTrigger value="send" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="send" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Send className="mr-2 h-3.5 w-3.5" /> Send Outreach
           </TabsTrigger>
-          <TabsTrigger value="history" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm" onClick={fetchHistory}>
+          <TabsTrigger value="history" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm" onClick={fetchHistory}>
             <Clock className="mr-2 h-3.5 w-3.5" /> History
           </TabsTrigger>
         </TabsList>
@@ -168,10 +176,10 @@ export default function Outreach() {
               <Tabs defaultValue="email">
                 <div className="border-b border-border/60 px-4 pt-4 pb-0">
                   <TabsList className="h-9 rounded-lg bg-muted/60 p-1 gap-1">
-                    <TabsTrigger value="email" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    <TabsTrigger value="email" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm">
                       <Mail className="h-3.5 w-3.5" /> Email
                     </TabsTrigger>
-                    <TabsTrigger value="whatsapp" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    <TabsTrigger value="whatsapp" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm">
                       <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
                     </TabsTrigger>
                   </TabsList>

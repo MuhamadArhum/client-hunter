@@ -27,30 +27,42 @@ interface AIBreakdown {
   topLeads: { _id: string; companyName: string; aiScore: number; aiQualification: string; aiRecommendedService: string }[];
 }
 
-function StatCard({ icon: Icon, label, value, topGradient, iconBg, iconColor }: {
-  icon: React.ElementType; label: string; value: string | number;
-  topGradient: string; iconBg: string; iconColor: string;
-}) {
+const ANALYTICS_STAT_CARDS = [
+  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #1DD2D7, #06b6d4)', bgColor: 'rgba(29,210,215,0.08)',   borderColor: 'rgba(29,210,215,0.18)',   glowColor: 'rgba(29,210,215,0.15)',   numClass: 'stat-number-teal' },
+  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(16,185,129,0.08)',   borderColor: 'rgba(16,185,129,0.18)',   glowColor: 'rgba(16,185,129,0.15)',   numClass: 'stat-number-emerald', suffix: '%' },
+  { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, gradient: 'linear-gradient(135deg, #9F8DD4, #c084fc)', bgColor: 'rgba(159,141,212,0.08)',  borderColor: 'rgba(159,141,212,0.18)',  glowColor: 'rgba(159,141,212,0.15)',  numClass: 'stat-number-purple' },
+  { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, gradient: 'linear-gradient(135deg, #6366f1, #818cf8)', bgColor: 'rgba(99,102,241,0.08)',   borderColor: 'rgba(99,102,241,0.18)',   glowColor: 'rgba(99,102,241,0.15)',   numClass: 'stat-number-indigo' },
+];
+
+function StatCard({ card, value }: { card: typeof ANALYTICS_STAT_CARDS[0]; value: string | number }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-white shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 p-5">
-      <div className={`absolute top-0 left-0 right-0 h-0.5 ${topGradient}`} />
+    <div
+      className="relative rounded-2xl p-5 overflow-hidden cursor-default group transition-all duration-300 hover:-translate-y-1"
+      style={{ background: card.bgColor, border: `1px solid ${card.borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)' }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 20px ${card.glowColor}, 0 8px 40px rgba(0,0,0,0.1)`; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)'; }}
+    >
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: card.gradient }} />
+      <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full opacity-30 blur-2xl transition-opacity group-hover:opacity-60" style={{ background: card.gradient }} />
       <div className="flex items-start justify-between mb-4">
-        <div className={cn('flex h-10 w-10 items-center justify-center rounded-xl', iconBg)}>
-          <Icon className={cn('h-5 w-5', iconColor)} />
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
+             style={{ background: card.gradient, boxShadow: `0 4px 14px ${card.glowColor}` }}>
+          <card.icon className="h-5 w-5 text-white" />
         </div>
-        <ArrowUpRight className="h-4 w-4 text-muted-foreground/30" />
+        <ArrowUpRight className="h-4 w-4 text-muted-foreground/30 transition-all group-hover:text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </div>
-      <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
-      <p className="text-sm text-muted-foreground mt-1 font-medium">{label}</p>
+      <p className={cn('text-4xl font-black tracking-tight mb-0.5', card.numClass)}>{value}</p>
+      <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
     </div>
   );
 }
 
-function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function ChartCard({ title, subtitle, accent, children }: { title: string; subtitle?: string; accent?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-border/60">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+    <div className="relative rounded-2xl border border-border/50 bg-card shadow-card overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #1DD2D7, #9F8DD4)' }} />
+      <div className="px-5 py-4 border-b border-border/40">
+        <h3 className="text-sm font-bold text-foreground">{title}</h3>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
       <div className="p-5">{children}</div>
@@ -61,8 +73,8 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle?: st
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { value: number; name?: string }[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-border/60 rounded-xl shadow-card px-3 py-2">
-        <p className="text-xs text-muted-foreground capitalize">{label?.replace(/_/g, ' ')}</p>
+      <div className="rounded-xl border border-border/60 bg-popover px-3 py-2 shadow-card">
+        <p className="text-xs text-muted-foreground capitalize mb-0.5">{label?.replace(/_/g, ' ')}</p>
         {payload.map((p, i) => (
           <p key={i} className="text-sm font-bold text-foreground">{p.value}</p>
         ))}
@@ -139,16 +151,16 @@ export default function Analytics() {
         <Skeleton className="h-7 w-36" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-2xl border bg-white p-5 space-y-3">
-              <Skeleton className="h-10 w-10 rounded-xl" />
-              <Skeleton className="h-8 w-20" />
+            <div key={i} className="rounded-2xl border border-border/50 bg-card p-5 space-y-3">
+              <Skeleton className="h-11 w-11 rounded-xl" />
+              <Skeleton className="h-9 w-20" />
               <Skeleton className="h-4 w-28" />
             </div>
           ))}
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-2xl border bg-white p-5">
+            <div key={i} className="rounded-2xl border border-border/50 bg-card p-5">
               <Skeleton className="h-4 w-32 mb-4" />
               <Skeleton className="h-56 w-full rounded-xl" />
             </div>
@@ -166,22 +178,31 @@ export default function Analytics() {
 
   return (
     <div className="space-y-5 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Performance metrics and pipeline insights</p>
+      <div className="page-header">
+        <div className="absolute inset-0 opacity-40 rounded-2xl"
+             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-1">
+            <Target className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Performance</span>
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Analytics</h1>
+          <p className="text-sm text-muted-foreground font-medium">Performance metrics and pipeline insights</p>
+        </div>
       </div>
 
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Users} label="Total Leads" value={dashboard?.totalLeads ?? 0} topGradient="bg-gradient-to-r from-cyan-400 to-teal-400" iconBg="bg-cyan-50" iconColor="text-cyan-500" />
-        <StatCard icon={TrendingUp} label="Conversion Rate" value={`${dashboard?.conversionRate ?? 0}%`} topGradient="bg-gradient-to-r from-emerald-400 to-green-400" iconBg="bg-emerald-50" iconColor="text-emerald-500" />
-        <StatCard icon={FileText} label="Proposals Sent" value={dashboard?.sentProposals ?? 0} topGradient="bg-gradient-to-r from-violet-400 to-purple-400" iconBg="bg-violet-50" iconColor="text-violet-500" />
-        <StatCard icon={Mail} label="Emails Sent" value={dashboard?.totalEmails ?? 0} topGradient="bg-gradient-to-r from-indigo-400 to-blue-400" iconBg="bg-indigo-50" iconColor="text-indigo-500" />
+        {ANALYTICS_STAT_CARDS.map((card) => {
+          const raw = dashboard?.[card.key] ?? 0;
+          const val = 'suffix' in card ? `${raw}${card.suffix}` : raw;
+          return <StatCard key={card.key} card={card} value={val} />;
+        })}
       </div>
 
       {/* Row 1: Source + Status */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Leads by Source" subtitle="Where your leads come from">
+        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #1DD2D7, #06b6d4)">
           {sourceChartData.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
@@ -195,7 +216,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution">
+        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #9F8DD4, #6366f1)">
           {statusChartData.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={statusChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -216,7 +237,7 @@ export default function Analytics() {
 
       {/* Row 2: Conversion + Proposals */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs">
+        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #1DD2D7)">
           {conversionBySource.length === 0 ? <EmptyChart height={180} /> : (
             <div className="space-y-3">
               {conversionBySource.map((item) => (
@@ -240,7 +261,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance">
+        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accent="linear-gradient(90deg, #9F8DD4, #c084fc)">
           {!proposalStats ? <EmptyChart height={180} /> : (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
@@ -273,7 +294,7 @@ export default function Analytics() {
 
       {/* Row 3: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics">
+        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #1DD2D7)">
           {outreachChartData.every(d => d.count === 0) ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={outreachChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -289,7 +310,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification">
+        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #9F8DD4)">
           {!aiBreakdown ? (
             <div className="flex flex-col items-center justify-center h-56 gap-2 text-center">
               <Brain className="h-8 w-8 text-muted-foreground/30" />
