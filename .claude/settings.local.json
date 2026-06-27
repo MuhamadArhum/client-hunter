@@ -34,7 +34,11 @@
       "Bash(git commit *)",
       "Bash(git push *)",
       "Bash(curl -s http://localhost:5000/api/health)",
-      "Bash(pkill -f \"node src/app.js\")"
+      "Bash(pkill -f \"node src/app.js\")",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(xargs wc *)",
+      "Bash(xargs grep *)"
     ]
   }
 }

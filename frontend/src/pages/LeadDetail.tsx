@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Mail, MessageSquare, Clock,
   Brain, Zap, CalendarClock, RefreshCw, Sparkles, Globe, StickyNote, Search,
+  CheckCircle, XCircle,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,38 +57,44 @@ interface OutreachLog {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  new: 'bg-cyan-100 text-cyan-700',
-  contacted: 'bg-amber-100 text-amber-700',
-  proposal_sent: 'bg-violet-100 text-violet-700',
-  follow_up: 'bg-indigo-100 text-indigo-700',
-  converted: 'bg-emerald-100 text-emerald-700',
-  lost: 'bg-rose-100 text-rose-700',
+  new: 'bg-cyan-50 text-cyan-700',
+  contacted: 'bg-amber-50 text-amber-700',
+  proposal_sent: 'bg-violet-50 text-violet-700',
+  follow_up: 'bg-indigo-50 text-indigo-700',
+  converted: 'bg-emerald-50 text-emerald-700',
+  lost: 'bg-rose-50 text-rose-700',
 };
 
 const QUAL_STYLES: Record<string, string> = {
-  hot: 'bg-rose-100 text-rose-700 border-rose-200',
-  warm: 'bg-amber-100 text-amber-700 border-amber-200',
-  cold: 'bg-sky-100 text-sky-700 border-sky-200',
+  hot: 'bg-rose-50 text-rose-700 border-rose-200',
+  warm: 'bg-amber-50 text-amber-700 border-amber-200',
+  cold: 'bg-sky-50 text-sky-700 border-sky-200',
 };
 
-const QUAL_EMOJI: Record<string, string> = { hot: '🔥', warm: '🟡', cold: '🔵' };
+const QUAL_EMOJI: Record<string, string> = { hot: '🔥', warm: '⚡', cold: '❄️' };
 
 const STATUSES = ['new', 'contacted', 'proposal_sent', 'follow_up', 'converted', 'lost'];
 
 function InfoRow({ label, value }: { label: string; value?: string }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-sm font-medium">{value || '—'}</span>
+    <div className="flex flex-col gap-0.5 py-2 border-b border-border/40 last:border-0">
+      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{label}</span>
+      <span className="text-sm font-medium text-foreground">{value || '—'}</span>
     </div>
   );
 }
 
 function AlertMsg({ msg, success }: { msg: string; success?: boolean }) {
   return (
-    <p className={cn('text-sm rounded p-2', success ? 'text-cyan-700 bg-cyan-50' : 'text-destructive bg-destructive/10')}>
+    <div className={cn(
+      'flex items-center gap-2.5 text-sm rounded-xl p-3 border',
+      success ? 'bg-cyan-50 text-cyan-700 border-cyan-200' : 'bg-rose-50 text-rose-700 border-rose-200',
+    )}>
+      {success
+        ? <CheckCircle className="h-4 w-4 shrink-0" />
+        : <XCircle className="h-4 w-4 shrink-0" />}
       {msg}
-    </p>
+    </div>
   );
 }
 
@@ -282,10 +289,22 @@ export default function LeadDetail() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-32 rounded-xl" />
         <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-1"><CardContent className="p-6 space-y-3">{[...Array(6)].map((_, i) => <Skeleton key={i} className="h-5 w-full" />)}</CardContent></Card>
-          <Card className="lg:col-span-2"><CardContent className="p-6 space-y-3"><Skeleton className="h-10 w-48" /><Skeleton className="h-32 w-full" /></CardContent></Card>
+          <div className="lg:col-span-1 space-y-4">
+            <div className="rounded-2xl border border-border/60 shadow-card overflow-hidden">
+              <div className="h-0.5 bg-muted" />
+              <div className="p-5 space-y-3">{[...Array(7)].map((_, i) => <Skeleton key={i} className="h-5 w-full" />)}</div>
+            </div>
+          </div>
+          <div className="lg:col-span-2">
+            <div className="rounded-2xl border border-border/60 shadow-card overflow-hidden">
+              <div className="p-5 space-y-3">
+                <Skeleton className="h-10 w-full rounded-xl" />
+                <Skeleton className="h-48 w-full rounded-xl" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -293,10 +312,19 @@ export default function LeadDetail() {
 
   if (!lead) {
     return (
-      <div className="p-6">
-        <p className="text-muted-foreground">Lead not found.</p>
-        <Button variant="ghost" className="mt-4" onClick={() => navigate('/leads')}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Leads
+      <div className="p-6 flex flex-col items-center justify-center py-20 text-center">
+        <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'linear-gradient(135deg, rgba(29,210,215,0.1), rgba(159,141,212,0.1))' }}>
+          <XCircle className="h-7 w-7 text-muted-foreground/40" />
+        </div>
+        <h2 className="text-base font-semibold text-foreground mb-1">Lead not found</h2>
+        <p className="text-sm text-muted-foreground mb-4">This lead may have been deleted or doesn't exist.</p>
+        <Button
+          size="sm"
+          className="h-9 rounded-xl gap-2 text-sm font-semibold text-white"
+          style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+          onClick={() => navigate('/leads')}
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to Leads
         </Button>
       </div>
     );
@@ -306,32 +334,43 @@ export default function LeadDetail() {
 
   return (
     <div className="space-y-6 p-6">
-      <Button variant="ghost" onClick={() => navigate('/leads')} className="-ml-2">
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Leads
-      </Button>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/leads')}
+          className="h-8 rounded-xl gap-2 text-sm font-medium hover:bg-muted/60 -ml-2"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to Leads
+        </Button>
+        <span className="text-muted-foreground/40 text-xs">·</span>
+        <span className="text-sm font-semibold text-foreground">{lead.companyName}</span>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
 
         {/* Left: Lead Info */}
         <div className="space-y-4">
-          <Card>
+          <Card className="border border-border/60 shadow-card overflow-hidden">
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #1DD2D7, #9F8DD4)' }} />
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-lg">{lead.companyName}</CardTitle>
-                <Badge className={cn('text-xs', STATUS_COLORS[lead.status] || '')}>
-                  {lead.status?.replace('_', ' ')}
-                </Badge>
+                <CardTitle className="text-base font-semibold">{lead.companyName}</CardTitle>
+                <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full shrink-0', STATUS_COLORS[lead.status] || 'bg-slate-50 text-slate-600')}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
+                  {lead.status?.replace(/_/g, ' ')}
+                </span>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-0 pb-4 px-5">
               <InfoRow label="Contact" value={lead.contactName} />
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs text-muted-foreground">Email</span>
+              <div className="flex flex-col gap-0.5 py-2 border-b border-border/40">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Email</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium flex-1">{lead.email || '—'}</span>
+                  <span className="text-sm font-medium text-foreground flex-1">{lead.email || '—'}</span>
                   {!lead.email && lead.website && (
-                    <Button size="sm" variant="outline" className="h-6 text-xs px-2 shrink-0" onClick={handleEnrichEmail} disabled={enrichLoading}>
-                      <Search className="h-3 w-3 mr-1" />
+                    <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-lg shrink-0 gap-1 border-border/60" onClick={handleEnrichEmail} disabled={enrichLoading}>
+                      <Search className="h-3 w-3" />
                       {enrichLoading ? '...' : 'Find'}
                     </Button>
                   )}
@@ -345,15 +384,15 @@ export default function LeadDetail() {
               <InfoRow label="Source" value={lead.source} />
               {lead.description && <InfoRow label="Description" value={lead.description} />}
 
-              <div className="pt-2 space-y-1">
-                <Label className="text-xs text-muted-foreground">Change Status</Label>
+              <div className="pt-3 space-y-1.5">
+                <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Change Status</Label>
                 <Select value={lead.status} onValueChange={handleStatusChange} disabled={statusUpdating}>
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl">
                     {STATUSES.map((s) => (
-                      <SelectItem key={s} value={s} className="text-xs capitalize">{s.replace('_', ' ')}</SelectItem>
+                      <SelectItem key={s} value={s} className="text-sm capitalize">{s.replace(/_/g, ' ')}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -362,21 +401,24 @@ export default function LeadDetail() {
           </Card>
 
           {/* AI Analysis Card */}
-          <Card className="border-primary/20">
+          <Card className="border border-border/60 shadow-card overflow-hidden">
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #9F8DD4, #1DD2D7)' }} />
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <Brain className="h-4 w-4 text-primary" />
+                  <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(159,141,212,0.12)' }}>
+                    <Brain className="h-3.5 w-3.5" style={{ color: '#9F8DD4' }} />
+                  </span>
                   AI Analysis
                 </CardTitle>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 text-xs"
+                  className="h-7 text-xs rounded-lg gap-1 hover:bg-muted/60"
                   onClick={handleAnalyze}
                   disabled={analyzeLoading}
                 >
-                  <RefreshCw className={cn('h-3 w-3 mr-1', analyzeLoading && 'animate-spin')} />
+                  <RefreshCw className={cn('h-3 w-3', analyzeLoading && 'animate-spin')} />
                   {analyzeLoading ? 'Analyzing...' : 'Re-analyze'}
                 </Button>
               </div>
@@ -437,33 +479,42 @@ export default function LeadDetail() {
           </Card>
 
           {/* Follow-up Scheduler */}
-          <Card>
+          <Card className="border border-border/60 shadow-card overflow-hidden">
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #6366f1, #9F8DD4)' }} />
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <CalendarClock className="h-4 w-4 text-primary" />
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
+                  <CalendarClock className="h-3.5 w-3.5 text-indigo-500" />
+                </span>
                 Schedule Follow-up
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {lead.followUpScheduled && (
-                <div className="text-xs rounded bg-indigo-50 text-indigo-700 p-2">
+                <div className="flex items-center gap-2 text-xs rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 p-3">
                   {lead.followUpSent ? '✅ Follow-up sent' : `⏰ Scheduled: ${new Date(lead.followUpScheduled).toDateString()}`}
                 </div>
               )}
               {followUpMsg && <AlertMsg msg={followUpMsg} success={followUpMsg.includes('cheduled')} />}
               <div className="flex gap-2">
                 <Select value={followUpDays} onValueChange={setFollowUpDays}>
-                  <SelectTrigger className="h-8 text-xs flex-1">
+                  <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm flex-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl">
                     {['1', '2', '3', '5', '7', '14'].map((d) => (
-                      <SelectItem key={d} value={d} className="text-xs">In {d} day{d !== '1' ? 's' : ''}</SelectItem>
+                      <SelectItem key={d} value={d} className="text-sm">In {d} day{d !== '1' ? 's' : ''}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button size="sm" className="h-8 text-xs" onClick={handleScheduleFollowUp} disabled={followUpLoading}>
-                  <Clock className="h-3 w-3 mr-1" />
+                <Button
+                  size="sm"
+                  className="h-9 rounded-xl text-sm font-semibold text-white gap-1.5 shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}
+                  onClick={handleScheduleFollowUp}
+                  disabled={followUpLoading}
+                >
+                  <Clock className="h-3.5 w-3.5" />
                   {followUpLoading ? '...' : 'Set'}
                 </Button>
               </div>
@@ -474,36 +525,62 @@ export default function LeadDetail() {
         {/* Right: Actions */}
         <div className="lg:col-span-2 space-y-4">
           <Tabs defaultValue="email" onValueChange={(v) => v === 'history' && fetchHistory()}>
-            <TabsList className="grid grid-cols-6 w-full">
-              <TabsTrigger value="email"><Mail className="h-4 w-4 mr-1" /><span className="hidden sm:inline">Email</span></TabsTrigger>
-              <TabsTrigger value="whatsapp"><MessageSquare className="h-4 w-4 mr-1" /><span className="hidden sm:inline">WA</span></TabsTrigger>
-              <TabsTrigger value="autoreply"><Sparkles className="h-4 w-4 mr-1" /><span className="hidden sm:inline">AI Reply</span></TabsTrigger>
-              <TabsTrigger value="website"><Globe className="h-4 w-4 mr-1" /><span className="hidden sm:inline">Website</span></TabsTrigger>
-              <TabsTrigger value="notes"><StickyNote className="h-4 w-4 mr-1" /><span className="hidden sm:inline">Notes</span></TabsTrigger>
-              <TabsTrigger value="history"><Clock className="h-4 w-4 mr-1" /><span className="hidden sm:inline">History</span></TabsTrigger>
+            <TabsList className="grid grid-cols-6 w-full h-10 rounded-xl bg-muted/60 p-1">
+              <TabsTrigger value="email" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <Mail className="h-3.5 w-3.5" /><span className="hidden sm:inline">Email</span>
+              </TabsTrigger>
+              <TabsTrigger value="whatsapp" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <MessageSquare className="h-3.5 w-3.5" /><span className="hidden sm:inline">WA</span>
+              </TabsTrigger>
+              <TabsTrigger value="autoreply" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <Sparkles className="h-3.5 w-3.5" /><span className="hidden sm:inline">AI Reply</span>
+              </TabsTrigger>
+              <TabsTrigger value="website" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <Globe className="h-3.5 w-3.5" /><span className="hidden sm:inline">Website</span>
+              </TabsTrigger>
+              <TabsTrigger value="notes" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <StickyNote className="h-3.5 w-3.5" /><span className="hidden sm:inline">Notes</span>
+              </TabsTrigger>
+              <TabsTrigger value="history" className="rounded-lg text-xs font-medium gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <Clock className="h-3.5 w-3.5" /><span className="hidden sm:inline">History</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* Email Tab */}
             <TabsContent value="email">
-              <Card>
-                <CardHeader><CardTitle className="text-base">Send Email</CardTitle></CardHeader>
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #1DD2D7, #1DD7CE)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(29,210,215,0.1)' }}>
+                      <Mail className="h-3.5 w-3.5" style={{ color: '#1DD2D7' }} />
+                    </span>
+                    Send Email
+                  </CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-3">
                   {emailMsg && <AlertMsg msg={emailMsg} success={emailMsg.includes('success')} />}
-                  <div className="space-y-1">
-                    <Label>To</Label>
-                    <Input value={lead.email || ''} disabled className="bg-muted/50" />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">To</Label>
+                    <Input value={lead.email || 'No email on file'} disabled className="h-9 rounded-xl border-border/60 text-sm bg-muted/40" />
                   </div>
-                  <div className="space-y-1">
-                    <Label>Subject</Label>
-                    <Input placeholder="Email subject..." value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject</Label>
+                    <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="Email subject..." value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
                   </div>
-                  <div className="space-y-1">
-                    <Label>Message</Label>
-                    <Textarea rows={5} placeholder="Write your email..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
+                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={5} placeholder="Write your email..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
                   </div>
-                  <Button className="w-full" onClick={handleSendEmail} disabled={emailLoading}>
-                    <Mail className="mr-2 h-4 w-4" />
-                    {emailLoading ? 'Sending...' : 'Send Email'}
+                  <Button
+                    className="w-full h-10 rounded-xl text-sm font-semibold text-white gap-2 shadow-glow-teal"
+                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                    onClick={handleSendEmail}
+                    disabled={emailLoading}
+                  >
+                    {emailLoading
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                      : <><Mail className="h-4 w-4" /> Send Email</>}
                   </Button>
                 </CardContent>
               </Card>
@@ -511,21 +588,35 @@ export default function LeadDetail() {
 
             {/* WhatsApp Tab */}
             <TabsContent value="whatsapp">
-              <Card>
-                <CardHeader><CardTitle className="text-base">Send WhatsApp</CardTitle></CardHeader>
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #9F8DD4, #b8a8e4)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(159,141,212,0.1)' }}>
+                      <MessageSquare className="h-3.5 w-3.5" style={{ color: '#9F8DD4' }} />
+                    </span>
+                    Send WhatsApp
+                  </CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-3">
                   {waMsg && <AlertMsg msg={waMsg} success={waMsg.includes('success')} />}
-                  <div className="space-y-1">
-                    <Label>Phone Number</Label>
-                    <Input placeholder="+923001234567" value={waPhone} onChange={(e) => setWaPhone(e.target.value)} />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone Number</Label>
+                    <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="+923001234567" value={waPhone} onChange={(e) => setWaPhone(e.target.value)} />
                   </div>
-                  <div className="space-y-1">
-                    <Label>Message</Label>
-                    <Textarea rows={5} placeholder="Write your message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
+                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={5} placeholder="Write your message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
                   </div>
-                  <Button className="w-full" onClick={handleSendWhatsApp} disabled={waLoading}>
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    {waLoading ? 'Sending...' : 'Send WhatsApp'}
+                  <Button
+                    className="w-full h-10 rounded-xl text-sm font-semibold gap-2"
+                    style={{ background: 'linear-gradient(135deg, #9F8DD4, #b8a8e4)', color: 'white' }}
+                    onClick={handleSendWhatsApp}
+                    disabled={waLoading}
+                  >
+                    {waLoading
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                      : <><MessageSquare className="h-4 w-4" /> Send WhatsApp</>}
                   </Button>
                 </CardContent>
               </Card>
@@ -533,43 +624,56 @@ export default function LeadDetail() {
 
             {/* AI Auto Reply Tab */}
             <TabsContent value="autoreply">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #1DD2D7, #9F8DD4)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(29,210,215,0.15), rgba(159,141,212,0.15))' }}>
+                      <Sparkles className="h-3.5 w-3.5" style={{ color: '#1DD2D7' }} />
+                    </span>
                     AI Auto Reply Draft
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground bg-muted/40 rounded-xl p-3 border border-border/40">
                     Paste the client's message — AI will draft a professional reply for you.
                   </p>
-                  <div className="space-y-1">
-                    <Label>Client's Message</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Client's Message</Label>
                     <Textarea
+                      className="rounded-xl border-border/60 text-sm resize-none"
                       rows={4}
                       placeholder="Paste what the client wrote to you..."
                       value={autoReplyInput}
                       onChange={(e) => setAutoReplyInput(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full" onClick={handleAutoReply} disabled={autoReplyLoading || !autoReplyInput.trim()}>
-                    <Sparkles className={cn('mr-2 h-4 w-4', autoReplyLoading && 'animate-pulse')} />
+                  <Button
+                    className="w-full h-10 rounded-xl text-sm font-semibold text-white gap-2 shadow-glow-teal"
+                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                    onClick={handleAutoReply}
+                    disabled={autoReplyLoading || !autoReplyInput.trim()}
+                  >
+                    <Sparkles className={cn('h-4 w-4', autoReplyLoading && 'animate-pulse')} />
                     {autoReplyLoading ? 'Generating...' : 'Generate Reply'}
                   </Button>
 
                   {autoReplyDraft && (
-                    <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-3">
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">Subject</p>
-                        <p className="text-sm font-medium">{autoReplyDraft.subject}</p>
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Subject</p>
+                        <p className="text-sm font-medium text-foreground">{autoReplyDraft.subject}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">Reply Body</p>
-                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{autoReplyDraft.body}</p>
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Reply Body</p>
+                        <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground/80">{autoReplyDraft.body}</p>
                       </div>
-                      <Button className="w-full" variant="outline" onClick={applyAutoReply}>
-                        <Mail className="mr-2 h-4 w-4" />
+                      <Button
+                        className="w-full h-9 rounded-xl text-sm font-semibold gap-2"
+                        variant="outline"
+                        onClick={applyAutoReply}
+                      >
+                        <Mail className="h-3.5 w-3.5" />
                         Use in Email Tab
                       </Button>
                     </div>
@@ -580,25 +684,34 @@ export default function LeadDetail() {
 
             {/* Website Analyzer Tab */}
             <TabsContent value="website">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-primary" />
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #3F4D67, #1DD2D7)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(63,77,103,0.1)' }}>
+                      <Globe className="h-3.5 w-3.5 text-foreground/60" />
+                    </span>
                     AI Website Analyzer
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground bg-muted/40 rounded-xl p-3 border border-border/40">
                     AI analyzes the client's website and detects pain points, tech stack, and the best service to pitch.
                   </p>
                   <div className="flex gap-2">
                     <Input
+                      className="h-9 rounded-xl border-border/60 text-sm"
                       placeholder="https://client-website.com"
                       value={websiteUrl}
                       onChange={(e) => setWebsiteUrl(e.target.value)}
                     />
-                    <Button onClick={handleWebsiteAnalyze} disabled={websiteLoading || !websiteUrl.trim()} className="shrink-0">
-                      <Globe className={cn('mr-2 h-4 w-4', websiteLoading && 'animate-spin')} />
+                    <Button
+                      className="h-9 rounded-xl text-sm font-semibold text-white gap-1.5 shrink-0"
+                      style={{ background: 'linear-gradient(135deg, #3F4D67, #4d5f80)' }}
+                      onClick={handleWebsiteAnalyze}
+                      disabled={websiteLoading || !websiteUrl.trim()}
+                    >
+                      <Globe className={cn('h-3.5 w-3.5', websiteLoading && 'animate-spin')} />
                       {websiteLoading ? 'Analyzing...' : 'Analyze'}
                     </Button>
                   </div>
@@ -681,25 +794,38 @@ export default function LeadDetail() {
 
             {/* Notes Tab */}
             <TabsContent value="notes">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <StickyNote className="h-4 w-4 text-primary" />
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(245,158,11,0.1)' }}>
+                      <StickyNote className="h-3.5 w-3.5 text-amber-500" />
+                    </span>
                     Internal Notes
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground bg-muted/40 rounded-xl p-3 border border-border/40">
                     Private notes visible only to your team. Not sent to the client.
                   </p>
                   <Textarea
+                    className="rounded-xl border-border/60 text-sm resize-none"
                     rows={8}
                     placeholder="Add notes about this lead — call summaries, concerns, next steps..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                  <Button className="w-full" onClick={handleSaveNotes} disabled={notesSaving}>
-                    {notesSaved ? '✅ Saved!' : notesSaving ? 'Saving...' : 'Save Notes'}
+                  <Button
+                    className="w-full h-10 rounded-xl text-sm font-semibold gap-2"
+                    style={notesSaved
+                      ? { background: 'linear-gradient(135deg, #10b981, #34d399)', color: 'white' }
+                      : { background: 'linear-gradient(135deg, #f59e0b, #fbbf24)', color: 'white' }}
+                    onClick={handleSaveNotes}
+                    disabled={notesSaving}
+                  >
+                    {notesSaved ? '✅ Saved!' : notesSaving
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
+                      : 'Save Notes'}
                   </Button>
                 </CardContent>
               </Card>
@@ -707,39 +833,64 @@ export default function LeadDetail() {
 
             {/* History Tab */}
             <TabsContent value="history">
-              <Card>
-                <CardHeader><CardTitle className="text-base">Outreach History</CardTitle></CardHeader>
-                <CardContent>
+              <Card className="border border-border/60 shadow-card overflow-hidden">
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #6366f1, #1DD2D7)' }} />
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
+                      <Clock className="h-3.5 w-3.5 text-indigo-500" />
+                    </span>
+                    Outreach History
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   {historyLoading ? (
-                    <div className="space-y-2">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
+                    <div className="space-y-2 py-2">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}</div>
                   ) : (
                     <Table>
                       <TableHeader>
-                        <TableRow>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Subject</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Date</TableHead>
+                        <TableRow className="hover:bg-transparent border-border/60">
+                          <TableHead className="text-xs font-semibold text-muted-foreground">Type</TableHead>
+                          <TableHead className="text-xs font-semibold text-muted-foreground">Subject</TableHead>
+                          <TableHead className="text-xs font-semibold text-muted-foreground">Status</TableHead>
+                          <TableHead className="text-xs font-semibold text-muted-foreground">Date</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {history.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                              No outreach history yet.
+                            <TableCell colSpan={4} className="text-center py-12">
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(99,102,241,0.08)' }}>
+                                  <Clock className="h-4 w-4 text-muted-foreground/40" />
+                                </div>
+                                <p className="text-sm text-muted-foreground">No outreach history yet.</p>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ) : history.map((log) => (
-                          <TableRow key={log._id}>
-                            <TableCell className="capitalize text-sm">{log.type}</TableCell>
-                            <TableCell className="max-w-xs truncate text-sm">{log.subject || log.message?.slice(0, 40) || '—'}</TableCell>
+                          <TableRow key={log._id} className="border-border/40 hover:bg-muted/30">
                             <TableCell>
-                              <Badge className={cn('text-xs', log.status === 'sent' ? 'bg-cyan-100 text-cyan-700' : 'bg-rose-100 text-rose-700')}>
-                                {log.status}
-                              </Badge>
+                              <span className={cn(
+                                'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',
+                                log.type === 'email' ? 'bg-cyan-50 text-cyan-700' : 'bg-violet-50 text-violet-700',
+                              )}>
+                                {log.type === 'email' ? <Mail className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                                {log.type}
+                              </span>
                             </TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {new Date(log.createdAt).toLocaleDateString()}
+                            <TableCell className="max-w-xs truncate text-sm text-muted-foreground">{log.subject || log.message?.slice(0, 40) || '—'}</TableCell>
+                            <TableCell>
+                              <span className={cn(
+                                'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full',
+                                log.status === 'sent' ? 'bg-cyan-50 text-cyan-700' : 'bg-rose-50 text-rose-700',
+                              )}>
+                                <span className={cn('h-1.5 w-1.5 rounded-full', log.status === 'sent' ? 'bg-cyan-400' : 'bg-rose-400')} />
+                                {log.status}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                              {new Date(log.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </TableCell>
                           </TableRow>
                         ))}

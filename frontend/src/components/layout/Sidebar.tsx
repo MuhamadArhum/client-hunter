@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FileText, Send, BarChart3,
-  Bell, User, Settings, LogOut, Zap,
+  LogOut, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -15,12 +15,6 @@ const navItems = [
   { title: 'Proposals', path: '/proposals', icon: FileText },
   { title: 'Outreach', path: '/outreach', icon: Send },
   { title: 'Analytics', path: '/analytics', icon: BarChart3 },
-  { title: 'Notifications', path: '/notifications', icon: Bell },
-];
-
-const bottomItems = [
-  { title: 'Profile', path: '/profile', icon: User },
-  { title: 'Settings', path: '/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -138,45 +132,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             </NavLink>
           ))}
 
-          <div className="my-4" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }} />
-
-          <p className="px-3 pb-2.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(210,220,235,0.35)' }}>
-            Account
-          </p>
-
-          {bottomItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={() => onClose()}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                  isActive ? 'text-white' : 'hover:bg-white/8',
-                )
-              }
-              style={({ isActive }) =>
-                isActive
-                  ? {
-                      background: 'linear-gradient(135deg, rgba(29,210,215,0.9), rgba(29,215,206,0.85))',
-                      boxShadow: '0 4px 16px rgba(29,210,215,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
-                    }
-                  : { color: 'rgba(210,225,240,0.75)' }
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <span
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all"
-                    style={isActive ? { background: 'rgba(255,255,255,0.2)' } : { background: 'rgba(255,255,255,0.06)' }}
-                  >
-                    <item.icon className="h-3.5 w-3.5" />
-                  </span>
-                  {item.title}
-                </>
-              )}
-            </NavLink>
-          ))}
         </nav>
 
         {/* User Footer */}

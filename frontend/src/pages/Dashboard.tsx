@@ -180,7 +180,9 @@ export default function Dashboard() {
     <div className="space-y-6 p-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Good morning 👋</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          {(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; })()} 👋
+        </h1>
         <p className="text-sm text-muted-foreground mt-0.5">Here's what's happening with your pipeline today.</p>
       </div>
 
