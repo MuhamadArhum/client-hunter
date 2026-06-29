@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Mail, MessageSquare, Clock,
   Brain, Zap, CalendarClock, RefreshCw, Sparkles, Globe, StickyNote, Search,
-  CheckCircle, XCircle,
+  CheckCircle, XCircle, Tag, X, Plus, Pencil,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
 
@@ -148,6 +151,17 @@ export default function LeadDetail() {
   const [enrichLoading, setEnrichLoading] = useState(false);
   const [enrichMsg, setEnrichMsg] = useState('');
 
+  // Tags
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [tagsSaving, setTagsSaving] = useState(false);
+
+  // Edit lead dialog
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ companyName: '', contactName: '', email: '', phone: '', website: '', industry: '', budget: '', description: '' });
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
+
   const fetchLead = () => {
     if (!id) return;
     api.get(`/leads/${id}`)
@@ -157,9 +171,40 @@ export default function LeadDetail() {
         setWaPhone(l?.phone || '');
         setNotes(l?.notes || '');
         setWebsiteUrl(l?.website || '');
+        setTags(Array.isArray(l?.tags) ? l.tags : []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
+  };
+
+  const openEdit = () => {
+    if (!lead) return;
+    setEditForm({
+      companyName: lead.companyName || '',
+      contactName: lead.contactName || '',
+      email: lead.email || '',
+      phone: lead.phone || '',
+      website: lead.website || '',
+      industry: lead.industry || '',
+      budget: lead.budget || '',
+      description: lead.description || '',
+    });
+    setEditError('');
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    if (!editForm.companyName.trim()) { setEditError('Company name is required.'); return; }
+    setEditSaving(true); setEditError('');
+    try {
+      const res = await api.put(`/leads/${id}`, editForm);
+      setLead(res.data?.data || { ...lead!, ...editForm });
+      setWebsiteUrl(editForm.website);
+      setEditOpen(false);
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      setEditError(err?.response?.data?.message || 'Failed to save changes.');
+    } finally { setEditSaving(false); }
   };
 
   useEffect(() => { fetchLead(); }, [id]);
@@ -286,6 +331,30 @@ export default function LeadDetail() {
     finally { setWebsiteLoading(false); }
   };
 
+  const saveTags = async (newTags: string[]) => {
+    if (!id) return;
+    setTagsSaving(true);
+    try {
+      await api.put(`/leads/${id}`, { tags: newTags });
+      setTags(newTags);
+      setLead((prev) => prev ? { ...prev, tags: newTags } : prev);
+    } catch (e) { console.error(e); }
+    finally { setTagsSaving(false); }
+  };
+
+  const handleAddTag = () => {
+    const trimmed = tagInput.trim();
+    if (!trimmed || tags.includes(trimmed)) { setTagInput(''); return; }
+    const newTags = [...tags, trimmed];
+    setTagInput('');
+    saveTags(newTags);
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    const newTags = tags.filter((t) => t !== tag);
+    saveTags(newTags);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 p-6">
@@ -356,10 +425,15 @@ export default function LeadDetail() {
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold">{lead.companyName}</CardTitle>
-                <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full shrink-0', STATUS_COLORS[lead.status] || 'bg-slate-50 text-slate-600')}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
-                  {lead.status?.replace(/_/g, ' ')}
-                </span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full', STATUS_COLORS[lead.status] || 'bg-slate-50 text-slate-600')}>
+                    <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
+                    {lead.status?.replace(/_/g, ' ')}
+                  </span>
+                  <button onClick={openEdit} className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" title="Edit lead">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-0 pb-4 px-5">
@@ -383,6 +457,55 @@ export default function LeadDetail() {
               <InfoRow label="Budget" value={lead.budget} />
               <InfoRow label="Source" value={lead.source} />
               {lead.description && <InfoRow label="Description" value={lead.description} />}
+
+              {/* Tags */}
+              <div className="py-2 border-b border-border/40">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Tags</span>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(29,210,215,0.12)', color: '#1DD2D7' }}
+                    >
+                      <Tag className="h-2.5 w-2.5" />
+                      {tag}
+                      <button
+                        className="ml-0.5 hover:opacity-70 transition-opacity"
+                        onClick={() => handleRemoveTag(tag)}
+                        disabled={tagsSaving}
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </span>
+                  ))}
+                  {tags.length === 0 && (
+                    <span className="text-xs text-muted-foreground/50">No tags yet</span>
+                  )}
+                </div>
+                <div className="flex gap-1.5">
+                  <Input
+                    className="h-7 rounded-lg border-border/60 text-xs flex-1"
+                    placeholder="Add tag..."
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } }}
+                    disabled={tagsSaving}
+                  />
+                  <button
+                    className="h-7 w-7 rounded-lg flex items-center justify-center text-white shrink-0 disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                    onClick={handleAddTag}
+                    disabled={tagsSaving || !tagInput.trim()}
+                  >
+                    {tagsSaving ? (
+                      <span className="h-3 w-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Plus className="h-3 w-3" />
+                    )}
+                  </button>
+                </div>
+              </div>
 
               <div className="pt-3 space-y-1.5">
                 <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Change Status</Label>
@@ -903,6 +1026,74 @@ export default function LeadDetail() {
           </Tabs>
         </div>
       </div>
+
+      {/* Edit Lead Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}>
+                <Pencil className="h-3.5 w-3.5 text-white" />
+              </span>
+              Edit Lead
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-1">
+            {editError && (
+              <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{editError}</div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name *</Label>
+              <Input className="h-9 rounded-xl border-border/60 text-sm" value={editForm.companyName} onChange={(e) => setEditForm((f) => ({ ...f, companyName: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact Name</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="John Smith" value={editForm.contactName} onChange={(e) => setEditForm((f) => ({ ...f, contactName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" type="email" placeholder="john@company.com" value={editForm.email} onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="+1234567890" value={editForm.phone} onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Website</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="https://company.com" value={editForm.website} onChange={(e) => setEditForm((f) => ({ ...f, website: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Industry</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="SaaS, E-commerce..." value={editForm.industry} onChange={(e) => setEditForm((f) => ({ ...f, industry: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Budget</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="$5k–$10k" value={editForm.budget} onChange={(e) => setEditForm((f) => ({ ...f, budget: e.target.value }))} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Description</Label>
+              <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={3} placeholder="Brief description..." value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 pt-2">
+            <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button
+              className="h-9 rounded-xl text-sm font-semibold text-white gap-2"
+              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              onClick={handleEditSave}
+              disabled={editSaving}
+            >
+              {editSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

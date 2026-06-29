@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FileText, Trash2, Eye, Sparkles, Plus, Calendar, Building2 } from 'lucide-react';
+import { FileText, Trash2, Eye, Sparkles, Plus, Calendar, Building2, Share2, Copy, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -70,6 +71,10 @@ export default function Proposals() {
   const [viewProposal, setViewProposal] = useState<Proposal | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareCopied, setShareCopied] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
 
   const fetchProposals = useCallback(() => {
     setLoading(true);
@@ -101,6 +106,34 @@ export default function Proposals() {
       const err = e as { response?: { data?: { message?: string } } };
       setGenError(err?.response?.data?.message || 'Generation failed.');
     } finally { setGenLoading(false); }
+  };
+
+  const handleShare = async (id: string) => {
+    setShareLoading(true);
+    setSharingId(id);
+    setShareUrl('');
+    setShareCopied(false);
+    try {
+      const res = await api.post(`/proposals/${id}/share`);
+      const token = res.data?.data?.publicToken || res.data?.publicToken;
+      setShareUrl(`${window.location.origin}/proposal/${token}`);
+    } catch (e) { console.error(e); }
+    finally { setShareLoading(false); }
+  };
+
+  const handleRevokeShare = async (id: string) => {
+    try {
+      await api.delete(`/proposals/${id}/share`);
+      setSharingId(null);
+      setShareUrl('');
+    } catch (e) { console.error(e); }
+  };
+
+  const handleCopyShareUrl = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
   };
 
   const handleDelete = async () => {
@@ -231,6 +264,14 @@ export default function Proposals() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="h-8 rounded-lg text-xs border-border/60 gap-1.5 text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 hover:border-cyan-200"
+                        onClick={() => handleShare(proposal._id)}
+                      >
+                        <Share2 className="h-3.5 w-3.5" /> Share
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="h-8 rounded-lg text-xs border-border/60 gap-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200"
                         onClick={() => setDeleteId(proposal._id)}
                       >
@@ -322,6 +363,66 @@ export default function Proposals() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setViewProposal(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Dialog */}
+      <Dialog open={!!sharingId} onOpenChange={(open) => { if (!open) { setSharingId(null); setShareUrl(''); setShareCopied(false); } }}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}>
+                <Share2 className="h-3.5 w-3.5 text-white" />
+              </span>
+              Share Proposal
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-1">
+            <p className="text-sm text-muted-foreground">
+              Generate a public link so your client can view and respond to this proposal without logging in.
+            </p>
+            {shareLoading && (
+              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(29,210,215,0.08)', border: '1px solid rgba(29,210,215,0.2)' }}>
+                <span className="h-3.5 w-3.5 border-2 border-[#1DD2D7]/30 border-t-[#1DD2D7] rounded-full animate-spin shrink-0" />
+                <span className="text-muted-foreground">Generating share link...</span>
+              </div>
+            )}
+            {shareUrl && !shareLoading && (
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Share URL</Label>
+                <div className="flex gap-2">
+                  <Input
+                    readOnly
+                    value={shareUrl}
+                    className="h-9 rounded-xl border-border/60 text-xs font-mono bg-muted/40"
+                  />
+                  <Button
+                    size="sm"
+                    className="h-9 px-3 rounded-xl text-xs font-semibold text-white shrink-0 gap-1.5"
+                    style={{ background: shareCopied ? 'linear-gradient(135deg, #10B981, #059669)' : 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                    onClick={handleCopyShareUrl}
+                  >
+                    {shareCopied ? '✓ Copied' : <><Copy className="h-3 w-3" /> Copy</>}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">Anyone with this link can view and respond to the proposal.</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            {shareUrl && sharingId && (
+              <Button
+                variant="outline"
+                className="rounded-xl border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-sm gap-1.5"
+                onClick={() => handleRevokeShare(sharingId)}
+              >
+                <X className="h-3.5 w-3.5" /> Revoke Link
+              </Button>
+            )}
+            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => { setSharingId(null); setShareUrl(''); setShareCopied(false); }}>
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

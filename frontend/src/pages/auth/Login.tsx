@@ -176,7 +176,7 @@ export default function Login() {
               background: 'linear-gradient(135deg, #1DD7CE 0%, #e0d8ff 60%, #c4b8f0 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
-              ClientHunter
+              Abyte Hunt
             </h1>
             <p className="text-xs font-medium mt-1" style={{ color: 'rgba(180,200,230,0.4)' }}>
               by Abyte Sol
@@ -250,9 +250,20 @@ export default function Login() {
 
             {/* Password */}
             <div className="field-2 space-y-1.5">
-              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(180,200,230,0.45)' }}>
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(180,200,230,0.45)' }}>
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-semibold"
+                  style={{ color: 'rgba(29,210,215,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#1DD2D7'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(29,210,215,0.7)'; }}
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'rgba(180,200,230,0.3)', transition: 'color 0.2s' }} />
                 <input

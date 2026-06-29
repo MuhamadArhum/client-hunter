@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Trash2, Download, AtSign, Users, Flame, TrendingUp, ExternalLink } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Search, Trash2, Download, AtSign, Users, ExternalLink, Upload, FileDown, Tag } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,6 +38,7 @@ interface Lead {
   description?: string;
   aiScore?: number;
   aiQualification?: 'hot' | 'warm' | 'cold';
+  tags?: string[];
 }
 
 interface Pagination {
@@ -79,6 +80,11 @@ const emptyForm = {
   budget: '',
   description: '',
 };
+
+const CSV_TEMPLATE = `companyName,contactName,email,phone,website,source,industry,budget,description
+Acme Corp,John Smith,john@acme.com,+1234567890,https://acme.com,manual,SaaS,$5k-$10k,Looking for a web redesign
+Beta Inc,Jane Doe,jane@beta.com,+0987654321,https://beta.com,linkedin,E-commerce,$2k-$5k,Needs mobile app
+`;
 
 function getInitials(name: string) {
   return name?.slice(0, 2).toUpperCase() || '??';
@@ -128,6 +134,20 @@ export default function Leads() {
   const [bulkEnrichLoading, setBulkEnrichLoading] = useState(false);
   const [bulkEnrichMsg, setBulkEnrichMsg] = useState('');
 
+  // Bulk select state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
+
+  // CSV Import state
+  const [csvImportOpen, setCsvImportOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvText, setCsvText] = useState('');
+  const [csvRowCount, setCsvRowCount] = useState(0);
+  const [csvImportLoading, setCsvImportLoading] = useState(false);
+  const [csvImportMsg, setCsvImportMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const fetchLeads = useCallback(() => {
     setLoading(true);
     const params: Record<string, string | number> = { page, limit: 10, search };
@@ -143,6 +163,9 @@ export default function Leads() {
   }, [page, search, statusFilter]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Reset selections when leads refresh
+  useEffect(() => { setSelectedIds(new Set()); }, [leads]);
 
   const handleAdd = async () => {
     if (!addForm.companyName.trim()) { setAddError('Company name is required.'); return; }
@@ -207,6 +230,133 @@ export default function Leads() {
     }
   };
 
+  // Bulk select helpers
+  const allSelected = leads.length > 0 && leads.every((l) => selectedIds.has(l._id));
+  const someSelected = selectedIds.size > 0;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(leads.map((l) => l._id)));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    setBulkDeleteLoading(true);
+    try {
+      await api.delete('/leads/bulk-delete', { data: { ids: [...selectedIds] } });
+      setBulkDeleteOpen(false);
+      setSelectedIds(new Set());
+      fetchLeads();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setBulkDeleteLoading(false);
+    }
+  };
+
+  // CSV Export
+  const handleExportCSV = () => {
+    const params = new URLSearchParams();
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+    if (search) params.set('search', search);
+    const token = localStorage.getItem('token');
+    const baseUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
+    const url = `${baseUrl}/leads/export/csv?${params}`;
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'leads.csv';
+        link.click();
+        URL.revokeObjectURL(objectUrl);
+      })
+      .catch(console.error);
+  };
+
+  const handleExportSelected = () => {
+    const params = new URLSearchParams();
+    [...selectedIds].forEach((id) => params.append('ids', id));
+    const token = localStorage.getItem('token');
+    const baseUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
+    const url = `${baseUrl}/leads/export/csv?${params}`;
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'leads-selected.csv';
+        link.click();
+        URL.revokeObjectURL(objectUrl);
+      })
+      .catch(console.error);
+  };
+
+  // CSV Import
+  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCsvFile(file);
+    setCsvImportMsg('');
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target?.result as string;
+      setCsvText(text);
+      // Count data rows (subtract header)
+      const rows = text.split('\n').filter((r) => r.trim().length > 0);
+      setCsvRowCount(Math.max(0, rows.length - 1));
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCsvImport = async () => {
+    if (!csvText.trim()) { setCsvImportMsg('Please select a CSV file.'); return; }
+    setCsvImportLoading(true);
+    setCsvImportMsg('');
+    try {
+      const res = await api.post('/leads/import/csv', { csvText });
+      const count = res.data?.data?.length || res.data?.count || 0;
+      setCsvImportMsg(`✓ Successfully imported ${count} lead(s).`);
+      fetchLeads();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      setCsvImportMsg(err?.response?.data?.message || 'CSV import failed.');
+    } finally {
+      setCsvImportLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'leads-template.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const openCsvImport = () => {
+    setCsvFile(null);
+    setCsvText('');
+    setCsvRowCount(0);
+    setCsvImportMsg('');
+    setCsvImportOpen(true);
+  };
+
   const hotLeads = leads.filter((l) => l.aiQualification === 'hot' || (l.aiScore ?? 0) >= 8).length;
   const convertedLeads = leads.filter((l) => l.status === 'converted').length;
 
@@ -250,6 +400,24 @@ export default function Leads() {
             variant="outline"
             size="sm"
             className="h-9 rounded-xl border-border/60 gap-2 font-medium text-sm"
+            onClick={handleExportCSV}
+          >
+            <FileDown className="h-3.5 w-3.5" />
+            Export CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 rounded-xl border-border/60 gap-2 font-medium text-sm"
+            onClick={openCsvImport}
+          >
+            <Upload className="h-3.5 w-3.5" />
+            Import CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 rounded-xl border-border/60 gap-2 font-medium text-sm"
             onClick={() => { setImportMsg(''); setImportOpen(true); }}
           >
             <Download className="h-3.5 w-3.5" />
@@ -267,6 +435,34 @@ export default function Leads() {
           </div>
         </div>
       </div>
+
+      {/* Bulk Action Bar */}
+      {someSelected && (
+        <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/40 px-4 py-2.5 gap-3">
+          <span className="text-sm font-semibold text-foreground">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 rounded-lg border-border/60 gap-1.5 text-xs font-medium"
+              onClick={handleExportSelected}
+            >
+              <FileDown className="h-3.5 w-3.5" />
+              Export Selected
+            </Button>
+            <Button
+              size="sm"
+              className="h-8 rounded-lg gap-1.5 text-xs font-semibold bg-rose-500 hover:bg-rose-600 text-white"
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete Selected
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Search & Filter */}
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -298,6 +494,14 @@ export default function Leads() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid hsl(var(--border) / 0.6)', background: 'hsl(var(--muted) / 0.4)' }}>
+                <th className="px-4 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-border/60 accent-primary cursor-pointer"
+                    checked={allSelected}
+                    onChange={toggleAll}
+                  />
+                </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Company</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Contact</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Status</th>
@@ -310,6 +514,7 @@ export default function Leads() {
               {loading ? (
                 [...Array(6)].map((_, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid hsl(var(--border) / 0.4)' }}>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-4 rounded" /></td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
@@ -328,7 +533,7 @@ export default function Leads() {
                 ))
               ) : leads.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16">
+                  <td colSpan={7} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3">
                       <div
                         className="h-14 w-14 rounded-2xl flex items-center justify-center"
@@ -356,13 +561,27 @@ export default function Leads() {
                   const statusStyle = STATUS_STYLES[lead.status] || STATUS_STYLES.new;
                   const sourceStyle = SOURCE_STYLES[lead.source] || SOURCE_STYLES.manual;
                   const isLast = idx === leads.length - 1;
+                  const isSelected = selectedIds.has(lead._id);
                   return (
                     <tr
                       key={lead._id}
-                      className="group transition-colors duration-100 hover:bg-muted/40 cursor-pointer"
+                      className={cn(
+                        'group transition-colors duration-100 hover:bg-muted/40 cursor-pointer',
+                        isSelected && 'bg-primary/5',
+                      )}
                       style={{ borderBottom: isLast ? 'none' : '1px solid hsl(var(--border) / 0.4)' }}
                       onClick={() => navigate(`/leads/${lead._id}`)}
                     >
+                      {/* Checkbox */}
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-border/60 accent-primary cursor-pointer"
+                          checked={isSelected}
+                          onChange={() => toggleOne(lead._id)}
+                        />
+                      </td>
+
                       {/* Company */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -390,6 +609,21 @@ export default function Leads() {
                                 <ExternalLink className="h-2.5 w-2.5" />
                                 {lead.website.replace(/^https?:\/\//, '')}
                               </a>
+                            )}
+                            {/* Tags */}
+                            {(lead.tags?.length ?? 0) > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {lead.tags!.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                    style={{ background: 'rgba(29,210,215,0.12)', color: '#1DD2D7' }}
+                                  >
+                                    <Tag className="h-2.5 w-2.5" />
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -661,6 +895,98 @@ export default function Leads() {
         </DialogContent>
       </Dialog>
 
+      {/* CSV Import Dialog */}
+      <Dialog open={csvImportOpen} onOpenChange={setCsvImportOpen}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <span
+                className="h-6 w-6 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+              >
+                <Upload className="h-3.5 w-3.5 text-white" />
+              </span>
+              Import CSV
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-1">
+            {csvImportMsg && (
+              <div className={cn(
+                'text-sm rounded-xl p-3 border',
+                csvImportMsg.startsWith('✓')
+                  ? 'text-cyan-700 bg-cyan-50 border-cyan-200'
+                  : 'text-rose-700 bg-rose-50 border-rose-200',
+              )}>
+                {csvImportMsg}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">CSV File</Label>
+                <button
+                  className="text-xs font-medium underline"
+                  style={{ color: '#1DD2D7' }}
+                  onClick={handleDownloadTemplate}
+                >
+                  Download Template
+                </button>
+              </div>
+
+              <div
+                className="relative rounded-xl border-2 border-dashed border-border/60 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer p-6 text-center"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv"
+                  className="hidden"
+                  onChange={handleCsvFileChange}
+                />
+                <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                {csvFile ? (
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{csvFile.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{csvRowCount} rows detected</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Click to select a CSV file</p>
+                    <p className="text-xs text-muted-foreground mt-1">Supports: companyName, contactName, email, phone, website, source, industry, budget</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {csvFile && csvRowCount > 0 && (
+              <div className="rounded-xl bg-cyan-50 border border-cyan-200 p-3">
+                <p className="text-xs text-cyan-700 font-medium">
+                  Ready to import <span className="font-bold">{csvRowCount}</span> lead{csvRowCount !== 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setCsvImportOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="rounded-xl text-sm font-semibold text-white gap-2"
+              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              onClick={handleCsvImport}
+              disabled={csvImportLoading || !csvText.trim()}
+            >
+              {csvImportLoading ? (
+                <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Importing...</>
+              ) : (
+                <><Upload className="h-3.5 w-3.5" /> Import {csvRowCount > 0 ? `${csvRowCount} Leads` : ''}</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="max-w-sm rounded-2xl">
@@ -680,6 +1006,34 @@ export default function Leads() {
               disabled={deleteLoading}
             >
               {deleteLoading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Dialog */}
+      <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold">Delete {selectedIds.size} Lead{selectedIds.size !== 1 ? 's' : ''}?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will permanently delete {selectedIds.size} selected lead{selectedIds.size !== 1 ? 's' : ''}. This action cannot be undone.
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setBulkDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="rounded-xl text-sm font-semibold bg-rose-500 hover:bg-rose-600 text-white"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteLoading}
+            >
+              {bulkDeleteLoading ? (
+                <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Deleting...</>
+              ) : (
+                `Delete ${selectedIds.size} Lead${selectedIds.size !== 1 ? 's' : ''}`
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

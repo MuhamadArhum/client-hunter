@@ -1,6 +1,7 @@
+const crypto = require('crypto');
 const Proposal = require('../models/Proposal');
 const Lead = require('../models/Lead');
-const openaiService = require('../services/groqService');
+const groqService = require('../services/groqService');
 const { notifyProposalGenerated } = require('../services/slackService');
 
 // @desc    Get all proposals with optional filters
@@ -56,7 +57,7 @@ const generateProposal = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Lead not found' });
     }
 
-    const { title, content } = await openaiService.generateProposal(lead, customInstructions);
+    const { title, content } = await groqService.generateProposal(lead, customInstructions);
 
     const proposal = await Proposal.create({
       lead: leadId,
@@ -95,9 +96,13 @@ const updateProposal = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Proposal not found' });
     }
 
+    const { title, content, status } = req.body;
+    const allowedUpdates = { title, content, status };
+    Object.keys(allowedUpdates).forEach((k) => allowedUpdates[k] === undefined && delete allowedUpdates[k]);
+
     const updatedProposal = await Proposal.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: allowedUpdates },
       { new: true, runValidators: true }
     ).populate('lead', 'companyName contactName email status');
 
@@ -129,4 +134,83 @@ const deleteProposal = async (req, res) => {
   }
 };
 
-module.exports = { getProposals, generateProposal, updateProposal, deleteProposal };
+// @desc    Share a proposal via public link
+// @route   POST /api/proposals/:id/share
+// @access  Private
+const shareProposal = async (req, res) => {
+  try {
+    const publicToken = crypto.randomBytes(32).toString('hex');
+    const proposal = await Proposal.findByIdAndUpdate(
+      req.params.id,
+      { publicToken, isPublic: true },
+      { new: true }
+    );
+    if (!proposal) {
+      return res.status(404).json({ success: false, message: 'Proposal not found' });
+    }
+    res.status(200).json({ success: true, data: { publicToken, proposal } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Revoke public sharing of a proposal
+// @route   DELETE /api/proposals/:id/share
+// @access  Private
+const revokeShare = async (req, res) => {
+  try {
+    const proposal = await Proposal.findByIdAndUpdate(
+      req.params.id,
+      { publicToken: null, isPublic: false },
+      { new: true }
+    );
+    if (!proposal) {
+      return res.status(404).json({ success: false, message: 'Proposal not found' });
+    }
+    res.status(200).json({ success: true, message: 'Proposal sharing revoked', data: proposal });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get a publicly shared proposal by token
+// @route   GET /api/proposals/public/:token
+// @access  Public
+const getPublicProposal = async (req, res) => {
+  try {
+    const proposal = await Proposal.findOne({ publicToken: req.params.token, isPublic: true })
+      .populate('lead', 'companyName');
+    if (!proposal) {
+      return res.status(404).json({ success: false, message: 'Proposal not found or no longer shared' });
+    }
+    res.status(200).json({ success: true, data: proposal });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Client responds to a shared proposal
+// @route   POST /api/proposals/public/:token/respond
+// @access  Public
+const clientRespond = async (req, res) => {
+  try {
+    const { clientDecision, clientMessage } = req.body;
+    const updateData = { clientDecision, clientMessage };
+    if (clientDecision === 'accepted' || clientDecision === 'rejected') {
+      updateData.status = clientDecision;
+    }
+    const proposal = await Proposal.findOneAndUpdate(
+      { publicToken: req.params.token, isPublic: true },
+      updateData,
+      { new: true, runValidators: true }
+    ).populate('lead', 'companyName');
+    if (!proposal) {
+      return res.status(404).json({ success: false, message: 'Proposal not found or no longer shared' });
+    }
+    res.status(200).json({ success: true, message: 'Response submitted successfully', data: proposal });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { getProposals, generateProposal, updateProposal, deleteProposal, shareProposal, revokeShare, getPublicProposal, clientRespond };

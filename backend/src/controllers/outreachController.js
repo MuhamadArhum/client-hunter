@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const OutreachLog = require('../models/OutreachLog');
 const Lead = require('../models/Lead');
 const emailService = require('../services/emailService');
@@ -26,13 +27,16 @@ const sendEmail = async (req, res) => {
 
     let logStatus = 'sent';
     let errorMessage = '';
+    const trackingId = crypto.randomBytes(16).toString('hex');
+    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const pixelTag = `<img src="${baseUrl}/api/outreach/track/open/${trackingId}" width="1" height="1" style="display:none" />`;
 
     try {
       await emailService.sendEmail({
         to: recipientEmail,
         subject,
         text: message,
-        html: `<div style="font-family: Arial, sans-serif;">${message.replace(/\n/g, '<br/>')}</div>`,
+        html: `<div style="font-family: Arial, sans-serif;">${message.replace(/\n/g, '<br/>')}</div>${pixelTag}`,
       });
     } catch (emailError) {
       logStatus = 'failed';
@@ -47,6 +51,7 @@ const sendEmail = async (req, res) => {
       status: logStatus,
       sentAt: logStatus === 'sent' ? new Date() : null,
       response: errorMessage,
+      trackingId,
     });
 
     if (logStatus === 'sent' && lead.status === 'new') {
@@ -56,6 +61,9 @@ const sendEmail = async (req, res) => {
     if (logStatus === 'failed') {
       return res.status(500).json({ success: false, message: `Email failed: ${errorMessage}`, data: log });
     }
+
+    const io = req.app.get('io');
+    if (io) io.emit('outreach:sent', { type: 'email', leadId });
 
     res.status(200).json({ success: true, message: 'Email sent successfully', data: log });
   } catch (error) {
@@ -195,4 +203,28 @@ const getAllOutreachLogs = async (req, res) => {
   }
 };
 
-module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp, getAllOutreachLogs };
+const trackOpen = async (req, res) => {
+  try {
+    await OutreachLog.findOneAndUpdate(
+      { trackingId: req.params.trackingId, openedAt: null },
+      { openedAt: new Date() }
+    );
+  } catch (_) {}
+  const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+  res.set({ 'Content-Type': 'image/gif', 'Content-Length': pixel.length, 'Cache-Control': 'no-store' });
+  res.end(pixel);
+};
+
+const trackClick = async (req, res) => {
+  try {
+    await OutreachLog.findOneAndUpdate(
+      { trackingId: req.params.trackingId, clickedAt: null },
+      { clickedAt: new Date() }
+    );
+  } catch (_) {}
+  const url = req.query.url;
+  if (!url || !/^https?:\/\//i.test(url)) return res.status(400).json({ success: false, message: 'Invalid URL' });
+  res.redirect(url);
+};
+
+module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp, getAllOutreachLogs, trackOpen, trackClick };

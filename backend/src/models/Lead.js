@@ -104,5 +104,8 @@ const leadSchema = new mongoose.Schema(
 // Index for search and filtering
 leadSchema.index({ companyName: 'text', contactName: 'text', email: 'text' });
 leadSchema.index({ status: 1, source: 1 });
+leadSchema.index({ assignedTo: 1, status: 1, createdAt: -1 });
+leadSchema.index({ aiScore: -1 });
+leadSchema.index({ followUpScheduled: 1, followUpSent: 1 });
 
 module.exports = mongoose.model('Lead', leadSchema);

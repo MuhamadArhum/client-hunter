@@ -203,7 +203,7 @@ export default function SignUp() {
               background: 'linear-gradient(135deg, #c4b8f0 0%, #e0d8ff 50%, #1DD7CE 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
-              ClientHunter
+              Abyte Hunt
             </h1>
             <p className="text-xs font-medium mt-1" style={{ color: 'rgba(180,200,230,0.4)' }}>
               by Abyte Sol

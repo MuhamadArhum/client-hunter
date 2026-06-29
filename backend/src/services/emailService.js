@@ -7,7 +7,7 @@ const getClient = () => {
   return new Resend(process.env.RESEND_API_KEY);
 };
 
-const FROM_ADDRESS = process.env.EMAIL_FROM || 'ClientHunter <onboarding@resend.dev>';
+const FROM_ADDRESS = process.env.EMAIL_FROM || 'Abyte Hunt <onboarding@resend.dev>';
 
 const sendEmail = async ({ to, subject, html, text }) => {
   const resend = getClient();

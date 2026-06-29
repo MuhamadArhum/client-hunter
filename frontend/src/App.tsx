@@ -12,9 +12,14 @@ const Analytics   = lazy(() => import('@/pages/Analytics'));
 const Profile     = lazy(() => import('@/pages/Profile'));
 const SettingsPage = lazy(() => import('@/pages/Settings'));
 const Notifications = lazy(() => import('@/pages/Notifications'));
-const Login       = lazy(() => import('@/pages/auth/Login'));
-const SignUp      = lazy(() => import('@/pages/auth/SignUp'));
-const NotFound    = lazy(() => import('@/pages/NotFound'));
+const Kanban        = lazy(() => import('@/pages/Kanban'));
+const Sequences     = lazy(() => import('@/pages/Sequences'));
+const Login          = lazy(() => import('@/pages/auth/Login'));
+const SignUp         = lazy(() => import('@/pages/auth/SignUp'));
+const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
+const ResetPassword  = lazy(() => import('@/pages/auth/ResetPassword'));
+const NotFound       = lazy(() => import('@/pages/NotFound'));
+const ProposalPublic = lazy(() => import('@/pages/ProposalPublic'));
 
 function Splash() {
   return (
@@ -52,6 +57,8 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/kanban" element={<Kanban />} />
+            <Route path="/sequences" element={<Sequences />} />
           </Route>
         </Route>
 
@@ -59,7 +66,12 @@ export default function App() {
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Route>
+
+        {/* Public proposal route — no auth required */}
+        <Route path="/proposal/:token" element={<ProposalPublic />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

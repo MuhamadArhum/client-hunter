@@ -37,6 +37,9 @@ const outreachLogSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    openedAt: { type: Date, default: null },
+    clickedAt: { type: Date, default: null },
+    trackingId: { type: String, default: null },
   },
   { timestamps: true }
 );

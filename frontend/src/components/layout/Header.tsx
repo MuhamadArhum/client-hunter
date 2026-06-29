@@ -8,6 +8,8 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
+import { useSocket } from '@/hooks/useSocket';
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string; emoji: string }> = {
   '/': { title: 'Dashboard', subtitle: 'Overview of your client acquisition pipeline', emoji: '📊' },
@@ -30,13 +32,23 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
 
   const basePath = '/' + pathname.split('/')[1];
-  const page = PAGE_TITLES[basePath] || { title: 'ClientHunter', subtitle: '', emoji: '⚡' };
+  const page = PAGE_TITLES[basePath] || { title: 'Abyte Hunt', subtitle: '', emoji: '⚡' };
 
   const initials = user?.name
     ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
   const { theme, toggleTheme } = useTheme();
+
+  useSocket((event, data: unknown) => {
+    const d = data as Record<string, unknown>;
+    if (event === 'lead:new') {
+      toast.success(`New lead added: ${d?.companyName as string}`, { duration: 4000 });
+    }
+    if (event === 'outreach:sent') {
+      toast.success('Email sent successfully!', { duration: 3000 });
+    }
+  });
 
   const handleLogout = () => {
     logout();

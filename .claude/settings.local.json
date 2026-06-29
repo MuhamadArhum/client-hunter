@@ -38,7 +38,14 @@
       "Bash(cat)",
       "Read(//tmp/**)",
       "Bash(xargs wc *)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(xargs -I{} node --check {})",
+      "Bash(npm list *)",
+      "Bash(sed -i 's/ClientHunter by Abyte Sol/Abyte Hunt by Abyte Sol/g' D:/client-hunter/frontend/src/pages/auth/ForgotPassword.tsx D:/client-hunter/frontend/src/pages/auth/ResetPassword.tsx)",
+      "Bash(sed -i 's/ClientHunter/Abyte Hunt/g' D:/client-hunter/frontend/src/components/layout/Header.tsx D:/client-hunter/frontend/src/components/layout/Sidebar.tsx D:/client-hunter/frontend/src/pages/auth/Login.tsx D:/client-hunter/frontend/src/pages/auth/SignUp.tsx D:/client-hunter/frontend/src/pages/ProposalPublic.tsx D:/client-hunter/frontend/src/pages/Settings.tsx D:/client-hunter/frontend/index.html)",
+      "Bash(sed -i 's/ClientHunter — Password Reset/Abyte Hunt — Password Reset/g' D:/client-hunter/backend/src/controllers/authController.js)",
+      "Bash(sed -i 's/ClientHunter by Abyte Sol/Abyte Hunt by Abyte Sol/g' D:/client-hunter/backend/src/controllers/authController.js)",
+      "Bash(sed -i 's/ClientHunter — Password Reset Link/Abyte Hunt — Password Reset Link/g' D:/client-hunter/backend/src/controllers/authController.js)"
     ]
   }
 }

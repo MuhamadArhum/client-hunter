@@ -24,7 +24,7 @@ const notifyNewLead = async (lead) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `${QUAL_EMOJI[qual]} *New Lead: ${lead.companyName}*\n${lead.aiSummary || 'New lead added to ClientHunter.'}`,
+            text: `${QUAL_EMOJI[qual]} *New Lead: ${lead.companyName}*\n${lead.aiSummary || 'New lead added to Abyte Hunt.'}`,
           },
         },
         {
@@ -79,4 +79,15 @@ const notifyFollowUpSent = async (lead) => {
   });
 };
 
-module.exports = { notifyNewLead, notifyProposalGenerated, notifyFollowUpSent };
+const notifyLeadConverted = async (lead) => {
+  if (!process.env.SLACK_WEBHOOK_URL) return;
+  try {
+    await axios.post(process.env.SLACK_WEBHOOK_URL, {
+      text: `🎉 *Lead Converted!* \n*Company:* ${lead.companyName}\n*Contact:* ${lead.contactName || 'N/A'}\n*AI Score:* ${lead.aiScore ?? 'N/A'}/10`,
+    });
+  } catch (err) {
+    console.error('[Slack] Failed to notify converted lead:', err.message);
+  }
+};
+
+module.exports = { notifyNewLead, notifyProposalGenerated, notifyFollowUpSent, notifyLeadConverted };

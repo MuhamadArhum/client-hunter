@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FileText, Send, BarChart3,
-  LogOut, Zap,
+  LogOut, Zap, Kanban, GitBranch,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +14,8 @@ const navItems = [
   { title: 'Proposals', path: '/proposals', icon: FileText },
   { title: 'Outreach',  path: '/outreach',  icon: Send },
   { title: 'Analytics', path: '/analytics', icon: BarChart3 },
+  { title: 'Kanban', path: '/kanban', icon: Kanban },
+  { title: 'Sequences', path: '/sequences', icon: GitBranch },
 ];
 
 interface SidebarProps { open: boolean; onClose: () => void; }
@@ -60,7 +62,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           <div>
             <p className="text-sm font-bold tracking-tight"
                style={{ background: 'linear-gradient(135deg, #1DD7CE, #c4b8f0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              ClientHunter
+              Abyte Hunt
             </p>
             <p className="text-[10px] font-medium tracking-wider uppercase" style={{ color: 'rgba(210,220,235,0.35)' }}>
               by Abyte Sol

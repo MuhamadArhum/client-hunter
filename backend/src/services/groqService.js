@@ -10,7 +10,7 @@ const getGroqClient = () => {
 const generateProposal = async (lead, customInstructions = '') => {
   const groq = getGroqClient();
 
-  const systemPrompt = `You are a professional business proposal writer for ClientHunter by Abyte Sol, a software development and digital transformation agency.
+  const systemPrompt = `You are a professional business proposal writer for Abyte Hunt by Abyte Sol, a software development and digital transformation agency.
 Write compelling, personalized proposals that highlight expertise in web development, mobile apps, AI integration, and cloud solutions.
 Keep proposals professional, concise (400-600 words), and focused on solving the client's specific needs.
 Always respond with valid JSON only — no markdown, no explanation outside the JSON.`;
@@ -63,7 +63,7 @@ Respond ONLY with this JSON:
 const generateFollowUpMessage = async (lead, previousMessages = []) => {
   const groq = getGroqClient();
 
-  const systemPrompt = `You are a professional outreach specialist for ClientHunter by Abyte Sol, a software development agency.
+  const systemPrompt = `You are a professional outreach specialist for Abyte Hunt by Abyte Sol, a software development agency.
 Write friendly but professional follow-up messages that are concise (100-150 words), non-pushy, and add value.
 Always respond with valid JSON only.`;
 

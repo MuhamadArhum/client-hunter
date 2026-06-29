@@ -1,13 +1,16 @@
 const Groq = require('groq-sdk');
 const axios = require('axios');
 
-const getGroqClient = () => new Groq({ apiKey: process.env.GROQ_API_KEY });
+const getGroqClient = () => {
+  if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY is not configured');
+  return new Groq({ apiKey: process.env.GROQ_API_KEY });
+};
 
 const fetchWebsiteText = async (url) => {
   const normalized = url.startsWith('http') ? url : `https://${url}`;
   const res = await axios.get(normalized, {
     timeout: 8000,
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ClientHunterBot/1.0)' },
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AbyteHuntBot/1.0)' },
   });
   // Strip HTML tags, keep only text, truncate to 3000 chars
   const text = res.data

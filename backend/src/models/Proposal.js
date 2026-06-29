@@ -26,6 +26,10 @@ const proposalSchema = new mongoose.Schema(
       enum: ['openai', 'groq', 'manual'],
       default: 'manual',
     },
+    publicToken: { type: String, default: null, unique: true, sparse: true },
+    isPublic: { type: Boolean, default: false },
+    clientDecision: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+    clientMessage: { type: String, default: '' },
   },
   { timestamps: true }
 );

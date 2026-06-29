@@ -4,6 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useSocket } from '@/hooks/useSocket';
 
 interface ActivityItem {
   id: string;
@@ -61,6 +63,7 @@ const TYPE_CONFIG = {
 export default function Notifications() {
   const [items, setItems] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
 
   const fetchData = () => {
     setLoading(true);
@@ -118,6 +121,19 @@ export default function Notifications() {
 
   useEffect(() => { fetchData(); }, []);
 
+  useSocket((event, data: unknown) => {
+    const d = data as Record<string, unknown>;
+    setIsLive(true);
+    if (event === 'lead:new') {
+      toast.success(`New lead: ${d?.companyName as string}`, { duration: 4000 });
+      fetchData();
+    }
+    if (event === 'outreach:sent') {
+      toast.success('Outreach sent!', { duration: 3000 });
+      fetchData();
+    }
+  });
+
   const grouped = items.reduce<Record<string, ActivityItem[]>>((acc, item) => {
     const date = new Date(item.date);
     const today = new Date();
@@ -138,7 +154,17 @@ export default function Notifications() {
     <div className="space-y-5 p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+            {/* Live indicator */}
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className={cn(
+                'h-2 w-2 rounded-full bg-emerald-500',
+                isLive && 'animate-pulse',
+              )} />
+              Live
+            </span>
+          </div>
           <p className="text-sm text-muted-foreground mt-0.5">{items.length} recent activities</p>
         </div>
         <Button

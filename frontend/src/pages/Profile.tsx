@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { User, Mail, Shield, FileText, Send, CheckCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { User, Mail, Shield, FileText, Send, CheckCircle, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,8 +23,17 @@ export default function Profile() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
+  // Avatar
+  const [avatar, setAvatar] = useState<string | null>((user as unknown as Record<string, unknown>)?.avatar as string | null ?? null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    if (user) { setName(user.name); setEmail(user.email); }
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+      setAvatar((user as unknown as Record<string, unknown>)?.avatar as string | null ?? null);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -58,6 +67,32 @@ export default function Profile() {
     } finally { setSaveLoading(false); }
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      setAlert({ type: 'error', msg: 'Image must be under 1.5MB.' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const base64 = evt.target?.result as string;
+      setAvatarLoading(true);
+      setAlert(null);
+      try {
+        await api.put('/auth/avatar', { avatar: base64 });
+        setAvatar(base64);
+        setAlert({ type: 'success', msg: 'Avatar updated successfully!' });
+      } catch (err: unknown) {
+        const e = err as { response?: { data?: { message?: string } } };
+        setAlert({ type: 'error', msg: e?.response?.data?.message || 'Failed to update avatar.' });
+      } finally {
+        setAvatarLoading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
@@ -82,11 +117,48 @@ export default function Profile() {
           <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
             <div className="h-24 w-full" style={{ background: 'linear-gradient(135deg, #3F4D67 0%, #4d5f80 50%, #3a4660 100%)' }} />
             <div className="px-5 pb-5 -mt-10 text-center">
-              <div
-                className="h-20 w-20 rounded-2xl flex items-center justify-center text-xl font-bold text-white mx-auto ring-4 ring-white shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
-              >
-                {initials}
+              {/* Clickable avatar with edit overlay */}
+              <div className="relative inline-block mx-auto">
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+                <button
+                  className="relative h-20 w-20 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden group focus:outline-none"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={avatarLoading}
+                  title="Click to change avatar"
+                >
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="Avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full flex items-center justify-center text-xl font-bold text-white"
+                      style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                    >
+                      {avatarLoading ? (
+                        <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        initials
+                      )}
+                    </div>
+                  )}
+                  {/* Edit overlay */}
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    {avatarLoading ? (
+                      <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Camera className="h-5 w-5 text-white" />
+                    )}
+                  </div>
+                </button>
               </div>
               <h2 className="text-base font-bold text-foreground mt-3">{user?.name || '—'}</h2>
               <p className="text-sm text-muted-foreground">{user?.email || '—'}</p>
@@ -97,6 +169,7 @@ export default function Profile() {
                 <Shield className="h-3 w-3" />
                 {user?.role || 'agent'}
               </span>
+              <p className="text-xs text-muted-foreground mt-2">Click avatar to change photo</p>
             </div>
           </div>
 

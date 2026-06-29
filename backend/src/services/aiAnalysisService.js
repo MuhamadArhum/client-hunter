@@ -1,6 +1,9 @@
 const Groq = require('groq-sdk');
 
-const getGroqClient = () => new Groq({ apiKey: process.env.GROQ_API_KEY });
+const getGroqClient = () => {
+  if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY is not configured');
+  return new Groq({ apiKey: process.env.GROQ_API_KEY });
+};
 
 const analyzeLead = async (lead) => {
   const groq = getGroqClient();

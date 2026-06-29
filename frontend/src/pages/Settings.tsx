@@ -47,7 +47,7 @@ export default function Settings() {
   };
 
   const appInfo = [
-    { label: 'Application', value: 'ClientHunter' },
+    { label: 'Application', value: 'Abyte Hunt' },
     { label: 'Version', value: '1.0.0' },
     { label: 'Built by', value: 'Abyte Sol' },
     { label: 'Frontend', value: 'React 18 + TypeScript + Vite + Shadcn UI' },

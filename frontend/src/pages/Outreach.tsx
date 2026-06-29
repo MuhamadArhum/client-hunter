@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, Plus, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +26,17 @@ interface OutreachRecord {
   status: string;
   subject?: string;
   createdAt: string;
+  openedAt?: string;
+  clickedAt?: string;
+}
+
+interface EmailTemplate {
+  _id: string;
+  name: string;
+  subject: string;
+  body: string;
+  category: string;
+  usageCount: number;
 }
 
 interface Pagination {
@@ -51,6 +62,8 @@ function Alert({ type, msg }: { type: 'success' | 'error'; msg: string }) {
   );
 }
 
+const CATEGORIES = ['general', 'cold-outreach', 'follow-up', 'proposal'];
+
 export default function Outreach() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState('');
@@ -70,6 +83,18 @@ export default function Outreach() {
   const [histPagination, setHistPagination] = useState<Pagination>({ total: 0, page: 1, limit: 10, pages: 1 });
   const [histPage, setHistPage] = useState(1);
   const [histLoading, setHistLoading] = useState(false);
+
+  // Templates state
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [showNewTemplate, setShowNewTemplate] = useState(false);
+  const [tmplName, setTmplName] = useState('');
+  const [tmplCategory, setTmplCategory] = useState('general');
+  const [tmplSubject, setTmplSubject] = useState('');
+  const [tmplBody, setTmplBody] = useState('');
+  const [tmplSaving, setTmplSaving] = useState(false);
+  const [tmplAlert, setTmplAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [activeOuterTab, setActiveOuterTab] = useState('send');
 
   useEffect(() => {
     api.get('/leads', { params: { limit: 100 } })
@@ -91,6 +116,14 @@ export default function Outreach() {
       .catch(console.error)
       .finally(() => setHistLoading(false));
   }, [histPage]);
+
+  const fetchTemplates = useCallback(() => {
+    setTemplatesLoading(true);
+    api.get('/templates')
+      .then((res) => setTemplates(Array.isArray(res.data?.data) ? res.data.data : []))
+      .catch(console.error)
+      .finally(() => setTemplatesLoading(false));
+  }, []);
 
   const handleSendEmail = async () => {
     if (!selectedLeadId) { setEmailAlert({ type: 'error', msg: 'Please select a lead.' }); return; }
@@ -120,6 +153,44 @@ export default function Outreach() {
     } finally { setWaLoading(false); }
   };
 
+  const handleUseTemplate = async (tmpl: EmailTemplate) => {
+    setEmailSubject(tmpl.subject);
+    setEmailMessage(tmpl.body);
+    setActiveOuterTab('send');
+    try { await api.post(`/templates/${tmpl._id}/use`); } catch (_) {}
+  };
+
+  const handleCreateTemplate = async () => {
+    if (!tmplName.trim() || !tmplSubject.trim() || !tmplBody.trim()) {
+      setTmplAlert({ type: 'error', msg: 'Name, subject, and body are required.' }); return;
+    }
+    setTmplSaving(true); setTmplAlert(null);
+    try {
+      await api.post('/templates', { name: tmplName, subject: tmplSubject, body: tmplBody, category: tmplCategory });
+      setTmplAlert({ type: 'success', msg: 'Template saved!' });
+      setTmplName(''); setTmplSubject(''); setTmplBody(''); setTmplCategory('general');
+      setShowNewTemplate(false);
+      fetchTemplates();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      setTmplAlert({ type: 'error', msg: err?.response?.data?.message || 'Failed to save.' });
+    } finally { setTmplSaving(false); }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    try {
+      await api.delete(`/templates/${id}`);
+      fetchTemplates();
+    } catch (err) { console.error(err); }
+  };
+
+  const categoryColor: Record<string, string> = {
+    general: 'bg-muted text-muted-foreground',
+    'cold-outreach': 'bg-cyan-50 text-cyan-700',
+    'follow-up': 'bg-amber-50 text-amber-700',
+    proposal: 'bg-violet-50 text-violet-700',
+  };
+
   return (
     <div className="space-y-5 p-6">
       <div className="page-header">
@@ -135,10 +206,13 @@ export default function Outreach() {
         </div>
       </div>
 
-      <Tabs defaultValue="send">
+      <Tabs value={activeOuterTab} onValueChange={setActiveOuterTab}>
         <TabsList className="h-10 rounded-xl bg-muted/60 p-1 gap-1">
           <TabsTrigger value="send" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Send className="mr-2 h-3.5 w-3.5" /> Send Outreach
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm" onClick={fetchTemplates}>
+            <Eye className="mr-2 h-3.5 w-3.5" /> Templates
           </TabsTrigger>
           <TabsTrigger value="history" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm" onClick={fetchHistory}>
             <Clock className="mr-2 h-3.5 w-3.5" /> History
@@ -148,7 +222,6 @@ export default function Outreach() {
         {/* Send Tab */}
         <TabsContent value="send" className="mt-5">
           <div className="max-w-2xl space-y-4">
-            {/* Lead Selector */}
             <div className="rounded-2xl border border-border/60 bg-white shadow-card p-4 space-y-1.5">
               <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Select Lead</Label>
               <Select value={selectedLeadId} onValueChange={setSelectedLeadId}>
@@ -171,7 +244,6 @@ export default function Outreach() {
               )}
             </div>
 
-            {/* Channel Tabs */}
             <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
               <Tabs defaultValue="email">
                 <div className="border-b border-border/60 px-4 pt-4 pb-0">
@@ -233,6 +305,101 @@ export default function Outreach() {
           </div>
         </TabsContent>
 
+        {/* Templates Tab */}
+        <TabsContent value="templates" className="mt-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">{templates.length} template{templates.length !== 1 ? 's' : ''}</p>
+            <Button
+              className="h-9 rounded-xl text-sm font-semibold text-white gap-2"
+              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              onClick={() => setShowNewTemplate((v) => !v)}
+            >
+              <Plus className="h-3.5 w-3.5" /> New Template
+            </Button>
+          </div>
+
+          {showNewTemplate && (
+            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-5 space-y-4">
+              <h3 className="text-sm font-semibold">New Email Template</h3>
+              {tmplAlert && <Alert type={tmplAlert.type} msg={tmplAlert.msg} />}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Template Name *</Label>
+                  <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="e.g. Cold Intro Email" value={tmplName} onChange={(e) => setTmplName(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Category</Label>
+                  <Select value={tmplCategory} onValueChange={setTmplCategory}>
+                    <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c} className="capitalize">{c.replace('-', ' ')}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject *</Label>
+                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="Email subject line..." value={tmplSubject} onChange={(e) => setTmplSubject(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Body *</Label>
+                <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Email body..." value={tmplBody} onChange={(e) => setTmplBody(e.target.value)} />
+              </div>
+              <div className="flex gap-2">
+                <Button className="h-9 rounded-xl text-sm font-semibold text-white" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
+                  {tmplSaving ? 'Saving...' : 'Save Template'}
+                </Button>
+                <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowNewTemplate(false)}>Cancel</Button>
+              </div>
+            </div>
+          )}
+
+          {templatesLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}
+            </div>
+          ) : templates.length === 0 ? (
+            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-16 flex flex-col items-center gap-3">
+              <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
+                <Eye className="h-6 w-6 text-muted-foreground/40" />
+              </div>
+              <p className="text-sm text-muted-foreground">No templates yet. Create one to reuse emails quickly.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {templates.map((tmpl) => (
+                <div key={tmpl._id} className="rounded-2xl border border-border/60 bg-white shadow-card p-4 space-y-3 hover:border-primary/30 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{tmpl.name}</p>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{tmpl.subject}</p>
+                    </div>
+                    <button onClick={() => handleDeleteTemplate(tmpl._id)} className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors shrink-0">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground line-clamp-3">{tmpl.body}</p>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full capitalize', categoryColor[tmpl.category] || 'bg-muted text-muted-foreground')}>
+                      {tmpl.category.replace('-', ' ')}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Used {tmpl.usageCount}×</span>
+                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-white gap-1" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }} onClick={() => handleUseTemplate(tmpl)}>
+                        <Mail className="h-3 w-3" /> Use
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
         {/* History Tab */}
         <TabsContent value="history" className="mt-5 space-y-4">
           <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
@@ -248,6 +415,7 @@ export default function Outreach() {
                   <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Type</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Status</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Subject</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Tracking</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Sent At</th>
                 </tr>
               </thead>
@@ -255,14 +423,14 @@ export default function Outreach() {
                 {histLoading ? (
                   [...Array(5)].map((_, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid hsl(var(--border) / 0.4)' }}>
-                      {[...Array(5)].map((__, j) => (
+                      {[...Array(6)].map((__, j) => (
                         <td key={j} className="px-5 py-3"><Skeleton className="h-4 w-full" /></td>
                       ))}
                     </tr>
                   ))
                 ) : history.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-16">
+                    <td colSpan={6} className="text-center py-16">
                       <div className="flex flex-col items-center gap-2">
                         <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
                           <Send className="h-5 w-5 text-muted-foreground/40" />
@@ -284,9 +452,7 @@ export default function Outreach() {
                           'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',
                           item.type === 'email' ? 'bg-cyan-50 text-cyan-700' : 'bg-violet-50 text-violet-700',
                         )}>
-                          {item.type === 'email'
-                            ? <Mail className="h-3 w-3" />
-                            : <MessageSquare className="h-3 w-3" />}
+                          {item.type === 'email' ? <Mail className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
                           {item.type}
                         </span>
                       </td>
@@ -300,6 +466,18 @@ export default function Outreach() {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-muted-foreground max-w-xs truncate">{item.subject || '—'}</td>
+                      <td className="px-5 py-3">
+                        {item.type === 'email' ? (
+                          <div className="flex gap-1.5">
+                            <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded', item.openedAt ? 'bg-emerald-50 text-emerald-700' : 'bg-muted text-muted-foreground')}>
+                              {item.openedAt ? '✓ Opened' : 'Not opened'}
+                            </span>
+                            {item.clickedAt && (
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-700">✓ Clicked</span>
+                            )}
+                          </div>
+                        ) : '—'}
+                      </td>
                       <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
                         {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </td>
