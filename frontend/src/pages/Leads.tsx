@@ -504,6 +504,8 @@ export default function Leads() {
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Company</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Contact</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Email</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Phone</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">AI Score</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Source</th>
@@ -525,6 +527,8 @@ export default function Leads() {
                       </div>
                     </td>
                     <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-28" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
                     <td className="px-4 py-3"><Skeleton className="h-6 w-20 rounded-full" /></td>
                     <td className="px-4 py-3"><Skeleton className="h-6 w-16 rounded-full" /></td>
                     <td className="px-4 py-3"><Skeleton className="h-6 w-16 rounded-full" /></td>
@@ -533,7 +537,7 @@ export default function Leads() {
                 ))
               ) : leads.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-16">
+                  <td colSpan={9} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3">
                       <div
                         className="h-14 w-14 rounded-2xl flex items-center justify-center"
@@ -631,12 +635,37 @@ export default function Leads() {
 
                       {/* Contact */}
                       <td className="px-4 py-3">
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-foreground">{lead.contactName || '—'}</p>
-                          {lead.email && (
-                            <p className="text-xs text-muted-foreground truncate max-w-[180px]">{lead.email}</p>
-                          )}
-                        </div>
+                        <p className="text-sm font-medium text-foreground">{lead.contactName || '—'}</p>
+                      </td>
+
+                      {/* Email */}
+                      <td className="px-4 py-3">
+                        {lead.email ? (
+                          <a
+                            href={`mailto:${lead.email}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-primary hover:underline truncate max-w-[160px] block"
+                          >
+                            {lead.email}
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+
+                      {/* Phone */}
+                      <td className="px-4 py-3">
+                        {lead.phone ? (
+                          <a
+                            href={`tel:${lead.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-primary hover:underline whitespace-nowrap"
+                          >
+                            {lead.phone}
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground/40">—</span>
+                        )}
                       </td>
 
                       {/* Status */}
