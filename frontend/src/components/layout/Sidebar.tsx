@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FileText, Send, BarChart3,
-  LogOut, Zap, Kanban, GitBranch,
+  LogOut, Zap, Kanban, GitBranch, MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -16,6 +16,7 @@ const navItems = [
   { title: 'Analytics', path: '/analytics', icon: BarChart3 },
   { title: 'Kanban', path: '/kanban', icon: Kanban },
   { title: 'Sequences', path: '/sequences', icon: GitBranch },
+  { title: 'AI Chat', path: '/chat', icon: MessageSquare },
 ];
 
 interface SidebarProps { open: boolean; onClose: () => void; }

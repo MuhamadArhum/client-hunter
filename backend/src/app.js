@@ -13,6 +13,7 @@ const outreachRoutes = require('./routes/outreach');
 const analyticsRoutes = require('./routes/analytics');
 const templatesRoutes = require('./routes/templates');
 const sequencesRoutes = require('./routes/sequences');
+const chatRoutes = require('./routes/chat');
 
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
 const { startFollowUpCron, startProposalFollowUpCron } = require('./services/followUpService');
@@ -63,6 +64,7 @@ app.use('/api/outreach', outreachRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/templates', templatesRoutes);
 app.use('/api/sequences', sequencesRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Abyte Hunt API is running', timestamp: new Date().toISOString() });
