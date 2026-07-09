@@ -7,6 +7,10 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
 import App from './App';
 import './index.css';
+// @ts-expect-error virtual module provided by vite-plugin-pwa
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({ immediate: true });
 
 const queryClient = new QueryClient();
 
