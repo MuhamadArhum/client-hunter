@@ -51,7 +51,7 @@ function Alert({ type, msg }: { type: 'success' | 'error'; msg: string }) {
     <div className={cn(
       'flex items-center gap-2.5 text-sm rounded-xl p-3 border',
       type === 'success'
-        ? 'bg-cyan-50 text-cyan-700 border-cyan-200'
+        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
         : 'bg-rose-50 text-rose-700 border-rose-200',
     )}>
       {type === 'success'
@@ -84,7 +84,6 @@ export default function Outreach() {
   const [histPage, setHistPage] = useState(1);
   const [histLoading, setHistLoading] = useState(false);
 
-  // Templates state
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const [showNewTemplate, setShowNewTemplate] = useState(false);
@@ -186,7 +185,7 @@ export default function Outreach() {
 
   const categoryColor: Record<string, string> = {
     general: 'bg-muted text-muted-foreground',
-    'cold-outreach': 'bg-cyan-50 text-cyan-700',
+    'cold-outreach': 'bg-emerald-50 text-emerald-700',
     'follow-up': 'bg-amber-50 text-amber-700',
     proposal: 'bg-violet-50 text-violet-700',
   };
@@ -194,12 +193,10 @@ export default function Outreach() {
   return (
     <div className="space-y-5 p-6">
       <div className="page-header">
-        <div className="absolute inset-0 opacity-40 rounded-2xl"
-             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
-            <Send className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Automation</span>
+            <Send className="h-4 w-4" style={{ color: '#0D9C6A' }} />
+            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Automation</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Outreach</h1>
           <p className="text-sm text-muted-foreground font-medium">Send emails and WhatsApp messages to your leads</p>
@@ -222,7 +219,7 @@ export default function Outreach() {
         {/* Send Tab */}
         <TabsContent value="send" className="mt-5">
           <div className="max-w-2xl space-y-4">
-            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-4 space-y-1.5">
+            <div className="rounded-xl border border-border bg-card shadow-sm p-4 space-y-1.5">
               <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Select Lead</Label>
               <Select value={selectedLeadId} onValueChange={setSelectedLeadId}>
                 <SelectTrigger className="h-10 rounded-xl border-border/60 text-sm">
@@ -244,7 +241,7 @@ export default function Outreach() {
               )}
             </div>
 
-            <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
               <Tabs defaultValue="email">
                 <div className="border-b border-border/60 px-4 pt-4 pb-0">
                   <TabsList className="h-9 rounded-lg bg-muted/60 p-1 gap-1">
@@ -268,13 +265,13 @@ export default function Outreach() {
                     <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your email message..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
                   </div>
                   <Button
-                    className="h-10 rounded-xl text-sm font-semibold text-white gap-2 shadow-glow-teal"
-                    style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                    className="h-10 rounded-xl text-sm font-semibold text-gray-900 gap-2"
+                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
                     onClick={handleSendEmail}
                     disabled={emailLoading}
                   >
                     {emailLoading
-                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                      ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Sending...</>
                       : <><Mail className="h-3.5 w-3.5" /> Send Email</>}
                   </Button>
                 </TabsContent>
@@ -290,8 +287,8 @@ export default function Outreach() {
                     <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your WhatsApp message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
                   </div>
                   <Button
-                    className="h-10 rounded-xl text-sm font-semibold gap-2"
-                    style={{ background: 'linear-gradient(135deg, #9F8DD4, #b8a8e4)', color: 'white' }}
+                    className="h-10 rounded-xl text-sm font-semibold gap-2 text-white"
+                    style={{ background: 'linear-gradient(135deg, #7C3AED, #9F5CE8)' }}
                     onClick={handleSendWhatsApp}
                     disabled={waLoading}
                   >
@@ -310,8 +307,8 @@ export default function Outreach() {
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{templates.length} template{templates.length !== 1 ? 's' : ''}</p>
             <Button
-              className="h-9 rounded-xl text-sm font-semibold text-white gap-2"
-              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               onClick={() => setShowNewTemplate((v) => !v)}
             >
               <Plus className="h-3.5 w-3.5" /> New Template
@@ -319,7 +316,7 @@ export default function Outreach() {
           </div>
 
           {showNewTemplate && (
-            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-4">
               <h3 className="text-sm font-semibold">New Email Template</h3>
               {tmplAlert && <Alert type={tmplAlert.type} msg={tmplAlert.msg} />}
               <div className="grid grid-cols-2 gap-3">
@@ -350,7 +347,7 @@ export default function Outreach() {
                 <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Email body..." value={tmplBody} onChange={(e) => setTmplBody(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button className="h-9 rounded-xl text-sm font-semibold text-white" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
+                <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
                   {tmplSaving ? 'Saving...' : 'Save Template'}
                 </Button>
                 <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowNewTemplate(false)}>Cancel</Button>
@@ -360,11 +357,11 @@ export default function Outreach() {
 
           {templatesLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}
+              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
             </div>
           ) : templates.length === 0 ? (
-            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-16 flex flex-col items-center gap-3">
-              <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
+            <div className="rounded-xl border border-border bg-card shadow-sm p-16 flex flex-col items-center gap-3">
+              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
                 <Eye className="h-6 w-6 text-muted-foreground/40" />
               </div>
               <p className="text-sm text-muted-foreground">No templates yet. Create one to reuse emails quickly.</p>
@@ -372,7 +369,7 @@ export default function Outreach() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {templates.map((tmpl) => (
-                <div key={tmpl._id} className="rounded-2xl border border-border/60 bg-white shadow-card p-4 space-y-3 hover:border-primary/30 transition-colors">
+                <div key={tmpl._id} className="rounded-xl border border-border bg-card shadow-sm p-4 space-y-3 transition-colors hover:border-emerald-200 dark:hover:border-emerald-900">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold truncate">{tmpl.name}</p>
@@ -389,7 +386,7 @@ export default function Outreach() {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Used {tmpl.usageCount}×</span>
-                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-white gap-1" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }} onClick={() => handleUseTemplate(tmpl)}>
+                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-gray-900 gap-1" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={() => handleUseTemplate(tmpl)}>
                         <Mail className="h-3 w-3" /> Use
                       </Button>
                     </div>
@@ -402,7 +399,7 @@ export default function Outreach() {
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-5 space-y-4">
-          <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-border/60">
               <h3 className="text-sm font-semibold text-foreground">Outreach History</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{histPagination.total} total records</p>
@@ -432,7 +429,7 @@ export default function Outreach() {
                   <tr>
                     <td colSpan={6} className="text-center py-16">
                       <div className="flex flex-col items-center gap-2">
-                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
                           <Send className="h-5 w-5 text-muted-foreground/40" />
                         </div>
                         <p className="text-sm text-muted-foreground">No outreach history yet</p>
@@ -450,7 +447,7 @@ export default function Outreach() {
                       <td className="px-5 py-3">
                         <span className={cn(
                           'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',
-                          item.type === 'email' ? 'bg-cyan-50 text-cyan-700' : 'bg-violet-50 text-violet-700',
+                          item.type === 'email' ? 'bg-emerald-50 text-emerald-700' : 'bg-violet-50 text-violet-700',
                         )}>
                           {item.type === 'email' ? <Mail className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
                           {item.type}
@@ -473,7 +470,7 @@ export default function Outreach() {
                               {item.openedAt ? '✓ Opened' : 'Not opened'}
                             </span>
                             {item.clickedAt && (
-                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-700">✓ Clicked</span>
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">✓ Clicked</span>
                             )}
                           </div>
                         ) : '—'}

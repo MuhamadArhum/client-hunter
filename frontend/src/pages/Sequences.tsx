@@ -48,20 +48,17 @@ export default function Sequences() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'sequences' | 'enrollments'>('sequences');
 
-  // Create form
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newSteps, setNewSteps] = useState<Step[]>([{ stepNumber: 1, delayDays: 0, subject: '', body: '' }]);
   const [creating, setCreating] = useState(false);
 
-  // Enroll form
   const [enrollSeqId, setEnrollSeqId] = useState('');
   const [enrollLeadId, setEnrollLeadId] = useState('');
   const [enrolling, setEnrolling] = useState(false);
   const [enrollAlert, setEnrollAlert] = useState('');
 
-  // Expanded sequence
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
@@ -134,27 +131,25 @@ export default function Sequences() {
   const statusColor: Record<string, string> = {
     active: 'text-emerald-600 bg-emerald-50',
     paused: 'text-amber-600 bg-amber-50',
-    completed: 'text-cyan-600 bg-cyan-50',
+    completed: 'text-green-600 bg-green-50',
     unsubscribed: 'text-rose-600 bg-rose-50',
   };
 
   return (
     <div className="space-y-5 p-6">
       <div className="page-header">
-        <div className="absolute inset-0 opacity-40 rounded-2xl"
-             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="relative flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <GitBranch className="h-4 w-4 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Automation</span>
+              <GitBranch className="h-4 w-4" style={{ color: '#0D9C6A' }} />
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Automation</span>
             </div>
             <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Email Sequences</h1>
             <p className="text-sm text-muted-foreground font-medium">Automated drip campaigns for your leads</p>
           </div>
           <Button
-            className="h-9 rounded-xl text-sm font-semibold text-white gap-2 shadow-glow-teal"
-            style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+            className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
+            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
             onClick={() => setShowCreate((v) => !v)}
           >
             <Plus className="h-3.5 w-3.5" /> New Sequence
@@ -164,7 +159,7 @@ export default function Sequences() {
 
       {/* Create Form */}
       {showCreate && (
-        <div className="rounded-2xl border border-border/60 bg-white shadow-card p-5 space-y-4">
+        <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-4">
           <h3 className="text-sm font-semibold">Create Sequence</h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -213,7 +208,7 @@ export default function Sequences() {
           </div>
 
           <div className="flex gap-2">
-            <Button className="h-9 rounded-xl text-sm font-semibold text-white gap-2" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }} onClick={handleCreate} disabled={creating}>
+            <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={handleCreate} disabled={creating}>
               {creating ? 'Creating...' : 'Create Sequence'}
             </Button>
             <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowCreate(false)}>Cancel</Button>
@@ -232,23 +227,23 @@ export default function Sequences() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'rgba(33,246,168,0.3)', borderTopColor: '#21F6A8' }} />
         </div>
       ) : activeTab === 'sequences' ? (
         <div className="space-y-3">
           {sequences.length === 0 ? (
-            <div className="rounded-2xl border border-border/60 bg-white shadow-card p-16 flex flex-col items-center gap-3">
-              <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.08)' }}>
+            <div className="rounded-xl border border-border bg-card shadow-sm p-16 flex flex-col items-center gap-3">
+              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
                 <GitBranch className="h-6 w-6 text-muted-foreground/40" />
               </div>
               <p className="text-sm text-muted-foreground">No sequences yet. Create one to get started.</p>
             </div>
           ) : sequences.map((seq) => (
-            <div key={seq._id} className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+            <div key={seq._id} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpandedId(expandedId === seq._id ? null : seq._id)}>
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(29,210,215,0.1)' }}>
-                    <GitBranch className="h-4 w-4 text-primary" />
+                  <div className="h-9 w-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                    <GitBranch className="h-4 w-4" style={{ color: '#0D9C6A' }} />
                   </div>
                   <div>
                     <p className="text-sm font-semibold">{seq.name}</p>
@@ -271,7 +266,7 @@ export default function Sequences() {
                   {seq.steps.map((step, i) => (
                     <div key={i} className="flex gap-3">
                       <div className="flex flex-col items-center">
-                        <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}>{step.stepNumber}</div>
+                        <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-gray-900" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>{step.stepNumber}</div>
                         {i < seq.steps.length - 1 && <div className="flex-1 w-px bg-border/40 my-1" />}
                       </div>
                       <div className="flex-1 pb-3">
@@ -282,7 +277,6 @@ export default function Sequences() {
                     </div>
                   ))}
 
-                  {/* Enroll in this sequence */}
                   <div className="rounded-xl border border-border/40 bg-muted/20 p-3 space-y-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"><Users className="h-3 w-3" /> Enroll a Lead</p>
                     {enrollAlert && enrollSeqId === seq._id && (
@@ -299,7 +293,7 @@ export default function Sequences() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button size="sm" className="h-8 rounded-lg text-xs font-semibold text-white gap-1.5" style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                      <Button size="sm" className="h-8 rounded-lg text-xs font-semibold text-gray-900 gap-1.5" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
                         onClick={() => { setEnrollSeqId(seq._id); handleEnroll(); }} disabled={enrolling || enrollSeqId !== seq._id || !enrollLeadId}>
                         <Play className="h-3 w-3" /> Enroll
                       </Button>
@@ -311,7 +305,7 @@ export default function Sequences() {
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-border/60 bg-white shadow-card overflow-hidden">
+        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-border/60">
             <h3 className="text-sm font-semibold">Active Enrollments</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{enrollments.length} total</p>

@@ -5,11 +5,10 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
 
-const PIE_COLORS = ['#1DD2D7', '#9F8DD4', '#3F4D67', '#f59e0b', '#6366f1', '#10b981'];
+const PIE_COLORS = ['#21F6A8', '#10B981', '#059669', '#f59e0b', '#6366f1', '#f43f5e'];
 
 interface DashboardData {
   totalLeads: number;
@@ -28,16 +27,16 @@ interface AIBreakdown {
 }
 
 const ANALYTICS_STAT_CARDS = [
-  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #1DD2D7, #06b6d4)', bgColor: 'rgba(29,210,215,0.08)',   borderColor: 'rgba(29,210,215,0.18)',   glowColor: 'rgba(29,210,215,0.15)',   numClass: 'stat-number-teal' },
-  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(16,185,129,0.08)',   borderColor: 'rgba(16,185,129,0.18)',   glowColor: 'rgba(16,185,129,0.15)',   numClass: 'stat-number-emerald', suffix: '%' },
-  { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, gradient: 'linear-gradient(135deg, #9F8DD4, #c084fc)', bgColor: 'rgba(159,141,212,0.08)',  borderColor: 'rgba(159,141,212,0.18)',  glowColor: 'rgba(159,141,212,0.15)',  numClass: 'stat-number-purple' },
-  { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, gradient: 'linear-gradient(135deg, #6366f1, #818cf8)', bgColor: 'rgba(99,102,241,0.08)',   borderColor: 'rgba(99,102,241,0.18)',   glowColor: 'rgba(99,102,241,0.15)',   numClass: 'stat-number-indigo' },
+  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #21F6A8, #10B981)', bgColor: 'rgba(33,246,168,0.08)',  borderColor: 'rgba(33,246,168,0.2)',  glowColor: 'rgba(33,246,168,0.15)',  numClass: 'stat-number-green' },
+  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(16,185,129,0.08)',  borderColor: 'rgba(16,185,129,0.18)', glowColor: 'rgba(16,185,129,0.15)', numClass: 'stat-number-emerald', suffix: '%' },
+  { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, gradient: 'linear-gradient(135deg, #7C3AED, #c084fc)', bgColor: 'rgba(124,58,237,0.08)',  borderColor: 'rgba(124,58,237,0.18)', glowColor: 'rgba(124,58,237,0.15)', numClass: 'stat-number-violet' },
+  { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, gradient: 'linear-gradient(135deg, #6366f1, #818cf8)', bgColor: 'rgba(99,102,241,0.08)',  borderColor: 'rgba(99,102,241,0.18)', glowColor: 'rgba(99,102,241,0.15)', numClass: 'stat-number-indigo' },
 ];
 
 function StatCard({ card, value }: { card: typeof ANALYTICS_STAT_CARDS[0]; value: string | number }) {
   return (
     <div
-      className="relative rounded-2xl p-5 overflow-hidden cursor-default group transition-all duration-300 hover:-translate-y-1"
+      className="relative rounded-xl p-5 overflow-hidden cursor-default group transition-all duration-300 hover:-translate-y-1"
       style={{ background: card.bgColor, border: `1px solid ${card.borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)' }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 20px ${card.glowColor}, 0 8px 40px rgba(0,0,0,0.1)`; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)'; }}
@@ -59,8 +58,8 @@ function StatCard({ card, value }: { card: typeof ANALYTICS_STAT_CARDS[0]; value
 
 function ChartCard({ title, subtitle, accent, children }: { title: string; subtitle?: string; accent?: string; children: React.ReactNode }) {
   return (
-    <div className="relative rounded-2xl border border-border/50 bg-card shadow-card overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #1DD2D7, #9F8DD4)' }} />
+    <div className="relative rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
       <div className="px-5 py-4 border-b border-border/40">
         <h3 className="text-sm font-bold text-foreground">{title}</h3>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
@@ -91,7 +90,7 @@ const QUAL_CONFIG: Record<string, { emoji: string; bg: string; text: string; dot
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: '#1DD2D7', contacted: '#f59e0b', proposal_sent: '#9F8DD4',
+  new: '#21F6A8', contacted: '#f59e0b', proposal_sent: '#7C3AED',
   follow_up: '#6366f1', converted: '#10b981', lost: '#f43f5e',
 };
 
@@ -132,15 +131,15 @@ export default function Analytics() {
   const sourceChartData = sourceData.map(s => ({ name: s._id, value: s.count }));
 
   const outreachChartData = outreachStats ? [
-    { name: 'Email Sent', count: outreachStats.emailSent, color: '#1DD2D7' },
+    { name: 'Email Sent', count: outreachStats.emailSent, color: '#21F6A8' },
     { name: 'Email Failed', count: outreachStats.emailFailed, color: '#f43f5e' },
-    { name: 'WA Sent', count: outreachStats.whatsappSent, color: '#9F8DD4' },
+    { name: 'WA Sent', count: outreachStats.whatsappSent, color: '#7C3AED' },
     { name: 'WA Failed', count: outreachStats.whatsappFailed, color: '#f59e0b' },
   ] : [];
 
   const proposalChartData = proposalStats ? [
-    { name: 'Accepted', count: proposalStats.accepted, color: '#10b981' },
-    { name: 'Sent', count: proposalStats.sent, color: '#1DD2D7' },
+    { name: 'Accepted', count: proposalStats.accepted, color: '#21F6A8' },
+    { name: 'Sent', count: proposalStats.sent, color: '#10b981' },
     { name: 'Rejected', count: proposalStats.rejected, color: '#f43f5e' },
     { name: 'Draft', count: proposalStats.draft, color: '#94a3b8' },
   ] : [];
@@ -151,7 +150,7 @@ export default function Analytics() {
         <Skeleton className="h-7 w-36" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-2xl border border-border/50 bg-card p-5 space-y-3">
+            <div key={i} className="rounded-xl border border-border bg-card p-5 space-y-3">
               <Skeleton className="h-11 w-11 rounded-xl" />
               <Skeleton className="h-9 w-20" />
               <Skeleton className="h-4 w-28" />
@@ -160,7 +159,7 @@ export default function Analytics() {
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-2xl border border-border/50 bg-card p-5">
+            <div key={i} className="rounded-xl border border-border bg-card p-5">
               <Skeleton className="h-4 w-32 mb-4" />
               <Skeleton className="h-56 w-full rounded-xl" />
             </div>
@@ -179,12 +178,10 @@ export default function Analytics() {
   return (
     <div className="space-y-5 p-6">
       <div className="page-header">
-        <div className="absolute inset-0 opacity-40 rounded-2xl"
-             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
             <Target className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Performance</span>
+            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Performance</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Analytics</h1>
           <p className="text-sm text-muted-foreground font-medium">Performance metrics and pipeline insights</p>
@@ -202,7 +199,7 @@ export default function Analytics() {
 
       {/* Row 1: Source + Status */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #1DD2D7, #06b6d4)">
+        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #21F6A8, #10B981)">
           {sourceChartData.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
@@ -216,7 +213,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #9F8DD4, #6366f1)">
+        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #10B981, #6366f1)">
           {statusChartData.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={statusChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -226,7 +223,7 @@ export default function Analytics() {
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted) / 0.5)', radius: 6 }} />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={48}>
                   {statusChartData.map((entry) => (
-                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#1DD2D7'} />
+                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#21F6A8'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -237,7 +234,7 @@ export default function Analytics() {
 
       {/* Row 2: Conversion + Proposals */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #1DD2D7)">
+        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #21F6A8)">
           {conversionBySource.length === 0 ? <EmptyChart height={180} /> : (
             <div className="space-y-3">
               {conversionBySource.map((item) => (
@@ -246,13 +243,13 @@ export default function Analytics() {
                     <span className="text-sm font-medium capitalize">{item.source}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">{item.total} leads</span>
-                      <span className="text-sm font-bold" style={{ color: '#1DD2D7' }}>{item.conversionRate}%</span>
+                      <span className="text-sm font-bold" style={{ color: '#0D9C6A' }}>{item.conversionRate}%</span>
                     </div>
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${item.conversionRate}%`, background: 'linear-gradient(90deg, #1DD2D7, #1DD7CE)' }}
+                      style={{ width: `${item.conversionRate}%`, background: 'linear-gradient(90deg, #21F6A8, #10B981)' }}
                     />
                   </div>
                 </div>
@@ -261,15 +258,15 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accent="linear-gradient(90deg, #9F8DD4, #c084fc)">
+        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accent="linear-gradient(90deg, #7C3AED, #c084fc)">
           {!proposalStats ? <EmptyChart height={180} /> : (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div
-                  className="h-16 w-16 rounded-2xl flex items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(29,210,215,0.1), rgba(159,141,212,0.1))' }}
+                  className="h-16 w-16 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)' }}
                 >
-                  <p className="text-xl font-bold" style={{ color: '#1DD2D7' }}>{proposalStats.acceptanceRate}%</p>
+                  <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{proposalStats.acceptanceRate}%</p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">Acceptance Rate</p>
@@ -294,7 +291,7 @@ export default function Analytics() {
 
       {/* Row 3: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #1DD2D7)">
+        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #21F6A8)">
           {outreachChartData.every(d => d.count === 0) ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={outreachChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -310,7 +307,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #9F8DD4)">
+        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #21F6A8)">
           {!aiBreakdown ? (
             <div className="flex flex-col items-center justify-center h-56 gap-2 text-center">
               <Brain className="h-8 w-8 text-muted-foreground/30" />
@@ -319,13 +316,12 @@ export default function Analytics() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Score + breakdown */}
               <div className="flex items-center gap-4">
                 <div
-                  className="h-16 w-16 rounded-2xl flex flex-col items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(29,210,215,0.1), rgba(159,141,212,0.1))' }}
+                  className="h-16 w-16 rounded-xl flex flex-col items-center justify-center shrink-0"
+                  style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)' }}
                 >
-                  <p className="text-xl font-bold" style={{ color: '#1DD2D7' }}>{aiBreakdown.avgScore}</p>
+                  <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{aiBreakdown.avgScore}</p>
                   <p className="text-[10px] text-muted-foreground">avg score</p>
                 </div>
                 <div className="flex gap-2 flex-wrap">
@@ -343,7 +339,6 @@ export default function Analytics() {
                 </div>
               </div>
 
-              {/* Top leads */}
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">🔥 Hottest Leads</p>
                 <div className="space-y-2">
@@ -352,8 +347,8 @@ export default function Analytics() {
                     return (
                       <div key={lead._id} className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-muted/40 transition-colors">
                         <div
-                          className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-white"
-                          style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                          className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
+                          style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
                         >
                           {lead.companyName.slice(0, 2).toUpperCase()}
                         </div>

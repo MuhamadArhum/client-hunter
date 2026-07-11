@@ -49,21 +49,21 @@ interface Pagination {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  new:           { bg: 'bg-cyan-50',    text: 'text-cyan-700',    dot: 'bg-cyan-400' },
-  contacted:     { bg: 'bg-amber-50',   text: 'text-amber-700',   dot: 'bg-amber-400' },
-  proposal_sent: { bg: 'bg-violet-50',  text: 'text-violet-700',  dot: 'bg-violet-400' },
-  follow_up:     { bg: 'bg-indigo-50',  text: 'text-indigo-700',  dot: 'bg-indigo-400' },
-  converted:     { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-400' },
-  lost:          { bg: 'bg-rose-50',    text: 'text-rose-700',    dot: 'bg-rose-400' },
+  new:           { bg: 'bg-emerald-50',  text: 'text-emerald-700',  dot: 'bg-emerald-400' },
+  contacted:     { bg: 'bg-amber-50',    text: 'text-amber-700',    dot: 'bg-amber-400' },
+  proposal_sent: { bg: 'bg-violet-50',   text: 'text-violet-700',   dot: 'bg-violet-400' },
+  follow_up:     { bg: 'bg-indigo-50',   text: 'text-indigo-700',   dot: 'bg-indigo-400' },
+  converted:     { bg: 'bg-emerald-50',  text: 'text-emerald-700',  dot: 'bg-emerald-400' },
+  lost:          { bg: 'bg-rose-50',     text: 'text-rose-700',     dot: 'bg-rose-400' },
 };
 
 const SOURCE_STYLES: Record<string, string> = {
-  manual:    'bg-slate-100 text-slate-600',
-  upwork:    'bg-green-50 text-green-700',
-  freelancer: 'bg-blue-50 text-blue-700',
-  crunchbase: 'bg-orange-50 text-orange-700',
-  clutch:    'bg-red-50 text-red-700',
-  linkedin:  'bg-sky-50 text-sky-700',
+  manual:    'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+  upwork:    'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+  freelancer: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
+  crunchbase: 'bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300',
+  clutch:    'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300',
+  linkedin:  'bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300',
 };
 
 const SOURCES = ['manual', 'upwork', 'freelancer', 'crunchbase', 'clutch', 'linkedin'];
@@ -163,8 +163,6 @@ export default function Leads() {
   }, [page, search, statusFilter]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
-
-  // Reset selections when leads refresh
   useEffect(() => { setSelectedIds(new Set()); }, [leads]);
 
   const handleAdd = async () => {
@@ -230,7 +228,6 @@ export default function Leads() {
     }
   };
 
-  // Bulk select helpers
   const allSelected = leads.length > 0 && leads.every((l) => selectedIds.has(l._id));
   const someSelected = selectedIds.size > 0;
 
@@ -265,7 +262,6 @@ export default function Leads() {
     }
   };
 
-  // CSV Export
   const handleExportCSV = () => {
     const params = new URLSearchParams();
     if (statusFilter !== 'all') params.set('status', statusFilter);
@@ -305,7 +301,6 @@ export default function Leads() {
       .catch(console.error);
   };
 
-  // CSV Import
   const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -315,7 +310,6 @@ export default function Leads() {
     reader.onload = (evt) => {
       const text = evt.target?.result as string;
       setCsvText(text);
-      // Count data rows (subtract header)
       const rows = text.split('\n').filter((r) => r.trim().length > 0);
       setCsvRowCount(Math.max(0, rows.length - 1));
     };
@@ -361,18 +355,18 @@ export default function Leads() {
   const convertedLeads = leads.filter((l) => l.status === 'converted').length;
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-5 p-5">
       {/* Header */}
       <div className="page-header">
-        <div className="absolute inset-0 opacity-40 rounded-2xl"
-             style={{ backgroundImage: 'radial-gradient(rgba(29,210,215,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="absolute inset-0 opacity-40 rounded-xl"
+             style={{ backgroundImage: 'radial-gradient(rgba(33,246,168,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Users className="h-4 w-4 text-primary" />
               <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Pipeline</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Leads</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-1">Leads</h1>
             <p className="text-sm text-muted-foreground font-medium">
               {pagination.total} total leads
               {hotLeads > 0 && <> · <span className="text-rose-500 font-semibold">{hotLeads} 🔥 hot</span></>}
@@ -382,7 +376,7 @@ export default function Leads() {
 
           <div className="flex flex-wrap gap-2">
           {bulkEnrichMsg && (
-            <span className="text-xs font-medium text-cyan-700 bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-xl self-center">
+            <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl self-center">
               {bulkEnrichMsg}
             </span>
           )}
@@ -425,8 +419,8 @@ export default function Leads() {
           </Button>
           <Button
             size="sm"
-            className="h-9 rounded-xl gap-2 font-semibold text-sm text-white shadow-glow-teal"
-            style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+            className="h-9 rounded-xl gap-2 font-semibold text-sm text-gray-900"
+            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
             onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
           >
             <Plus className="h-3.5 w-3.5" />
@@ -540,8 +534,8 @@ export default function Leads() {
                   <td colSpan={9} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3">
                       <div
-                        className="h-14 w-14 rounded-2xl flex items-center justify-center"
-                        style={{ background: 'linear-gradient(135deg, rgba(29,210,215,0.1), rgba(159,141,212,0.1))' }}
+                        className="h-14 w-14 rounded-xl flex items-center justify-center"
+                        style={{ background: 'rgba(33,246,168,0.08)' }}
                       >
                         <Users className="h-6 w-6 text-muted-foreground/50" />
                       </div>
@@ -551,8 +545,8 @@ export default function Leads() {
                       </div>
                       <Button
                         size="sm"
-                        className="mt-1 h-8 rounded-xl gap-1.5 text-xs font-semibold text-white"
-                        style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+                        className="mt-1 h-8 rounded-xl gap-1.5 text-xs font-semibold text-gray-900"
+                        style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
                         onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
                       >
                         <Plus className="h-3.5 w-3.5" /> Add First Lead
@@ -590,8 +584,8 @@ export default function Leads() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div
-                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
-                            style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-gray-900"
+                            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
                           >
                             {getInitials(lead.companyName)}
                           </div>
@@ -621,7 +615,7 @@ export default function Leads() {
                                   <span
                                     key={tag}
                                     className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                                    style={{ background: 'rgba(29,210,215,0.12)', color: '#1DD2D7' }}
+                                    style={{ background: 'rgba(33,246,168,0.1)', color: '#0D9C6A' }}
                                   >
                                     <Tag className="h-2.5 w-2.5" />
                                     {tag}
@@ -741,9 +735,9 @@ export default function Leads() {
                   size="sm"
                   className={cn(
                     'h-8 w-8 p-0 rounded-lg text-xs border-border/60',
-                    page === p && 'text-white border-0',
+                    page === p && 'text-gray-900 border-0',
                   )}
-                  style={page === p ? { background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' } : {}}
+                  style={page === p ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)' } : {}}
                   onClick={() => setPage(p)}
                 >
                   {p}
@@ -765,14 +759,14 @@ export default function Leads() {
 
       {/* Add Lead Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <span
                 className="h-6 w-6 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               >
-                <Plus className="h-3.5 w-3.5 text-white" />
+                <Plus className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Add New Lead
             </DialogTitle>
@@ -843,13 +837,13 @@ export default function Leads() {
               Cancel
             </Button>
             <Button
-              className="rounded-xl text-sm font-semibold text-white gap-2"
-              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              className="rounded-xl text-sm font-semibold text-gray-900 gap-2"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               onClick={handleAdd}
               disabled={addLoading}
             >
               {addLoading ? (
-                <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Adding...</>
+                <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Adding...</>
               ) : (
                 <><Plus className="h-3.5 w-3.5" /> Add Lead</>
               )}
@@ -860,14 +854,14 @@ export default function Leads() {
 
       {/* Auto Import Dialog */}
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
-        <DialogContent className="max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <span
                 className="h-6 w-6 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               >
-                <Download className="h-3.5 w-3.5 text-white" />
+                <Download className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Auto Import Leads
             </DialogTitle>
@@ -877,7 +871,7 @@ export default function Leads() {
               <div className={cn(
                 'text-sm rounded-xl p-3 border',
                 importMsg.startsWith('✓')
-                  ? 'text-cyan-700 bg-cyan-50 border-cyan-200'
+                  ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
                   : 'text-rose-700 bg-rose-50 border-rose-200',
               )}>
                 {importMsg}
@@ -909,13 +903,13 @@ export default function Leads() {
               Cancel
             </Button>
             <Button
-              className="rounded-xl text-sm font-semibold text-white gap-2"
-              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              className="rounded-xl text-sm font-semibold text-gray-900 gap-2"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               onClick={handleImport}
               disabled={importLoading}
             >
               {importLoading ? (
-                <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Importing...</>
+                <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Importing...</>
               ) : (
                 <><Download className="h-3.5 w-3.5" /> Import</>
               )}
@@ -926,14 +920,14 @@ export default function Leads() {
 
       {/* CSV Import Dialog */}
       <Dialog open={csvImportOpen} onOpenChange={setCsvImportOpen}>
-        <DialogContent className="max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <span
                 className="h-6 w-6 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #1DD2D7, #9F8DD4)' }}
+                style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               >
-                <Upload className="h-3.5 w-3.5 text-white" />
+                <Upload className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Import CSV
             </DialogTitle>
@@ -943,7 +937,7 @@ export default function Leads() {
               <div className={cn(
                 'text-sm rounded-xl p-3 border',
                 csvImportMsg.startsWith('✓')
-                  ? 'text-cyan-700 bg-cyan-50 border-cyan-200'
+                  ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
                   : 'text-rose-700 bg-rose-50 border-rose-200',
               )}>
                 {csvImportMsg}
@@ -955,7 +949,7 @@ export default function Leads() {
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">CSV File</Label>
                 <button
                   className="text-xs font-medium underline"
-                  style={{ color: '#1DD2D7' }}
+                  style={{ color: '#0D9C6A' }}
                   onClick={handleDownloadTemplate}
                 >
                   Download Template
@@ -989,8 +983,8 @@ export default function Leads() {
             </div>
 
             {csvFile && csvRowCount > 0 && (
-              <div className="rounded-xl bg-cyan-50 border border-cyan-200 p-3">
-                <p className="text-xs text-cyan-700 font-medium">
+              <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3">
+                <p className="text-xs text-emerald-700 font-medium">
                   Ready to import <span className="font-bold">{csvRowCount}</span> lead{csvRowCount !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -1001,13 +995,13 @@ export default function Leads() {
               Cancel
             </Button>
             <Button
-              className="rounded-xl text-sm font-semibold text-white gap-2"
-              style={{ background: 'linear-gradient(135deg, #1DD2D7, #1DD7CE)' }}
+              className="rounded-xl text-sm font-semibold text-gray-900 gap-2"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
               onClick={handleCsvImport}
               disabled={csvImportLoading || !csvText.trim()}
             >
               {csvImportLoading ? (
-                <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Importing...</>
+                <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Importing...</>
               ) : (
                 <><Upload className="h-3.5 w-3.5" /> Import {csvRowCount > 0 ? `${csvRowCount} Leads` : ''}</>
               )}
@@ -1018,7 +1012,7 @@ export default function Leads() {
 
       {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">Delete Lead?</DialogTitle>
           </DialogHeader>
@@ -1042,7 +1036,7 @@ export default function Leads() {
 
       {/* Bulk Delete Dialog */}
       <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">Delete {selectedIds.size} Lead{selectedIds.size !== 1 ? 's' : ''}?</DialogTitle>
           </DialogHeader>
