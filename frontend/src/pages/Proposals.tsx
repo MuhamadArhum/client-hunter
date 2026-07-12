@@ -59,8 +59,17 @@ function ProposalCardSkeleton() {
   );
 }
 
+interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
 export default function Proposals() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, limit: 10, pages: 1 });
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [generateOpen, setGenerateOpen] = useState(false);
@@ -79,13 +88,17 @@ export default function Proposals() {
   const fetchProposals = useCallback(() => {
     setLoading(true);
     api
-      .get('/proposals')
-      .then((res) => setProposals(Array.isArray(res.data?.data) ? res.data.data : []))
+      .get('/proposals', { params: { page, limit: 10 } })
+      .then((res) => {
+        setProposals(Array.isArray(res.data?.data) ? res.data.data : []);
+        setPagination(res.data?.pagination || { total: 0, page: 1, limit: 10, pages: 1 });
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [page]);
 
   useEffect(() => { fetchProposals(); }, [fetchProposals]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [page]);
 
   const handleOpenGenerate = () => {
     api.get('/leads', { params: { limit: 100 } })
@@ -142,7 +155,8 @@ export default function Proposals() {
     try {
       await api.delete(`/proposals/${deleteId}`);
       setDeleteId(null);
-      fetchProposals();
+      if (proposals.length === 1 && page > 1) setPage((p) => p - 1);
+      else fetchProposals();
     } catch (e) { console.error(e); }
     finally { setDeleteLoading(false); }
   };
@@ -158,7 +172,7 @@ export default function Proposals() {
               <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>AI-Generated</span>
             </div>
             <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Proposals</h1>
-            <p className="text-sm text-muted-foreground font-medium">{proposals.length} proposal(s) generated</p>
+            <p className="text-sm text-muted-foreground font-medium">{pagination.total} proposal{pagination.total !== 1 ? 's' : ''} generated</p>
           </div>
           <Button
             size="sm"
@@ -278,6 +292,46 @@ export default function Proposals() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.pages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs" style={{ color: '#9CA3AF' }}>
+            Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total}
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page <= 1}
+              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+            >
+              Prev
+            </button>
+            {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
+                style={page === p
+                  ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', border: 'none' }
+                  : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
+                }
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= pagination.pages}
+              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
