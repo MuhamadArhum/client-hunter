@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
@@ -95,6 +96,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function Analytics() {
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [sourceData, setSourceData] = useState<{ _id: string; count: number }[]>([]);
   const [outreachStats, setOutreachStats] = useState<OutreachStats | null>(null);
@@ -169,9 +171,10 @@ export default function Analytics() {
     );
   }
 
-  const EmptyChart = ({ height = 220 }: { height?: number }) => (
-    <div className="flex items-center justify-center text-sm text-muted-foreground/60" style={{ height }}>
-      No data yet
+  const EmptyChart = ({ height = 220, message = 'No data yet', hint }: { height?: number; message?: string; hint?: string }) => (
+    <div className="flex flex-col items-center justify-center gap-1.5 text-center" style={{ height }}>
+      <p className="text-sm font-medium" style={{ color: '#9CA3AF' }}>{message}</p>
+      {hint && <p className="text-xs" style={{ color: '#D1D5DB' }}>{hint}</p>}
     </div>
   );
 
@@ -200,7 +203,7 @@ export default function Analytics() {
       {/* Row 1: Source + Status */}
       <div className="grid gap-5 lg:grid-cols-2">
         <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #21F6A8, #10B981)">
-          {sourceChartData.length === 0 ? <EmptyChart /> : (
+          {sourceChartData.length === 0 ? <EmptyChart message="No leads added yet" hint="Add leads to see source breakdown" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
                 <Pie data={sourceChartData} cx="50%" cy="50%" outerRadius={85} innerRadius={40} dataKey="value" paddingAngle={3}>
@@ -214,7 +217,7 @@ export default function Analytics() {
         </ChartCard>
 
         <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #10B981, #6366f1)">
-          {statusChartData.length === 0 ? <EmptyChart /> : (
+          {statusChartData.length === 0 ? <EmptyChart message="No pipeline data" hint="Leads will appear here once added" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={statusChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
@@ -235,7 +238,7 @@ export default function Analytics() {
       {/* Row 2: Conversion + Proposals */}
       <div className="grid gap-5 lg:grid-cols-2">
         <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #21F6A8)">
-          {conversionBySource.length === 0 ? <EmptyChart height={180} /> : (
+          {conversionBySource.length === 0 ? <EmptyChart height={180} message="No conversion data" hint="Convert a lead to see rates by source" /> : (
             <div className="space-y-3">
               {conversionBySource.map((item) => (
                 <div key={item.source} className="space-y-1.5">
@@ -259,7 +262,7 @@ export default function Analytics() {
         </ChartCard>
 
         <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accent="linear-gradient(90deg, #7C3AED, #c084fc)">
-          {!proposalStats ? <EmptyChart height={180} /> : (
+          {!proposalStats ? <EmptyChart height={180} message="No proposals yet" hint="Generate a proposal to see acceptance stats" /> : (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div
@@ -292,7 +295,7 @@ export default function Analytics() {
       {/* Row 3: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
         <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #21F6A8)">
-          {outreachChartData.every(d => d.count === 0) ? <EmptyChart /> : (
+          {outreachChartData.every(d => d.count === 0) ? <EmptyChart message="No outreach sent yet" hint="Send emails or WhatsApp messages to see stats" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={outreachChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
@@ -308,11 +311,22 @@ export default function Analytics() {
         </ChartCard>
 
         <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #21F6A8)">
-          {!aiBreakdown ? (
-            <div className="flex flex-col items-center justify-center h-56 gap-2 text-center">
-              <Brain className="h-8 w-8 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">No AI data yet</p>
-              <p className="text-xs text-muted-foreground/60">Add leads to trigger AI analysis</p>
+          {!aiBreakdown || (aiBreakdown.topLeads.length === 0 && aiBreakdown.qualBreakdown.length === 0) ? (
+            <div className="flex flex-col items-center justify-center h-56 gap-3 text-center">
+              <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: '#F0FDF9' }}>
+                <Brain className="h-6 w-6" style={{ color: '#9CA3AF' }} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: '#111827' }}>No AI data yet</p>
+                <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>Open a lead and run AI analysis to see scores here</p>
+              </div>
+              <button
+                onClick={() => navigate('/leads')}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
+                style={{ background: '#F0FDF9', border: '1px solid #A7F3D0', color: '#065F46' }}
+              >
+                <ExternalLink className="h-3 w-3" /> Go to Leads
+              </button>
             </div>
           ) : (
             <div className="space-y-4">
@@ -339,33 +353,55 @@ export default function Analytics() {
                 </div>
               </div>
 
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">🔥 Hottest Leads</p>
-                <div className="space-y-2">
-                  {aiBreakdown.topLeads.map((lead) => {
-                    const cfg = QUAL_CONFIG[lead.aiQualification];
-                    return (
-                      <div key={lead._id} className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-muted/40 transition-colors">
+              {aiBreakdown.topLeads.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🔥 Hottest Leads</p>
+                    <button
+                      onClick={() => navigate('/leads')}
+                      className="flex items-center gap-1 text-xs font-semibold transition-colors"
+                      style={{ color: '#10B981' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#065F46'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#10B981'; }}
+                    >
+                      View All <ExternalLink className="h-2.5 w-2.5" />
+                    </button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {aiBreakdown.topLeads.map((lead) => {
+                      const cfg = QUAL_CONFIG[lead.aiQualification];
+                      return (
                         <div
-                          className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
-                          style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                          key={lead._id}
+                          className="flex items-center gap-3 rounded-xl p-2.5 cursor-pointer transition-colors"
+                          style={{ background: 'transparent' }}
+                          onClick={() => navigate(`/leads/${lead._id}`)}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#F9FAFB'; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
                         >
-                          {lead.companyName.slice(0, 2).toUpperCase()}
+                          <div
+                            className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
+                            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                          >
+                            {lead.companyName.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold truncate" style={{ color: '#111827' }}>{lead.companyName}</p>
+                            {lead.aiRecommendedService && (
+                              <p className="text-xs truncate" style={{ color: '#9CA3AF' }}>{lead.aiRecommendedService}</p>
+                            )}
+                          </div>
+                          {cfg && (
+                            <span className={cn('inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0', cfg.bg, cfg.text)}>
+                              {cfg.emoji} {lead.aiScore}/10
+                            </span>
+                          )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground truncate">{lead.companyName}</p>
-                          <p className="text-xs text-muted-foreground truncate">{lead.aiRecommendedService}</p>
-                        </div>
-                        {cfg && (
-                          <span className={cn('inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full', cfg.bg, cfg.text)}>
-                            {cfg.emoji} {lead.aiScore}/10
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </ChartCard>

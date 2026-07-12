@@ -193,6 +193,22 @@ export default function Sequences() {
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Delay (days)</Label>
                     <Input type="number" min={0} className="h-8 rounded-lg border-border/60 text-sm" value={step.delayDays} onChange={(e) => updateStep(idx, 'delayDays', Number(e.target.value))} />
+                    <div className="flex flex-wrap gap-1 pt-0.5">
+                      {[0, 1, 3, 7, 14, 30].map((d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => updateStep(idx, 'delayDays', d)}
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md transition-all"
+                          style={step.delayDays === d
+                            ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }
+                            : { background: '#F3F4F6', color: '#6B7280', border: '1px solid #E5E7EB' }
+                          }
+                        >
+                          {d === 0 ? 'Now' : `${d}d`}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="col-span-2 space-y-1">
                     <Label className="text-xs text-muted-foreground">Subject *</Label>

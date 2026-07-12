@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FileText, Trash2, Eye, Sparkles, Calendar, Building2, Share2, Copy, X } from 'lucide-react';
+import { FileText, Trash2, Eye, Sparkles, Calendar, Building2, Share2, Copy, X, Pencil, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -84,6 +84,11 @@ export default function Proposals() {
   const [shareUrl, setShareUrl] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
+  const [editProposal, setEditProposal] = useState<Proposal | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
 
   const fetchProposals = useCallback(() => {
     setLoading(true);
@@ -147,6 +152,19 @@ export default function Proposals() {
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
     });
+  };
+
+  const handleEdit = async () => {
+    if (!editProposal) return;
+    setEditLoading(true); setEditError('');
+    try {
+      await api.patch(`/proposals/${editProposal._id}`, { title: editTitle, content: editContent });
+      setEditProposal(null);
+      fetchProposals();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      setEditError(err?.response?.data?.message || 'Update failed.');
+    } finally { setEditLoading(false); }
   };
 
   const handleDelete = async () => {
@@ -261,6 +279,16 @@ export default function Proposals() {
                       {new Date(proposal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                     <div className="flex gap-2">
+                      {proposal.status === 'draft' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 rounded-lg text-xs border-border/60 gap-1.5"
+                          onClick={() => { setEditProposal(proposal); setEditTitle(proposal.title || ''); setEditContent(proposal.content); setEditError(''); }}
+                        >
+                          <Pencil className="h-3.5 w-3.5" /> Edit
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -456,6 +484,10 @@ export default function Proposals() {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">Anyone with this link can view and respond to the proposal.</p>
+                <p className="text-xs text-muted-foreground/60 flex items-center gap-1.5 mt-1">
+                  <Clock className="h-3 w-3" />
+                  Generated just now · Revoke to invalidate
+                </p>
               </div>
             )}
           </div>
@@ -485,6 +517,58 @@ export default function Proposals() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setDeleteId(null)}>Cancel</Button>
             <Button className="rounded-xl text-sm font-semibold bg-rose-500 hover:bg-rose-600 text-white" onClick={handleDelete} disabled={deleteLoading}>
               {deleteLoading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Draft Dialog */}
+      <Dialog open={!!editProposal} onOpenChange={(open) => { if (!open) setEditProposal(null); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+                <Pencil className="h-3.5 w-3.5 text-gray-900" />
+              </span>
+              Edit Draft Proposal
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-1">
+            {editError && (
+              <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{editError}</div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Title</Label>
+              <Input
+                className="h-9 rounded-xl border-border/60 text-sm"
+                placeholder="Proposal title..."
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Content</Label>
+              <Textarea
+                className="rounded-xl border-border/60 text-sm resize-none"
+                rows={14}
+                placeholder="Proposal content..."
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setEditProposal(null)}>Cancel</Button>
+            <Button
+              className="rounded-xl text-sm font-bold text-gray-900 gap-2"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              onClick={handleEdit}
+              disabled={editLoading || !editContent.trim()}
+            >
+              {editLoading
+                ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Saving...</>
+                : 'Save Changes'
+              }
             </Button>
           </DialogFooter>
         </DialogContent>
