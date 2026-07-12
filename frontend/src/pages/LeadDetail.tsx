@@ -402,7 +402,7 @@ export default function LeadDetail() {
   const score = lead.aiScore ?? null;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="page-content space-y-6 p-6">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -412,14 +412,14 @@ export default function LeadDetail() {
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Leads
         </Button>
-        <span className="text-muted-foreground/40 text-xs">·</span>
+        <span className="text-muted-foreground/40 text-xs">/</span>
         <span className="text-sm font-semibold text-foreground">{lead.companyName}</span>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
 
         {/* Left: Lead Info */}
-        <div className="space-y-4">
+        <div className="space-y-4 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <Card className="border border-border/60 shadow-card overflow-hidden">
             <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
             <CardHeader className="pb-3">

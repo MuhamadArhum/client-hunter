@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Trash2, Download, AtSign, Users, ExternalLink, Upload, FileDown, Tag, Eye, Mail } from 'lucide-react';
+import { Plus, Search, Trash2, Download, AtSign, Users, ExternalLink, Upload, FileDown, Tag, Eye, Mail, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,21 +45,21 @@ interface Pagination {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; border: string }> = {
-  new:           { bg: 'rgba(33,246,168,0.1)',  text: '#21F6A8', dot: '#21F6A8', border: 'rgba(33,246,168,0.2)' },
-  contacted:     { bg: 'rgba(245,158,11,0.1)',  text: '#FCD34D', dot: '#F59E0B', border: 'rgba(245,158,11,0.2)' },
-  proposal_sent: { bg: 'rgba(139,92,246,0.1)',  text: '#C4B5FD', dot: '#8B5CF6', border: 'rgba(139,92,246,0.2)' },
-  follow_up:     { bg: 'rgba(99,102,241,0.1)',  text: '#A5B4FC', dot: '#6366F1', border: 'rgba(99,102,241,0.2)' },
-  converted:     { bg: 'rgba(16,185,129,0.1)',  text: '#6EE7B7', dot: '#10B981', border: 'rgba(16,185,129,0.2)' },
-  lost:          { bg: 'rgba(244,63,94,0.1)',   text: '#FCA5A5', dot: '#F43F5E', border: 'rgba(244,63,94,0.2)' },
+  new:           { bg: '#ECFDF5', text: '#065F46', dot: '#10B981', border: '#A7F3D0' },
+  contacted:     { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B', border: '#FDE68A' },
+  proposal_sent: { bg: '#F5F3FF', text: '#4C1D95', dot: '#8B5CF6', border: '#DDD6FE' },
+  follow_up:     { bg: '#EEF2FF', text: '#3730A3', dot: '#6366F1', border: '#C7D2FE' },
+  converted:     { bg: '#D1FAE5', text: '#064E3B', dot: '#21F6A8', border: '#6EE7B7' },
+  lost:          { bg: '#FEF2F2', text: '#991B1B', dot: '#EF4444', border: '#FECACA' },
 };
 
 const SOURCE_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  manual:     { bg: 'rgba(148,163,184,0.08)', color: '#94A3B8',  border: 'rgba(148,163,184,0.15)' },
-  upwork:     { bg: 'rgba(33,246,168,0.08)',  color: '#0D9C6A',  border: 'rgba(33,246,168,0.15)' },
-  freelancer: { bg: 'rgba(59,130,246,0.08)',  color: '#93C5FD',  border: 'rgba(59,130,246,0.15)' },
-  crunchbase: { bg: 'rgba(249,115,22,0.08)',  color: '#FDBA74',  border: 'rgba(249,115,22,0.15)' },
-  clutch:     { bg: 'rgba(244,63,94,0.08)',   color: '#FCA5A5',  border: 'rgba(244,63,94,0.15)' },
-  linkedin:   { bg: 'rgba(14,165,233,0.08)',  color: '#7DD3FC',  border: 'rgba(14,165,233,0.15)' },
+  manual:     { bg: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
+  upwork:     { bg: '#F0FDF9', color: '#065F46', border: '#A7F3D0' },
+  freelancer: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' },
+  crunchbase: { bg: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
+  clutch:     { bg: '#FFF1F2', color: '#BE123C', border: '#FECDD3' },
+  linkedin:   { bg: '#F0F9FF', color: '#0369A1', border: '#BAE6FD' },
 };
 
 const SOURCES = ['manual', 'upwork', 'freelancer', 'crunchbase', 'clutch', 'linkedin'];
@@ -84,24 +84,25 @@ function AiScoreBadge({ score, qualification }: { score: number; qualification?:
   const isWarm = qualification === 'warm' || (score >= 5 && score < 8);
 
   const style = isHot
-    ? { bg: 'rgba(239,68,68,0.1)',   color: '#FCA5A5', border: 'rgba(239,68,68,0.2)' }
+    ? { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' }
     : isWarm
-    ? { bg: 'rgba(245,158,11,0.1)',  color: '#FCD34D', border: 'rgba(245,158,11,0.2)' }
-    : { bg: 'rgba(99,102,241,0.1)',  color: '#A5B4FC', border: 'rgba(99,102,241,0.2)' };
+    ? { bg: '#FFFBEB', color: '#92400E', border: '#FDE68A' }
+    : { bg: '#EEF2FF', color: '#3730A3', border: '#C7D2FE' };
 
   const emoji = isHot ? '🔥' : isWarm ? '⚡' : '❄️';
+  const label = isHot ? 'Hot' : isWarm ? 'Warm' : 'Cold';
 
   return (
     <span
       className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg"
       style={{ background: style.bg, color: style.color, border: `1px solid ${style.border}` }}
     >
-      {emoji} {score}/10
+      {emoji} {score}/10 <span className="font-medium">{label}</span>
     </span>
   );
 }
 
-function DarkInput({ placeholder, value, onChange, type = 'text', className = '' }: {
+function LightInput({ placeholder, value, onChange, type = 'text', className = '' }: {
   placeholder: string; value: string; onChange: (v: string) => void; type?: string; className?: string;
 }) {
   return (
@@ -112,19 +113,30 @@ function DarkInput({ placeholder, value, onChange, type = 'text', className = ''
       onChange={(e) => onChange(e.target.value)}
       className={`w-full h-9 px-3 text-sm rounded-xl outline-none transition-all ${className}`}
       style={{
-        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-        color: '#E2E8F0',
+        background: '#FFFFFF',
+        border: '1px solid #E5E7EB',
+        color: '#111827',
       }}
       onFocus={(e) => {
-        e.target.style.borderColor = 'rgba(33,246,168,0.35)';
-        e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.08)';
+        e.target.style.borderColor = '#21F6A8';
+        e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.12)';
       }}
       onBlur={(e) => {
-        e.target.style.borderColor = 'rgba(255,255,255,0.08)';
+        e.target.style.borderColor = '#E5E7EB';
         e.target.style.boxShadow = 'none';
       }}
     />
   );
+}
+
+type SortKey = 'companyName' | 'contactName' | 'status' | 'aiScore' | 'source';
+type SortDir = 'asc' | 'desc';
+
+function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey | null; sortDir: SortDir }) {
+  if (sortKey !== col) return <ChevronsUpDown className="h-3 w-3 ml-1 opacity-30" />;
+  return sortDir === 'asc'
+    ? <ChevronUp className="h-3 w-3 ml-1" style={{ color: '#21F6A8' }} />
+    : <ChevronDown className="h-3 w-3 ml-1" style={{ color: '#21F6A8' }} />;
 }
 
 export default function Leads() {
@@ -136,6 +148,9 @@ export default function Leads() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [page, setPage] = useState(1);
+
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
 
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState({ ...emptyForm });
@@ -182,6 +197,31 @@ export default function Leads() {
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
   useEffect(() => { setSelectedIds(new Set()); }, [leads]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const sortedLeads = [...leads].sort((a, b) => {
+    if (!sortKey) return 0;
+    let av: string | number = '';
+    let bv: string | number = '';
+    if (sortKey === 'aiScore') {
+      av = a.aiScore ?? -1;
+      bv = b.aiScore ?? -1;
+      return sortDir === 'asc' ? (av as number) - (bv as number) : (bv as number) - (av as number);
+    }
+    av = (a[sortKey] ?? '') as string;
+    bv = (b[sortKey] ?? '') as string;
+    return sortDir === 'asc'
+      ? av.localeCompare(bv)
+      : bv.localeCompare(av);
+  });
 
   const handleAdd = async () => {
     if (!addForm.companyName.trim()) { setAddError('Company name is required.'); return; }
@@ -318,44 +358,48 @@ export default function Leads() {
   const hotLeads = leads.filter((l) => l.aiQualification === 'hot' || (l.aiScore ?? 0) >= 8).length;
   const convertedLeads = leads.filter((l) => l.status === 'converted').length;
 
-  const outlineBtn = {
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: 'rgba(148,163,184,0.8)',
-    borderRadius: 10,
-  };
+  const SORTABLE_COLS: { key: SortKey; label: string }[] = [
+    { key: 'companyName', label: 'Company' },
+    { key: 'contactName', label: 'Contact' },
+    { key: 'status',      label: 'Status' },
+    { key: 'aiScore',     label: 'AI Score' },
+    { key: 'source',      label: 'Source' },
+  ];
 
   return (
-    <div className="space-y-5 p-5">
+    <div className="page-content space-y-5 p-5">
 
       {/* ── Hero Header ── */}
       <div
         className="relative overflow-hidden rounded-2xl px-6 py-5"
-        style={{ background: 'linear-gradient(145deg, #111613 0%, #0e1610 100%)', border: '1px solid rgba(33,246,168,0.12)' }}
+        style={{
+          background: 'linear-gradient(135deg, rgba(33,246,168,0.06) 0%, rgba(16,185,129,0.03) 50%, #FFFFFF 100%)',
+          border: '1px solid #E5E7EB',
+        }}
       >
-        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+        <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
           style={{ background: 'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)' }} />
         <div className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: 'radial-gradient(rgba(33,246,168,0.05) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          style={{ backgroundImage: 'radial-gradient(rgba(33,246,168,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Users className="h-3.5 w-3.5" style={{ color: '#21F6A8' }} />
+              <Users className="h-3.5 w-3.5" style={{ color: '#10B981' }} />
               <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Pipeline</span>
             </div>
-            <h1 className="text-2xl font-extrabold mb-1" style={{ color: '#E2E8F0' }}>Leads</h1>
-            <p className="text-sm font-medium" style={{ color: 'rgba(148,163,184,0.55)' }}>
+            <h1 className="text-2xl font-extrabold mb-1" style={{ color: '#111827' }}>Leads</h1>
+            <p className="text-sm font-medium" style={{ color: '#6B7280' }}>
               {pagination.total} total leads
-              {hotLeads > 0 && <> · <span style={{ color: '#FCA5A5', fontWeight: 700 }}>{hotLeads} 🔥 hot</span></>}
-              {convertedLeads > 0 && <> · <span style={{ color: '#21F6A8', fontWeight: 700 }}>{convertedLeads} converted</span></>}
+              {hotLeads > 0 && <> · <span style={{ color: '#DC2626', fontWeight: 700 }}>{hotLeads} 🔥 hot</span></>}
+              {convertedLeads > 0 && <> · <span style={{ color: '#065F46', fontWeight: 700 }}>{convertedLeads} converted</span></>}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2 items-center">
             {bulkEnrichMsg && (
               <span className="text-xs font-semibold px-3 py-1.5 rounded-xl self-center"
-                style={{ background: 'rgba(33,246,168,0.08)', color: '#0D9C6A', border: '1px solid rgba(33,246,168,0.15)' }}>
+                style={{ background: '#F0FDF9', color: '#065F46', border: '1px solid #A7F3D0' }}>
                 {bulkEnrichMsg}
               </span>
             )}
@@ -369,10 +413,10 @@ export default function Leads() {
                 key={label}
                 onClick={onClick}
                 disabled={disabled}
-                className="flex items-center gap-2 text-sm font-medium px-3 h-9 rounded-xl transition-all"
-                style={outlineBtn}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#E2E8F0'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                className="flex items-center gap-2 text-sm font-medium px-3 h-9 rounded-xl transition-all disabled:opacity-50"
+                style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#D1D5DB'; (e.currentTarget as HTMLButtonElement).style.color = '#111827'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E5E7EB'; (e.currentTarget as HTMLButtonElement).style.color = '#4B5563'; }}
               >
                 <Icon className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{label}</span>
@@ -393,23 +437,23 @@ export default function Leads() {
       {someSelected && (
         <div
           className="flex items-center justify-between rounded-xl px-4 py-2.5 gap-3"
-          style={{ background: 'rgba(33,246,168,0.05)', border: '1px solid rgba(33,246,168,0.2)' }}
+          style={{ background: '#F0FDF9', border: '1px solid rgba(33,246,168,0.3)' }}
         >
-          <span className="text-sm font-bold" style={{ color: '#21F6A8' }}>
+          <span className="text-sm font-bold" style={{ color: '#065F46' }}>
             {selectedIds.size} lead{selectedIds.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportSelected}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
-              style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.15)', color: '#0D9C6A' }}
+              style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46' }}
             >
               <FileDown className="h-3.5 w-3.5" /> Export Selected
             </button>
             <button
               onClick={() => setBulkDeleteOpen(true)}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
-              style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', color: '#FCA5A5' }}
+              style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B' }}
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete Selected
             </button>
@@ -417,99 +461,122 @@ export default function Leads() {
         </div>
       )}
 
-      {/* ── Search & Filters ── */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(148,163,184,0.35)' }} />
-          <input
-            placeholder="Search by company, contact or email..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full h-11 pl-10 pr-4 text-sm rounded-xl outline-none transition-all"
-            style={{
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#E2E8F0',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = 'rgba(33,246,168,0.35)'; e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.08)'; }}
-            onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none'; }}
-          />
+      {/* ── Search + Status Chips + Source Filter ── */}
+      <div className="space-y-3">
+        {/* Search bar + source select */}
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" style={{ color: '#9CA3AF' }} />
+            <input
+              placeholder="Search by company, contact or email..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="w-full h-11 pl-10 pr-4 text-sm rounded-xl outline-none transition-all"
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#111827' }}
+              onFocus={(e) => { e.target.style.borderColor = '#21F6A8'; e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.12)'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+          <Select value={sourceFilter} onValueChange={(v) => { setSourceFilter(v); setPage(1); }}>
+            <SelectTrigger className="w-full sm:w-36 h-11 rounded-xl text-sm border-[#E5E7EB] bg-white text-[#111827]">
+              <SelectValue placeholder="All Sources" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">All Sources</SelectItem>
+              {SOURCES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-full sm:w-40 h-11 rounded-xl text-sm" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#E2E8F0' }}>
-            <SelectValue placeholder="All Statuses" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">All Statuses</SelectItem>
-            {STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s.replace(/_/g, ' ')}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={sourceFilter} onValueChange={(v) => { setSourceFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-full sm:w-36 h-11 rounded-xl text-sm" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#E2E8F0' }}>
-            <SelectValue placeholder="All Sources" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">All Sources</SelectItem>
-            {SOURCES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
-          </SelectContent>
-        </Select>
+
+        {/* Status filter chips */}
+        <div className="flex flex-wrap gap-2">
+          {['all', ...STATUSES].map((s) => {
+            const isActive = statusFilter === s;
+            const sStyle = s !== 'all' ? STATUS_STYLES[s] : null;
+            return (
+              <button
+                key={s}
+                onClick={() => { setStatusFilter(s); setPage(1); }}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 h-7 rounded-full transition-all"
+                style={isActive
+                  ? sStyle
+                    ? { background: sStyle.bg, color: sStyle.text, border: `1.5px solid ${sStyle.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
+                    : { background: '#111827', color: '#FFFFFF', border: '1.5px solid #111827' }
+                  : { background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }
+                }
+              >
+                {isActive && sStyle && <span className="h-1.5 w-1.5 rounded-full" style={{ background: sStyle.dot }} />}
+                {s === 'all' ? 'All Statuses' : s.replace(/_/g, ' ')}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── Leads Table ── */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(33,246,168,0.08)', background: 'rgba(33,246,168,0.02)' }}>
+              <tr style={{ borderBottom: '1px solid #F3F4F6', background: '#F9FAFB' }}>
                 <th className="px-4 py-3 w-10">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded cursor-pointer accent-emerald-400"
+                    className="h-4 w-4 rounded cursor-pointer accent-emerald-500"
                     checked={allSelected}
                     onChange={toggleAll}
                   />
                 </th>
-                {['Company', 'Contact', 'Email', 'Phone', 'Status', 'AI Score', 'Source', ''].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
-                    style={{ color: 'rgba(148,163,184,0.4)' }}>
-                    {h}
+                {SORTABLE_COLS.map(({ key, label }) => (
+                  <th
+                    key={key}
+                    className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap cursor-pointer select-none"
+                    style={{ color: '#9CA3AF' }}
+                    onClick={() => handleSort(key)}
+                  >
+                    <span className="inline-flex items-center">
+                      {label}
+                      <SortIcon col={key} sortKey={sortKey} sortDir={sortDir} />
+                    </span>
                   </th>
                 ))}
+                <th className="px-4 py-3 w-24" />
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 [...Array(6)].map((_, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <tr key={i} style={{ borderBottom: '1px solid #F3F4F6' }}>
                     <td className="px-4 py-3.5">
-                      <div className="h-4 w-4 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                      <div className="h-4 w-4 rounded animate-pulse" style={{ background: '#F3F4F6' }} />
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl shrink-0 animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                        <div className="h-9 w-9 rounded-xl shrink-0 animate-pulse" style={{ background: '#F3F4F6' }} />
                         <div className="space-y-2">
-                          <div className="h-3.5 w-28 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
-                          <div className="h-3 w-20 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
+                          <div className="h-3.5 w-28 rounded animate-pulse" style={{ background: '#F3F4F6' }} />
+                          <div className="h-3 w-20 rounded animate-pulse" style={{ background: '#F9FAFB' }} />
                         </div>
                       </div>
                     </td>
-                    {[24, 28, 20, 20, 16, 16].map((w, j) => (
+                    {[24, 20, 20, 16, 16].map((w, j) => (
                       <td key={j} className="px-4 py-3.5">
-                        <div className={`h-4 w-${w} rounded animate-pulse`} style={{ background: 'rgba(255,255,255,0.06)' }} />
+                        <div className={`h-4 w-${w} rounded animate-pulse`} style={{ background: '#F3F4F6' }} />
                       </td>
                     ))}
                     <td className="px-4 py-3.5" />
                   </tr>
                 ))
-              ) : leads.length === 0 ? (
+              ) : sortedLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-16">
+                  <td colSpan={7} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
-                        <Users className="h-6 w-6" style={{ color: 'rgba(148,163,184,0.35)' }} />
+                      <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: '#F0FDF9' }}>
+                        <Users className="h-6 w-6" style={{ color: '#9CA3AF' }} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: '#E2E8F0' }}>No leads found</p>
-                        <p className="text-xs mt-1" style={{ color: 'rgba(148,163,184,0.45)' }}>Try adjusting filters or add a new lead</p>
+                        <p className="text-sm font-semibold" style={{ color: '#111827' }}>No leads found</p>
+                        <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>Try adjusting filters or add a new lead</p>
                       </div>
                       <button
                         className="mt-1 flex items-center gap-1.5 text-xs font-bold px-4 h-8 rounded-xl"
@@ -522,32 +589,37 @@ export default function Leads() {
                   </td>
                 </tr>
               ) : (
-                leads.map((lead, idx) => {
+                sortedLeads.map((lead, idx) => {
                   const statusStyle = STATUS_STYLES[lead.status] || STATUS_STYLES.new;
                   const sourceStyle = SOURCE_STYLES[lead.source] || SOURCE_STYLES.manual;
-                  const isLast = idx === leads.length - 1;
+                  const isLast = idx === sortedLeads.length - 1;
                   const isSelected = selectedIds.has(lead._id);
                   return (
                     <tr
                       key={lead._id}
+                      role="button"
+                      tabIndex={0}
                       className="group cursor-pointer transition-colors duration-100"
                       style={{
-                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                        borderBottom: isLast ? 'none' : '1px solid #F3F4F6',
                         background: isSelected ? 'rgba(33,246,168,0.04)' : 'transparent',
                       }}
                       onMouseEnter={(e) => {
-                        if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(33,246,168,0.025)';
+                        if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = '#F9FAFB';
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = 'transparent';
                       }}
                       onClick={() => navigate(`/leads/${lead._id}`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/leads/${lead._id}`); }
+                      }}
                     >
                       {/* Checkbox */}
                       <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded cursor-pointer accent-emerald-400"
+                          className="h-4 w-4 rounded cursor-pointer accent-emerald-500"
                           checked={isSelected}
                           onChange={() => toggleOne(lead._id)}
                         />
@@ -563,14 +635,12 @@ export default function Leads() {
                             {getInitials(lead.companyName)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-semibold text-sm truncate transition-colors duration-100"
-                              style={{ color: '#E2E8F0' }}
-                              onMouseEnter={(e) => { (e.currentTarget as HTMLParagraphElement).style.color = '#21F6A8'; }}
-                              onMouseLeave={(e) => { (e.currentTarget as HTMLParagraphElement).style.color = '#E2E8F0'; }}>
+                            <p className="font-semibold text-sm truncate group-hover:text-[#10B981] transition-colors duration-100"
+                              style={{ color: '#111827' }}>
                               {lead.companyName}
                             </p>
                             {lead.industry && (
-                              <p className="text-xs truncate" style={{ color: 'rgba(148,163,184,0.45)' }}>{lead.industry}</p>
+                              <p className="text-xs truncate" style={{ color: '#9CA3AF' }}>{lead.industry}</p>
                             )}
                             {lead.website && (
                               <a
@@ -579,9 +649,9 @@ export default function Leads() {
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
                                 className="flex items-center gap-0.5 truncate max-w-[140px] text-xs transition-colors"
-                                style={{ color: 'rgba(33,246,168,0.5)' }}
-                                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#21F6A8'; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(33,246,168,0.5)'; }}
+                                style={{ color: '#10B981' }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#10B981'; }}
                               >
                                 <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                                 {lead.website.replace(/^https?:\/\//, '')}
@@ -593,7 +663,7 @@ export default function Leads() {
                                   <span
                                     key={tag}
                                     className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
-                                    style={{ background: 'rgba(33,246,168,0.08)', color: '#0D9C6A', border: '1px solid rgba(33,246,168,0.12)' }}
+                                    style={{ background: '#F0FDF9', color: '#065F46', border: '1px solid #A7F3D0' }}
                                   >
                                     <Tag className="h-2.5 w-2.5" />{tag}
                                   </span>
@@ -604,51 +674,32 @@ export default function Leads() {
                         </div>
                       </td>
 
-                      {/* Contact */}
+                      {/* Contact (with email below name) */}
                       <td className="px-4 py-3.5">
-                        <p className="text-sm font-medium whitespace-nowrap" style={{ color: '#CBD5E1' }}>{lead.contactName || '—'}</p>
-                      </td>
-
-                      {/* Email */}
-                      <td className="px-4 py-3.5">
+                        <p className="text-sm font-medium whitespace-nowrap" style={{ color: '#374151' }}>
+                          {lead.contactName || '—'}
+                        </p>
                         {lead.email ? (
                           <a
                             href={`mailto:${lead.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="text-xs truncate max-w-[160px] block transition-colors"
-                            style={{ color: '#0D9C6A' }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#21F6A8'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#0D9C6A'; }}
+                            className="flex items-center gap-1 text-xs truncate max-w-[160px] mt-0.5 transition-colors"
+                            style={{ color: '#10B981' }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#10B981'; }}
                           >
+                            <Mail className="h-2.5 w-2.5 shrink-0" />
                             {lead.email}
                           </a>
                         ) : (
-                          <span className="text-xs" style={{ color: 'rgba(148,163,184,0.25)' }}>—</span>
-                        )}
-                      </td>
-
-                      {/* Phone */}
-                      <td className="px-4 py-3.5">
-                        {lead.phone ? (
-                          <a
-                            href={`tel:${lead.phone}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-xs whitespace-nowrap transition-colors"
-                            style={{ color: '#0D9C6A' }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#21F6A8'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#0D9C6A'; }}
-                          >
-                            {lead.phone}
-                          </a>
-                        ) : (
-                          <span className="text-xs" style={{ color: 'rgba(148,163,184,0.25)' }}>—</span>
+                          <span className="text-xs mt-0.5 block" style={{ color: '#D1D5DB' }}>No email</span>
                         )}
                       </td>
 
                       {/* Status */}
                       <td className="px-4 py-3.5">
                         <span
-                          className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap capitalize"
                           style={{ background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}` }}
                         >
                           <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusStyle.dot }} />
@@ -661,7 +712,7 @@ export default function Leads() {
                         {lead.aiScore != null ? (
                           <AiScoreBadge score={lead.aiScore} qualification={lead.aiQualification} />
                         ) : (
-                          <span className="text-xs" style={{ color: 'rgba(148,163,184,0.25)' }}>—</span>
+                          <span className="text-xs" style={{ color: '#D1D5DB' }}>—</span>
                         )}
                       </td>
 
@@ -681,30 +732,30 @@ export default function Leads() {
                           <button
                             title="Send Email"
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
-                            style={{ color: 'rgba(148,163,184,0.4)' }}
+                            style={{ color: '#9CA3AF' }}
                             onClick={() => navigate(`/leads/${lead._id}`)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#21F6A8'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(33,246,168,0.08)'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#10B981'; (e.currentTarget as HTMLButtonElement).style.background = '#F0FDF9'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Mail className="h-3.5 w-3.5" />
                           </button>
                           <button
                             title="View Detail"
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
-                            style={{ color: 'rgba(148,163,184,0.4)' }}
+                            style={{ color: '#9CA3AF' }}
                             onClick={() => navigate(`/leads/${lead._id}`)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#E2E8F0'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#374151'; (e.currentTarget as HTMLButtonElement).style.background = '#F9FAFB'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
                           <button
                             title="Delete"
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
-                            style={{ color: 'rgba(148,163,184,0.4)' }}
+                            style={{ color: '#9CA3AF' }}
                             onClick={() => setDeleteId(lead._id)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#FCA5A5'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(244,63,94,0.08)'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#DC2626'; (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -722,23 +773,18 @@ export default function Leads() {
       {/* ── Pagination ── */}
       {pagination.pages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-xs" style={{ color: 'rgba(148,163,184,0.45)' }}>
+          <p className="text-xs" style={{ color: '#9CA3AF' }}>
             Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total}
           </p>
           <div className="flex items-center gap-1.5">
-            {[
-              { label: 'Prev', action: () => setPage((p) => p - 1), disabled: page <= 1 },
-            ].map(({ label, action, disabled }) => (
-              <button
-                key={label}
-                onClick={action}
-                disabled={disabled}
-                className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(148,163,184,0.7)' }}
-              >
-                {label}
-              </button>
-            ))}
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page <= 1}
+              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+            >
+              Prev
+            </button>
             {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
@@ -746,7 +792,7 @@ export default function Leads() {
                 className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
                 style={page === p
                   ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', border: 'none' }
-                  : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(148,163,184,0.7)' }
+                  : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
                 }
               >
                 {p}
@@ -756,7 +802,7 @@ export default function Leads() {
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= pagination.pages}
               className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(148,163,184,0.7)' }}
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
             >
               Next
             </button>
@@ -781,26 +827,26 @@ export default function Leads() {
             )}
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Company Name *</Label>
-              <DarkInput placeholder="Acme Corp" value={addForm.companyName} onChange={(v) => setAddForm((f) => ({ ...f, companyName: v }))} />
+              <LightInput placeholder="Acme Corp" value={addForm.companyName} onChange={(v) => setAddForm((f) => ({ ...f, companyName: v }))} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Contact Name</Label>
-                <DarkInput placeholder="John Smith" value={addForm.contactName} onChange={(v) => setAddForm((f) => ({ ...f, contactName: v }))} />
+                <LightInput placeholder="John Smith" value={addForm.contactName} onChange={(v) => setAddForm((f) => ({ ...f, contactName: v }))} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Email</Label>
-                <DarkInput type="email" placeholder="john@acme.com" value={addForm.email} onChange={(v) => setAddForm((f) => ({ ...f, email: v }))} />
+                <LightInput type="email" placeholder="john@acme.com" value={addForm.email} onChange={(v) => setAddForm((f) => ({ ...f, email: v }))} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Phone</Label>
-                <DarkInput placeholder="+1 234 567 890" value={addForm.phone} onChange={(v) => setAddForm((f) => ({ ...f, phone: v }))} />
+                <LightInput placeholder="+1 234 567 890" value={addForm.phone} onChange={(v) => setAddForm((f) => ({ ...f, phone: v }))} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Website</Label>
-                <DarkInput placeholder="https://acme.com" value={addForm.website} onChange={(v) => setAddForm((f) => ({ ...f, website: v }))} />
+                <LightInput placeholder="https://acme.com" value={addForm.website} onChange={(v) => setAddForm((f) => ({ ...f, website: v }))} />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -815,11 +861,11 @@ export default function Leads() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Industry</Label>
-                <DarkInput placeholder="SaaS, E-commerce..." value={addForm.industry} onChange={(v) => setAddForm((f) => ({ ...f, industry: v }))} />
+                <LightInput placeholder="SaaS, E-commerce..." value={addForm.industry} onChange={(v) => setAddForm((f) => ({ ...f, industry: v }))} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Budget</Label>
-                <DarkInput placeholder="$5k–$10k" value={addForm.budget} onChange={(v) => setAddForm((f) => ({ ...f, budget: v }))} />
+                <LightInput placeholder="$5k–$10k" value={addForm.budget} onChange={(v) => setAddForm((f) => ({ ...f, budget: v }))} />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -879,7 +925,7 @@ export default function Leads() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Search Query</Label>
-              <DarkInput
+              <LightInput
                 placeholder="e.g. React developer New York"
                 value={importQuery}
                 onChange={setImportQuery}
@@ -922,7 +968,7 @@ export default function Leads() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">CSV File</Label>
-                <button className="text-xs font-semibold underline" style={{ color: '#0D9C6A' }} onClick={handleDownloadTemplate}>
+                <button className="text-xs font-semibold underline" style={{ color: '#10B981' }} onClick={handleDownloadTemplate}>
                   Download Template
                 </button>
               </div>
@@ -946,8 +992,8 @@ export default function Leads() {
               </div>
             </div>
             {csvFile && csvRowCount > 0 && (
-              <div className="rounded-xl p-3" style={{ background: 'rgba(33,246,168,0.06)', border: '1px solid rgba(33,246,168,0.15)' }}>
-                <p className="text-xs font-semibold" style={{ color: '#0D9C6A' }}>
+              <div className="rounded-xl p-3" style={{ background: '#F0FDF9', border: '1px solid #A7F3D0' }}>
+                <p className="text-xs font-semibold" style={{ color: '#065F46' }}>
                   Ready to import <span className="font-black">{csvRowCount}</span> lead{csvRowCount !== 1 ? 's' : ''}
                 </p>
               </div>

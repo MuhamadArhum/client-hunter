@@ -292,3 +292,46 @@
 .btn-breathe-purple { animation: btn-glow-green 3s ease-in-out infinite; }
 .shadow-glow-teal   { box-shadow: 0 4px 20px rgba(33,246,168,0.35); }
 .shadow-blue        { box-shadow: 0 4px 16px rgba(33,246,168,0.30); }
+
+/* ── Global focus-visible states (Accessibility fix C3) ── */
+:focus-visible {
+  outline: 2px solid #21F6A8;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Native inputs/buttons: remove forced outline:none patterns */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Max-width content wrapper (Fix C6) ── */
+.page-content {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── Light card system ── */
+.card-light {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.card-light:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ── Table accessibility ── */
+tr[role="button"] {
+  cursor: pointer;
+}
+tr[role="button"]:focus-visible {
+  outline: 2px solid #21F6A8;
+  outline-offset: -2px;
+}
