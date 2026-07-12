@@ -170,8 +170,8 @@ export default function Login() {
                 {['MA', 'AH', 'SB', 'KR'].map((init) => (
                   <div
                     key={init}
-                    className="h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold text-gray-900 ring-2"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', ringColor: '#080e09' }}
+                    className="h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold text-gray-900"
+                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', outline: '2px solid #080e09', outlineOffset: '-1px' }}
                   >
                     {init}
                   </div>
