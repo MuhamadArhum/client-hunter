@@ -7,11 +7,7 @@ import {
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 
 interface StatusBreakdown { _id: string; count: number; }
 interface Lead { _id: string; companyName: string; contactName: string; email: string; status: string; source: string; }
@@ -21,13 +17,13 @@ interface DashboardData {
   statusBreakdown: StatusBreakdown[]; recentLeads: Lead[]; recentOutreach: OutreachItem[];
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  new:           { bg: 'bg-sky-50 dark:bg-sky-950/40',     text: 'text-sky-700 dark:text-sky-300',     dot: 'bg-sky-400' },
-  contacted:     { bg: 'bg-amber-50 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-400' },
-  proposal_sent: { bg: 'bg-violet-50 dark:bg-violet-950/40',text:'text-violet-700 dark:text-violet-300',dot:'bg-violet-400'},
-  follow_up:     { bg: 'bg-indigo-50 dark:bg-indigo-950/40',text:'text-indigo-700 dark:text-indigo-300',dot:'bg-indigo-400'},
-  converted:     { bg: 'bg-emerald-50 dark:bg-emerald-950/40',text:'text-emerald-700 dark:text-emerald-300',dot:'bg-emerald-400'},
-  lost:          { bg: 'bg-rose-50 dark:bg-rose-950/40',   text: 'text-rose-700 dark:text-rose-300',   dot: 'bg-rose-400' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; border: string }> = {
+  new:           { bg: 'rgba(33,246,168,0.1)',  text: '#21F6A8', dot: '#21F6A8', border: 'rgba(33,246,168,0.2)' },
+  contacted:     { bg: 'rgba(245,158,11,0.1)',  text: '#FCD34D', dot: '#F59E0B', border: 'rgba(245,158,11,0.2)' },
+  proposal_sent: { bg: 'rgba(139,92,246,0.1)',  text: '#C4B5FD', dot: '#8B5CF6', border: 'rgba(139,92,246,0.2)' },
+  follow_up:     { bg: 'rgba(99,102,241,0.1)',  text: '#A5B4FC', dot: '#6366F1', border: 'rgba(99,102,241,0.2)' },
+  converted:     { bg: 'rgba(16,185,129,0.1)',  text: '#6EE7B7', dot: '#10B981', border: 'rgba(16,185,129,0.2)' },
+  lost:          { bg: 'rgba(244,63,94,0.1)',   text: '#FCA5A5', dot: '#F43F5E', border: 'rgba(244,63,94,0.2)' },
 };
 
 const CHART_COLORS: Record<string, string> = {
@@ -38,70 +34,81 @@ const CHART_COLORS: Record<string, string> = {
 const STAT_CARDS = [
   {
     icon: Users, label: 'Total Leads', key: 'totalLeads' as const,
-    color: '#0D9C6A', bgColor: 'rgba(33,246,168,0.08)', borderColor: 'rgba(33,246,168,0.2)',
-    numClass: 'stat-number-green', trend: '+12%',
+    accent: '#21F6A8', bgColor: 'rgba(33,246,168,0.08)', borderColor: 'rgba(33,246,168,0.2)',
+    trend: '+12%', gradientText: true,
   },
   {
     icon: TrendingUp, label: 'Conversion Rate', key: 'conversionRate' as const, suffix: '%',
-    color: '#059669', bgColor: 'rgba(5,150,105,0.08)', borderColor: 'rgba(5,150,105,0.15)',
-    numClass: 'stat-number-emerald', trend: '+4%',
+    accent: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)',
+    trend: '+4%', gradientText: false,
   },
   {
     icon: FileText, label: 'Proposals Sent', key: 'sentProposals' as const,
-    color: '#7C3AED', bgColor: 'rgba(124,58,237,0.08)', borderColor: 'rgba(124,58,237,0.15)',
-    numClass: 'stat-number-violet', trend: '+8%',
+    accent: '#8B5CF6', bgColor: 'rgba(139,92,246,0.08)', borderColor: 'rgba(139,92,246,0.2)',
+    trend: '+8%', gradientText: false,
   },
   {
     icon: Mail, label: 'Emails Sent', key: 'totalEmails' as const,
-    color: '#4F46E5', bgColor: 'rgba(79,70,229,0.08)', borderColor: 'rgba(79,70,229,0.15)',
-    numClass: 'stat-number-indigo', trend: '+16%',
+    accent: '#6366F1', bgColor: 'rgba(99,102,241,0.08)', borderColor: 'rgba(99,102,241,0.2)',
+    trend: '+16%', gradientText: false,
   },
 ];
 
 function StatCard({ card, value }: { card: typeof STAT_CARDS[0]; value: string | number }) {
   return (
     <div
-      className="relative rounded-xl p-5 overflow-hidden cursor-default group transition-all duration-200 hover:-translate-y-0.5"
-      style={{
-        background: card.bgColor,
-        border: `1px solid ${card.borderColor}`,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
+      className="relative rounded-2xl p-5 overflow-hidden cursor-default transition-all duration-200 hover:-translate-y-1"
+      style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 20px ${card.bgColor.replace('0.08', '0.25')}, 0 8px 32px rgba(0,0,0,0.08)`;
+        (e.currentTarget as HTMLDivElement).style.borderColor = card.borderColor;
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 32px ${card.bgColor.replace('0.08', '0.22')}, 0 2px 8px rgba(0,0,0,0.3)`;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)';
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
       }}
     >
-      <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-xl" style={{ background: card.color }} />
+      <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl" style={{ background: card.accent }} />
 
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: card.color }}>
-          <card.icon className="h-4.5 w-4.5 text-white" />
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: card.bgColor }}>
+          <card.icon className="h-[18px] w-[18px]" style={{ color: card.accent }} />
         </div>
-        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-          {card.trend}
+        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(33,246,168,0.08)', color: '#0D9C6A' }}>
+          ↑ {card.trend}
         </span>
       </div>
 
-      <p className={cn('text-3xl font-black tracking-tight leading-none mb-1.5', card.numClass)}>
-        {value}
+      {card.gradientText ? (
+        <p
+          className="text-4xl font-black tracking-tight leading-none mb-2"
+          style={{ background: 'linear-gradient(135deg, #21F6A8 0%, #A7F3D0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+        >
+          {value}
+        </p>
+      ) : (
+        <p className="text-4xl font-black tracking-tight leading-none mb-2" style={{ color: '#E2E8F0' }}>
+          {value}
+        </p>
+      )}
+
+      <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(148,163,184,0.5)' }}>
+        {card.label}
       </p>
-      <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
     </div>
   );
 }
 
 function StatCardSkeleton() {
   return (
-    <div className="rounded-xl border border-border p-5">
-      <div className="flex items-start justify-between mb-3">
-        <Skeleton className="h-10 w-10 rounded-xl" />
-        <Skeleton className="h-5 w-12 rounded-full" />
+    <div className="relative rounded-2xl p-5 overflow-hidden" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl" style={{ background: 'rgba(33,246,168,0.15)' }} />
+      <div className="flex items-start justify-between mb-4">
+        <div className="h-10 w-10 rounded-xl animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
+        <div className="h-5 w-14 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
       </div>
-      <Skeleton className="h-8 w-20 mb-2" />
-      <Skeleton className="h-4 w-28" />
+      <div className="h-10 w-24 rounded-xl mb-2 animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
+      <div className="h-3 w-28 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
     </div>
   );
 }
@@ -109,14 +116,34 @@ function StatCardSkeleton() {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) => {
   if (active && payload?.length) {
     return (
-      <div className="rounded-xl border border-border bg-popover px-3 py-2 shadow-card-hover">
-        <p className="text-xs text-muted-foreground capitalize mb-0.5">{label?.replace(/_/g, ' ')}</p>
-        <p className="text-sm font-bold text-foreground">{payload[0].value} leads</p>
+      <div style={{
+        background: '#161c17', border: '1px solid rgba(33,246,168,0.2)',
+        borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.5)', padding: '10px 14px',
+      }}>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="h-2 w-2 rounded-full" style={{ background: '#21F6A8' }} />
+          <p className="text-[11px] capitalize" style={{ color: 'rgba(148,163,184,0.55)' }}>{label?.replace(/_/g, ' ')}</p>
+        </div>
+        <p className="text-sm font-bold" style={{ color: '#E2E8F0' }}>{payload[0].value} leads</p>
       </div>
     );
   }
   return null;
 };
+
+function GhostBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1 text-xs font-semibold px-3 h-7 rounded-lg transition-colors"
+      style={{ background: 'rgba(33,246,168,0.06)', border: '1px solid rgba(33,246,168,0.12)', color: '#0D9C6A' }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(33,246,168,0.1)'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(33,246,168,0.06)'; }}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -138,13 +165,17 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="space-y-5 p-5">
-        <Skeleton className="h-28 w-full rounded-xl" />
+        <div className="h-28 w-full rounded-2xl animate-pulse" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => <StatCardSkeleton key={i} />)}
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
-          <Card><CardContent className="p-5"><Skeleton className="h-60 w-full rounded-lg" /></CardContent></Card>
-          <Card><CardContent className="p-5"><Skeleton className="h-60 w-full rounded-lg" /></CardContent></Card>
+          {[0, 1].map((i) => (
+            <div key={i} className="rounded-2xl p-5 space-y-4" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div className="h-5 w-32 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <div className="h-52 rounded-xl animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -154,52 +185,63 @@ export default function Dashboard() {
     name: s._id, label: s._id.replace(/_/g, ' '), count: s.count,
   }));
 
+  const followUpCount = (data?.statusBreakdown || []).find((s) => s._id === 'follow_up')?.count || 0;
+  const newLeadsCount = (data?.statusBreakdown || []).find((s) => s._id === 'new')?.count || 0;
+  const convertedCount = (data?.statusBreakdown || []).find((s) => s._id === 'converted')?.count || 0;
+  const totalInPipeline = chartData.reduce((sum, d) => sum + d.count, 0);
+  const convRate = data?.conversionRate || 0;
+
   return (
     <div className="space-y-5 p-5">
 
-      {/* ── Hero banner ── */}
-      <div className="page-header">
+      {/* ── Hero Banner ── */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ background: 'linear-gradient(145deg, #111613 0%, #0e1610 100%)', border: '1px solid rgba(33,246,168,0.12)' }}
+      >
+        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)' }} />
+        <div className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: 'radial-gradient(rgba(33,246,168,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
         <div className="relative flex items-center justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: '#0D9C6A' }}>
-                <Sparkles className="h-3.5 w-3.5 text-white" />
+              <div className="flex h-5 w-5 items-center justify-center rounded-md"
+                style={{ background: 'rgba(33,246,168,0.1)', border: '1px solid rgba(33,246,168,0.2)' }}>
+                <Sparkles className="h-3 w-3" style={{ color: '#21F6A8' }} />
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#0D9C6A' }}>
+              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>
                 AI-Powered Pipeline
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-1">
-              {greeting} 👋
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Here's your client acquisition overview for today.
+            <h2 className="text-2xl font-extrabold mb-1" style={{ color: '#E2E8F0' }}>{greeting} 👋</h2>
+            <p className="text-sm" style={{ color: 'rgba(148,163,184,0.55)' }}>
+              Your client acquisition overview for today.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 rounded-lg text-sm font-medium gap-2"
+            <button
               onClick={() => navigate('/analytics')}
+              className="flex items-center gap-2 text-sm font-medium px-4 h-9 rounded-xl transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(148,163,184,0.8)' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)'; (e.currentTarget as HTMLButtonElement).style.color = '#E2E8F0'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.1)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.8)'; }}
             >
-              <BarChart3 className="h-3.5 w-3.5" />
-              Analytics
-            </Button>
-            <Button
-              size="sm"
-              className="h-9 rounded-lg text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              <BarChart3 className="h-3.5 w-3.5" /> Analytics
+            </button>
+            <button
               onClick={() => navigate('/leads')}
+              className="flex items-center gap-2 text-sm font-bold px-4 h-9 rounded-xl transition-all hover:brightness-105"
+              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', boxShadow: '0 4px 16px rgba(33,246,168,0.25)' }}
             >
-              <Plus className="h-3.5 w-3.5" />
-              Add Lead
-            </Button>
+              <Plus className="h-3.5 w-3.5" /> Add Lead
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ── Stat cards ── */}
+      {/* ── KPI Cards ── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {STAT_CARDS.map((card) => {
           const raw = data?.[card.key] ?? 0;
@@ -208,53 +250,45 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* ── Charts row ── */}
-      <div className="grid gap-5 lg:grid-cols-2">
+      {/* ── Charts Row ── */}
+      <div className="grid gap-5 lg:grid-cols-[58%_1fr]">
 
-        {/* Pipeline chart */}
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardHeader className="pb-2 pt-5 px-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-semibold text-foreground">Leads Pipeline</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">Distribution across all stages</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs rounded-lg gap-1 text-muted-foreground hover:text-foreground"
-                onClick={() => navigate('/analytics')}
-              >
-                View all <ArrowRight className="h-3 w-3" />
-              </Button>
+        {/* Pipeline Chart */}
+        <div className="rounded-2xl overflow-hidden" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#E2E8F0' }}>Leads Pipeline</p>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(148,163,184,0.45)' }}>
+                {totalInPipeline} total · {convertedCount} converted
+              </p>
             </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-2">
+            <GhostBtn onClick={() => navigate('/analytics')}>
+              View all <ArrowRight className="h-3 w-3" />
+            </GhostBtn>
+          </div>
+          <div className="px-5 pb-5">
             {chartData.length === 0 ? (
               <div className="h-52 flex flex-col items-center justify-center gap-3 text-center">
-                <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                  <BarChart3 className="h-4.5 w-4.5 text-muted-foreground/50" />
+                <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                  <BarChart3 className="h-[18px] w-[18px]" style={{ color: 'rgba(148,163,184,0.35)' }} />
                 </div>
-                <p className="text-sm text-muted-foreground">No pipeline data yet</p>
-                <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" onClick={() => navigate('/leads')}>
+                <p className="text-sm" style={{ color: 'rgba(148,163,184,0.5)' }}>No pipeline data yet</p>
+                <button
+                  className="text-xs font-bold px-4 h-8 rounded-xl"
+                  style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }}
+                  onClick={() => navigate('/leads')}
+                >
                   Add your first lead
-                </Button>
+                </button>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={210}>
                 <BarChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} opacity={0.6} />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    axisLine={false} tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    axisLine={false} tickLine={false} allowDecimals={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted) / 0.5)', radius: 6 }} />
-                  <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'rgba(148,163,184,0.4)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: 'rgba(148,163,184,0.4)' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(33,246,168,0.04)', radius: 6 }} />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={36}>
                     {chartData.map((entry) => (
                       <Cell key={entry.name} fill={CHART_COLORS[entry.name] || '#21F6A8'} />
                     ))}
@@ -262,63 +296,62 @@ export default function Dashboard() {
                 </BarChart>
               </ResponsiveContainer>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Recent Leads */}
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardHeader className="pb-2 pt-5 px-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-semibold text-foreground">Recent Leads</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">Latest additions to your pipeline</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs rounded-lg gap-1 text-muted-foreground hover:text-foreground"
-                onClick={() => navigate('/leads')}
-              >
-                View all <ArrowRight className="h-3 w-3" />
-              </Button>
+        <div className="rounded-2xl overflow-hidden" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#E2E8F0' }}>Recent Leads</p>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(148,163,184,0.45)' }}>Latest additions</p>
             </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-2">
+            <GhostBtn onClick={() => navigate('/leads')}>
+              View all <ArrowRight className="h-3 w-3" />
+            </GhostBtn>
+          </div>
+          <div className="px-3 pb-5">
             {(Array.isArray(data?.recentLeads) ? data.recentLeads : []).length === 0 ? (
               <div className="h-52 flex flex-col items-center justify-center gap-3 text-center">
-                <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                  <Users className="h-4.5 w-4.5 text-muted-foreground/50" />
+                <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                  <Users className="h-[18px] w-[18px]" style={{ color: 'rgba(148,163,184,0.35)' }} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">No leads yet</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Add or scrape your first lead</p>
+                  <p className="text-sm font-semibold" style={{ color: '#E2E8F0' }}>No leads yet</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'rgba(148,163,184,0.45)' }}>Add or scrape your first lead</p>
                 </div>
               </div>
             ) : (
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {(Array.isArray(data?.recentLeads) ? data.recentLeads : []).slice(0, 6).map((lead) => {
-                  const style = STATUS_STYLES[lead.status] || STATUS_STYLES.new;
+                  const st = STATUS_STYLES[lead.status] || STATUS_STYLES.new;
                   const initials = lead.companyName?.slice(0, 2).toUpperCase() || '??';
                   return (
                     <li
                       key={lead._id}
-                      className="flex items-center gap-3 rounded-lg px-2.5 py-2 cursor-pointer transition-all duration-150 hover:bg-muted/60 group"
+                      className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 cursor-pointer transition-colors duration-100"
+                      style={{ background: 'transparent' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLLIElement).style.background = '#161c17'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.background = 'transparent'; }}
                       onClick={() => navigate(`/leads/${lead._id}`)}
                     >
                       <div
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-gray-900"
-                        style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black"
+                        style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }}
                       >
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate text-foreground group-hover:text-primary transition-colors">
-                          {lead.companyName}
+                        <p className="text-sm font-semibold truncate" style={{ color: '#E2E8F0' }}>{lead.companyName}</p>
+                        <p className="text-xs truncate" style={{ color: 'rgba(148,163,184,0.45)' }}>
+                          {lead.contactName || lead.email || '—'}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">{lead.contactName || lead.email || '—'}</p>
                       </div>
-                      <span className={cn('inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap', style.bg, style.text)}>
-                        <span className={cn('h-1.5 w-1.5 rounded-full', style.dot)} />
+                      <span
+                        className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0"
+                        style={{ background: st.bg, color: st.text, border: `1px solid ${st.border}` }}
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: st.dot }} />
                         {lead.status?.replace(/_/g, ' ')}
                       </span>
                     </li>
@@ -326,72 +359,162 @@ export default function Dashboard() {
                 })}
               </ul>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* ── AI Insights Panel ── */}
+      <div
+        className="rounded-2xl p-5"
+        style={{ background: 'linear-gradient(145deg, #0e1a10 0%, #111613 100%)', border: '1px solid rgba(33,246,168,0.15)' }}
+      >
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl"
+              style={{ background: 'rgba(33,246,168,0.1)', border: '1px solid rgba(33,246,168,0.2)' }}>
+              <Sparkles className="h-4 w-4" style={{ color: '#21F6A8' }} />
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#E2E8F0' }}>AI Pipeline Insights</p>
+              <p className="text-[11px]" style={{ color: 'rgba(148,163,184,0.45)' }}>Auto-generated from your pipeline data</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/ai-chat')}
+            className="flex items-center gap-2 text-xs font-bold px-4 h-8 rounded-xl transition-all hover:brightness-110"
+            style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)', color: '#0D9C6A' }}
+          >
+            <Sparkles className="h-3 w-3" /> Run AI Analysis
+          </button>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'rgba(33,246,168,0.05)', border: '1px solid rgba(33,246,168,0.12)' }}>
+            <span className="text-lg mt-0.5">🚀</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#21F6A8' }}>
+                {newLeadsCount} New Lead{newLeadsCount !== 1 ? 's' : ''} Ready
+              </p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'rgba(148,163,184,0.5)' }}>
+                {newLeadsCount > 0 ? 'Qualify and move them forward' : 'Import leads to grow your pipeline'}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="flex items-start gap-3 rounded-xl p-4"
+            style={{
+              background: convRate >= 15 ? 'rgba(33,246,168,0.05)' : 'rgba(245,158,11,0.05)',
+              border: `1px solid ${convRate >= 15 ? 'rgba(33,246,168,0.12)' : 'rgba(245,158,11,0.12)'}`,
+            }}
+          >
+            <span className="text-lg mt-0.5">{convRate >= 15 ? '⚡' : '📈'}</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: convRate >= 15 ? '#21F6A8' : '#FCD34D' }}>
+                {convRate}% Conversion Rate
+              </p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'rgba(148,163,184,0.5)' }}>
+                {convRate >= 15 ? 'Above industry average — great work' : 'Send more proposals to improve this'}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="flex items-start gap-3 rounded-xl p-4"
+            style={{
+              background: followUpCount > 0 ? 'rgba(245,158,11,0.05)' : 'rgba(99,102,241,0.05)',
+              border: `1px solid ${followUpCount > 0 ? 'rgba(245,158,11,0.12)' : 'rgba(99,102,241,0.12)'}`,
+            }}
+          >
+            <span className="text-lg mt-0.5">🕐</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: followUpCount > 0 ? '#FCD34D' : '#A5B4FC' }}>
+                {followUpCount} Follow-up{followUpCount !== 1 ? 's' : ''} Pending
+              </p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'rgba(148,163,184,0.5)' }}>
+                {followUpCount > 0 ? "Don't let these leads go cold" : 'All caught up — great job!'}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Recent Outreach ── */}
-      <Card className="border-border shadow-sm overflow-hidden">
-        <CardHeader className="pb-2 pt-5 px-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-sm font-semibold text-foreground">Recent Outreach</CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">Latest emails and messages sent</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs rounded-lg gap-1 text-muted-foreground hover:text-foreground"
-              onClick={() => navigate('/outreach')}
-            >
-              View all <ArrowRight className="h-3 w-3" />
-            </Button>
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <div>
+            <p className="text-sm font-bold" style={{ color: '#E2E8F0' }}>Recent Outreach</p>
+            <p className="text-[11px] mt-0.5" style={{ color: 'rgba(148,163,184,0.45)' }}>Latest emails and messages sent</p>
           </div>
-        </CardHeader>
-        <CardContent className="px-5 pb-5 pt-2">
+          <GhostBtn onClick={() => navigate('/outreach')}>
+            View all <ArrowRight className="h-3 w-3" />
+          </GhostBtn>
+        </div>
+        <div className="px-5 pb-5">
           {(Array.isArray(data?.recentOutreach) ? data.recentOutreach : []).length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-3 text-center">
-              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                <Mail className="h-4.5 w-4.5 text-muted-foreground/50" />
+              <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                <Mail className="h-[18px] w-[18px]" style={{ color: 'rgba(148,163,184,0.35)' }} />
               </div>
-              <p className="text-sm text-muted-foreground">No outreach sent yet</p>
+              <p className="text-sm" style={{ color: 'rgba(148,163,184,0.5)' }}>No outreach sent yet</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border/60">
-                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company</th>
-                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Type</th>
-                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">Subject</th>
-                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status</th>
-                    <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Date</th>
+                  <tr style={{ borderBottom: '1px solid rgba(33,246,168,0.08)', background: 'rgba(33,246,168,0.02)' }}>
+                    {['Company', 'Type', 'Subject', 'Status', 'Date'].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`text-left py-2.5 pr-4 text-[11px] font-bold uppercase tracking-widest${i === 2 ? ' hidden md:table-cell' : ''}`}
+                        style={{ color: 'rgba(148,163,184,0.4)' }}
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/40">
-                  {(Array.isArray(data?.recentOutreach) ? data.recentOutreach : []).map((item) => (
-                    <tr key={item._id} className="hover:bg-muted/30 transition-colors">
-                      <td className="py-3 pr-4 font-medium text-sm">{item.leadId?.companyName || '—'}</td>
+                <tbody>
+                  {(Array.isArray(data?.recentOutreach) ? data.recentOutreach : []).map((item, idx, arr) => (
+                    <tr
+                      key={item._id}
+                      className="transition-colors"
+                      style={{ borderBottom: idx === arr.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.04)' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(33,246,168,0.025)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'; }}
+                    >
+                      <td className="py-3 pr-4 font-semibold text-sm" style={{ color: '#CBD5E1' }}>
+                        {item.leadId?.companyName || '—'}
+                      </td>
                       <td className="py-3 pr-4">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          {item.type === 'email' ? '✉️' : '💬'} {item.type}
+                        <span
+                          className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full"
+                          style={item.type === 'email'
+                            ? { background: 'rgba(33,246,168,0.08)', color: '#0D9C6A', border: '1px solid rgba(33,246,168,0.15)' }
+                            : { background: 'rgba(139,92,246,0.08)', color: '#A78BFA', border: '1px solid rgba(139,92,246,0.15)' }
+                          }
+                        >
+                          {item.type === 'email' ? '✉' : '💬'} {item.type}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 text-sm text-muted-foreground hidden md:table-cell max-w-[200px]">
-                        <span className="truncate block">{item.subject || '—'}</span>
+                      <td className="py-3 pr-4 hidden md:table-cell max-w-[200px]">
+                        <span className="truncate block text-xs" style={{ color: 'rgba(148,163,184,0.45)' }}>
+                          {item.subject || '—'}
+                        </span>
                       </td>
                       <td className="py-3 pr-4">
-                        <span className={cn(
-                          'inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full',
-                          item.status === 'sent'
-                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                            : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300',
-                        )}>
-                          <span className={cn('h-1.5 w-1.5 rounded-full', item.status === 'sent' ? 'bg-emerald-400' : 'bg-rose-400')} />
+                        <span
+                          className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full"
+                          style={item.status === 'sent'
+                            ? { background: 'rgba(33,246,168,0.08)', color: '#21F6A8', border: '1px solid rgba(33,246,168,0.15)' }
+                            : { background: 'rgba(244,63,94,0.08)', color: '#FCA5A5', border: '1px solid rgba(244,63,94,0.15)' }
+                          }
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: item.status === 'sent' ? '#21F6A8' : '#F43F5E' }} />
                           {item.status}
                         </span>
                       </td>
-                      <td className="py-3 text-xs text-muted-foreground whitespace-nowrap">
+                      <td className="py-3 text-[11px] whitespace-nowrap" style={{ color: 'rgba(148,163,184,0.4)' }}>
                         {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </td>
                     </tr>
@@ -400,44 +523,44 @@ export default function Dashboard() {
               </table>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* ── Quick action cards ── */}
+      {/* ── Quick Actions ── */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          {
-            icon: Users, label: 'Manage Leads', desc: 'View and qualify your pipeline', path: '/leads',
-            iconBg: 'rgba(33,246,168,0.1)', iconColor: '#0D9C6A',
-          },
-          {
-            icon: FileText, label: 'Generate Proposal', desc: 'Create AI-powered proposals', path: '/proposals',
-            iconBg: '#F5F3FF', iconColor: '#7C3AED',
-          },
-          {
-            icon: TrendingUp, label: 'View Analytics', desc: 'Track your performance metrics', path: '/analytics',
-            iconBg: '#ECFDF5', iconColor: '#059669',
-          },
+          { icon: Users,     label: 'Manage Leads',       desc: 'View and qualify your pipeline',   path: '/leads',     accent: '#21F6A8', iconBg: 'rgba(33,246,168,0.1)' },
+          { icon: FileText,  label: 'Generate Proposal',  desc: 'Create AI-powered proposals',      path: '/proposals', accent: '#8B5CF6', iconBg: 'rgba(139,92,246,0.1)' },
+          { icon: TrendingUp, label: 'View Analytics',    desc: 'Track your performance metrics',   path: '/analytics', accent: '#10B981', iconBg: 'rgba(16,185,129,0.1)' },
         ].map((action) => (
           <button
             key={action.path}
             onClick={() => navigate(action.path)}
-            className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all duration-150 hover:shadow-sm hover:-translate-y-0.5 hover:border-emerald-200 dark:hover:border-emerald-900"
+            className="group relative flex items-center gap-4 rounded-2xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5"
+            style={{ background: '#111613', border: '1px solid rgba(255,255,255,0.07)' }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = action.accent + '33';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 20px ${action.iconBg.replace('0.1', '0.15')}`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.07)';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+            }}
           >
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-              style={{ background: action.iconBg }}
-            >
-              <action.icon className="h-4.5 w-4.5" style={{ color: action.iconColor }} />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
+              style={{ background: action.iconBg }}>
+              <action.icon className="h-5 w-5" style={{ color: action.accent }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground">{action.label}</p>
-              <p className="text-xs text-muted-foreground">{action.desc}</p>
+              <p className="text-sm font-bold mb-0.5" style={{ color: '#E2E8F0' }}>{action.label}</p>
+              <p className="text-xs" style={{ color: 'rgba(148,163,184,0.5)' }}>{action.desc}</p>
             </div>
-            <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+            <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              style={{ color: 'rgba(148,163,184,0.2)' }} />
           </button>
         ))}
       </div>
+
     </div>
   );
 }
