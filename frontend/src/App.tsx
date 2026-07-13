@@ -21,6 +21,12 @@ const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
 const ResetPassword  = lazy(() => import('@/pages/auth/ResetPassword'));
 const NotFound       = lazy(() => import('@/pages/NotFound'));
 const ProposalPublic = lazy(() => import('@/pages/ProposalPublic'));
+const LoginPreview   = lazy(() => import('@/pages/auth/LoginPreview'));
+const LoginV1        = lazy(() => import('@/pages/auth/LoginV1'));
+const LoginV2        = lazy(() => import('@/pages/auth/LoginV2'));
+const LoginV3        = lazy(() => import('@/pages/auth/LoginV3'));
+const LoginV4        = lazy(() => import('@/pages/auth/LoginV4'));
+const LoginV5        = lazy(() => import('@/pages/auth/LoginV5'));
 
 function Splash() {
   return (
@@ -74,6 +80,14 @@ export default function App() {
 
         {/* Public proposal route — no auth required */}
         <Route path="/proposal/:token" element={<ProposalPublic />} />
+
+        {/* Login design previews — no auth required */}
+        <Route path="/login-preview" element={<LoginPreview />} />
+        <Route path="/login-v1" element={<LoginV1 />} />
+        <Route path="/login-v2" element={<LoginV2 />} />
+        <Route path="/login-v3" element={<LoginV3 />} />
+        <Route path="/login-v4" element={<LoginV4 />} />
+        <Route path="/login-v5" element={<LoginV5 />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
