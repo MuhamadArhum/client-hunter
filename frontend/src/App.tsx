@@ -21,7 +21,8 @@ const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
 const ResetPassword  = lazy(() => import('@/pages/auth/ResetPassword'));
 const NotFound       = lazy(() => import('@/pages/NotFound'));
 const ProposalPublic = lazy(() => import('@/pages/ProposalPublic'));
-const LoginPreview   = lazy(() => import('@/pages/auth/LoginPreview'));
+const LoginPreview      = lazy(() => import('@/pages/auth/LoginPreview'));
+const DashboardPreview  = lazy(() => import('@/pages/DashboardPreview'));
 const LoginV1        = lazy(() => import('@/pages/auth/LoginV1'));
 const LoginV2        = lazy(() => import('@/pages/auth/LoginV2'));
 const LoginV3        = lazy(() => import('@/pages/auth/LoginV3'));
@@ -88,6 +89,7 @@ export default function App() {
         <Route path="/login-v3" element={<LoginV3 />} />
         <Route path="/login-v4" element={<LoginV4 />} />
         <Route path="/login-v5" element={<LoginV5 />} />
+        <Route path="/dashboard-preview" element={<DashboardPreview />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
