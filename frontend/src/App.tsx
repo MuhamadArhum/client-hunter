@@ -15,6 +15,8 @@ const Notifications = lazy(() => import('@/pages/Notifications'));
 const Kanban        = lazy(() => import('@/pages/Kanban'));
 const Sequences     = lazy(() => import('@/pages/Sequences'));
 const Chat          = lazy(() => import('@/pages/Chat'));
+const ActivityFeed  = lazy(() => import('@/pages/ActivityFeed'));
+const Templates     = lazy(() => import('@/pages/Templates'));
 const Login          = lazy(() => import('@/pages/auth/Login'));
 const SignUp         = lazy(() => import('@/pages/auth/SignUp'));
 const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
@@ -68,6 +70,8 @@ export default function App() {
             <Route path="/kanban" element={<Kanban />} />
             <Route path="/sequences" element={<Sequences />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/activity" element={<ActivityFeed />} />
+            <Route path="/templates" element={<Templates />} />
           </Route>
         </Route>
 

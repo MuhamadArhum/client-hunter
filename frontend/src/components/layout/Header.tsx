@@ -23,6 +23,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/profile':       { title: 'Profile',       subtitle: 'Manage your account information' },
   '/settings':      { title: 'Settings',      subtitle: 'App configuration and preferences' },
   '/notifications': { title: 'Notifications', subtitle: 'Recent activity feed' },
+  '/activity':      { title: 'Agent Activity', subtitle: 'Real-time feed of everything your agent does' },
 };
 
 interface HeaderProps { onMenuClick: () => void; }

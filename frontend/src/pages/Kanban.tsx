@@ -13,12 +13,12 @@ interface Lead {
 }
 
 const COLUMNS: { key: string; label: string; color: string; bg: string }[] = [
-  { key: 'new', label: 'New', color: '#21F6A8', bg: 'rgba(33,246,168,0.1)' },
-  { key: 'contacted', label: 'Contacted', color: '#1DD2D7', bg: 'rgba(29,210,215,0.1)' },
-  { key: 'proposal_sent', label: 'Proposal Sent', color: '#9F8DD4', bg: 'rgba(159,141,212,0.1)' },
-  { key: 'follow_up', label: 'Follow Up', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-  { key: 'converted', label: 'Converted', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
-  { key: 'lost', label: 'Lost', color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
+  { key: 'new',           label: 'New',           color: '#3B82F6', bg: 'rgba(59,130,246,0.1)'  },
+  { key: 'contacted',     label: 'Contacted',     color: '#6366F1', bg: 'rgba(99,102,241,0.1)'  },
+  { key: 'proposal_sent', label: 'Proposal Sent', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)'  },
+  { key: 'follow_up',     label: 'Follow Up',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)'  },
+  { key: 'converted',     label: 'Converted',     color: '#10B981', bg: 'rgba(16,185,129,0.1)'  },
+  { key: 'lost',          label: 'Lost',           color: '#EF4444', bg: 'rgba(239,68,68,0.1)'  },
 ];
 
 export default function Kanban() {

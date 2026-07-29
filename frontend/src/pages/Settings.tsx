@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Lock, Info, CheckCircle, Shield, Zap, Server, Brain } from 'lucide-react';
+import { Eye, EyeOff, Lock, Info, CheckCircle, Shield, Zap, Server, Brain, Bell, Mail, MessageSquare, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +44,20 @@ function PasswordField({
   );
 }
 
+interface NotifPrefs {
+  emailFollowUp: boolean;
+  emailNewLead: boolean;
+  whatsappOutreach: boolean;
+  sequenceAlerts: boolean;
+}
+
+const DEFAULT_NOTIF: NotifPrefs = {
+  emailFollowUp: true,
+  emailNewLead: true,
+  whatsappOutreach: false,
+  sequenceAlerts: true,
+};
+
 export default function Settings() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword,     setNewPassword]     = useState('');
@@ -53,6 +67,18 @@ export default function Settings() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert]     = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
+  const [notif, setNotif] = useState<NotifPrefs>(() => {
+    try { return { ...DEFAULT_NOTIF, ...JSON.parse(localStorage.getItem('abyte_notif_prefs') || '{}') }; }
+    catch { return DEFAULT_NOTIF; }
+  });
+  const [notifSaved, setNotifSaved] = useState(false);
+
+  const handleSaveNotif = () => {
+    localStorage.setItem('abyte_notif_prefs', JSON.stringify(notif));
+    setNotifSaved(true);
+    setTimeout(() => setNotifSaved(false), 2000);
+  };
 
   const passwordStrength = newPassword.length === 0 ? 0
     : newPassword.length < 6 ? 1
@@ -198,6 +224,73 @@ export default function Settings() {
                 <span className="text-sm text-foreground">{row.value}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Notification Preferences */}
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
+            <Bell className="h-4 w-4" style={{ color: '#6366F1' }} />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3>
+            <p className="text-xs text-muted-foreground">Control what alerts the agent sends you</p>
+          </div>
+        </div>
+
+        <div className="p-5 space-y-3">
+          {[
+            { key: 'emailFollowUp' as keyof NotifPrefs, icon: Mail, label: 'Follow-up Email Alerts', desc: 'Notify when auto follow-up emails are sent', color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
+            { key: 'emailNewLead' as keyof NotifPrefs, icon: Bell, label: 'New Lead Alerts', desc: 'Notify when a new lead is scraped or added', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
+            { key: 'whatsappOutreach' as keyof NotifPrefs, icon: MessageSquare, label: 'WhatsApp Outreach Alerts', desc: 'Notify when WhatsApp messages are sent', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+            { key: 'sequenceAlerts' as keyof NotifPrefs, icon: GitBranch, label: 'Sequence Step Alerts', desc: 'Notify when a sequence step is executed', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+          ].map((item) => (
+            <div
+              key={item.key}
+              className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3.5 hover:bg-muted/20 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: item.bg }}>
+                  <item.icon className="h-3.5 w-3.5" style={{ color: item.color }} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+              <button
+                role="switch"
+                aria-checked={notif[item.key]}
+                onClick={() => setNotif((p) => ({ ...p, [item.key]: !p[item.key] }))}
+                className={cn(
+                  'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent',
+                  'transition-colors duration-200 focus:outline-none',
+                  notif[item.key] ? 'bg-primary' : 'bg-muted',
+                )}
+              >
+                <span
+                  className={cn(
+                    'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200',
+                    notif[item.key] ? 'translate-x-4' : 'translate-x-0',
+                  )}
+                />
+              </button>
+            </div>
+          ))}
+
+          <div className="pt-1">
+            <Button
+              onClick={handleSaveNotif}
+              className={cn('h-9 text-sm font-semibold gap-2 rounded-lg transition-all', notifSaved && 'bg-emerald-500')}
+              style={!notifSaved ? { background: 'linear-gradient(135deg, #2563EB, #7C3AED)', color: '#fff' } : { color: '#fff' }}
+            >
+              {notifSaved
+                ? <><CheckCircle className="h-3.5 w-3.5" /> Saved!</>
+                : <><Bell className="h-3.5 w-3.5" /> Save Preferences</>
+              }
+            </Button>
           </div>
         </div>
       </div>

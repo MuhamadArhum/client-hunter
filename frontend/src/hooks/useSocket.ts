@@ -17,13 +17,16 @@ export function useSocket(onEvent: (event: string, data: unknown) => void) {
     const handler = (event: string) => (data: unknown) => cbRef.current(event, data);
     const leadNew = handler('lead:new');
     const outreachSent = handler('outreach:sent');
+    const agentAction = handler('agent:action');
 
     socket.on('lead:new', leadNew);
     socket.on('outreach:sent', outreachSent);
+    socket.on('agent:action', agentAction);
 
     return () => {
       socket?.off('lead:new', leadNew);
       socket?.off('outreach:sent', outreachSent);
+      socket?.off('agent:action', agentAction);
     };
   }, []);
 }

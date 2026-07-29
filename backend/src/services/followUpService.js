@@ -5,6 +5,10 @@ const emailService = require('./emailService');
 const { generateFollowUpMessage } = require('./groqService');
 const { notifyFollowUpSent } = require('./slackService');
 
+const getIO = () => {
+  try { return require('../app').get('io'); } catch { return null; }
+};
+
 const processFollowUps = async () => {
   try {
     const now = new Date();
@@ -32,6 +36,8 @@ const processFollowUps = async () => {
         });
 
         await notifyFollowUpSent(lead);
+        const io = getIO();
+        if (io) io.emit('agent:action', { type: 'follow_up', message: `Follow-up sent to ${lead.companyName}`, timestamp: new Date() });
         console.log(`[Follow-up] Sent to ${lead.email}`);
       } catch (err) {
         console.error(`[Follow-up] Failed for ${lead.companyName}:`, err.message);
