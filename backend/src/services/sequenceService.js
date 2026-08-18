@@ -4,6 +4,7 @@ const Sequence = require('../models/Sequence');
 const Lead = require('../models/Lead');
 const OutreachLog = require('../models/OutreachLog');
 const { Resend } = require('resend');
+const configService = require('./configService');
 const crypto = require('crypto');
 
 async function processSequenceEmails() {
@@ -21,17 +22,20 @@ async function processSequenceEmails() {
       const step = sequence.steps[enrollment.currentStep];
       if (!step) { await enrollment.updateOne({ status: 'completed' }); continue; }
 
-      if (lead.email && process.env.RESEND_API_KEY) {
-        const resend = new Resend(process.env.RESEND_API_KEY);
+      const apiKey   = await configService.get('RESEND_API_KEY');
+      const fromAddr = (await configService.get('EMAIL_FROM')) || 'noreply@example.com';
+      const baseUrl  = process.env.BACKEND_URL || 'http://localhost:5000';
+
+      if (lead.email && apiKey) {
+        const resend     = new Resend(apiKey);
         const trackingId = crypto.randomBytes(16).toString('hex');
-        const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-        const pixelTag = `<img src="${baseUrl}/api/outreach/track/open/${trackingId}" width="1" height="1" style="display:none" />`;
+        const pixelTag   = `<img src="${baseUrl}/api/outreach/track/open/${trackingId}" width="1" height="1" style="display:none" />`;
 
         await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'noreply@example.com',
-          to: lead.email,
+          from:    fromAddr,
+          to:      lead.email,
           subject: step.subject,
-          html: step.body + pixelTag,
+          html:    step.body + pixelTag,
         });
 
         await OutreachLog.create({
@@ -44,10 +48,14 @@ async function processSequenceEmails() {
       if (nextStepIndex >= sequence.steps.length) {
         await enrollment.updateOne({ status: 'completed', currentStep: nextStepIndex });
       } else {
-        const nextStep = sequence.steps[nextStepIndex];
+        const nextStep   = sequence.steps[nextStepIndex];
         const nextSendAt = new Date();
         nextSendAt.setDate(nextSendAt.getDate() + nextStep.delayDays);
-        await enrollment.updateOne({ currentStep: nextStepIndex, nextSendAt, $push: { completedSteps: enrollment.currentStep } });
+        await enrollment.updateOne({
+          currentStep: nextStepIndex,
+          nextSendAt,
+          $push: { completedSteps: enrollment.currentStep },
+        });
       }
     } catch (err) {
       console.error('[Sequence] Error processing enrollment:', enrollment._id, err.message);

@@ -1,30 +1,26 @@
 const axios = require('axios');
+const configService = require('./configService');
 
-// Send a WhatsApp message via WhatsApp Cloud API
 const sendMessage = async ({ to, message }) => {
-  if (!process.env.WHATSAPP_API_TOKEN || !process.env.WHATSAPP_PHONE_ID) {
-    throw new Error('WhatsApp credentials are not configured. Please set WHATSAPP_API_TOKEN and WHATSAPP_PHONE_ID in .env');
+  const apiToken = await configService.get('WHATSAPP_API_TOKEN');
+  const phoneId  = await configService.get('WHATSAPP_PHONE_ID');
+
+  if (!apiToken || !phoneId) {
+    throw new Error('WhatsApp credentials are not configured. Add them in Settings → Integrations.');
   }
 
-  // Format phone number: remove spaces, dashes, and ensure it starts with country code
   const formattedPhone = to.replace(/[\s\-\(\)]/g, '').replace(/^\+/, '');
+  const url = `https://graph.facebook.com/v18.0/${phoneId}/messages`;
 
-  const url = `https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}/messages`;
-
-  const payload = {
+  const response = await axios.post(url, {
     messaging_product: 'whatsapp',
-    recipient_type: 'individual',
-    to: formattedPhone,
-    type: 'text',
-    text: {
-      preview_url: false,
-      body: message,
-    },
-  };
-
-  const response = await axios.post(url, payload, {
+    recipient_type:    'individual',
+    to:                formattedPhone,
+    type:              'text',
+    text:              { preview_url: false, body: message },
+  }, {
     headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_API_TOKEN}`,
+      Authorization:  `Bearer ${apiToken}`,
       'Content-Type': 'application/json',
     },
   });

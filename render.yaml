@@ -6,6 +6,7 @@ services:
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -25,6 +26,8 @@ services:
         sync: false
       - key: EMAIL_FROM
         sync: false
+      - key: DIGEST_EMAIL
+        sync: false
       - key: SLACK_WEBHOOK_URL
         sync: false
       - key: HUNTER_API_KEY
@@ -32,6 +35,10 @@ services:
       - key: WHATSAPP_API_TOKEN
         sync: false
       - key: WHATSAPP_PHONE_ID
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: BACKEND_URL
         sync: false
       - key: FRONTEND_URL
         sync: false

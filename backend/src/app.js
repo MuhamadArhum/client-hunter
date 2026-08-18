@@ -14,7 +14,8 @@ const analyticsRoutes = require('./routes/analytics');
 const templatesRoutes = require('./routes/templates');
 const sequencesRoutes = require('./routes/sequences');
 const chatRoutes = require('./routes/chat');
-const activityRoutes = require('./routes/activity');
+const activityRoutes  = require('./routes/activity');
+const settingsRoutes  = require('./routes/settings');
 
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
 const { startFollowUpCron, startProposalFollowUpCron } = require('./services/followUpService');
@@ -66,7 +67,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/templates', templatesRoutes);
 app.use('/api/sequences', sequencesRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/activity', activityRoutes);
+app.use('/api/activity',  activityRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Abyte Hunt API is running', timestamp: new Date().toISOString() });

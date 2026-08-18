@@ -1,18 +1,18 @@
 const axios = require('axios');
+const configService = require('./configService');
 
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const QUAL_EMOJI  = { hot: '🔥', warm: '🟡', cold: '🔵' };
+const SCORE_COLOR = (score) => (score >= 8 ? '#E53E3E' : score >= 5 ? '#DD6B20' : '#3182CE');
 
 const send = async (payload) => {
-  if (!SLACK_WEBHOOK_URL) return;
+  const webhookUrl = await configService.get('SLACK_WEBHOOK_URL');
+  if (!webhookUrl) return;
   try {
-    await axios.post(SLACK_WEBHOOK_URL, payload);
+    await axios.post(webhookUrl, payload);
   } catch (e) {
-    console.error('Slack notification failed:', e.message);
+    console.error('[Slack] Notification failed:', e.message);
   }
 };
-
-const QUAL_EMOJI = { hot: '🔥', warm: '🟡', cold: '🔵' };
-const SCORE_COLOR = (score) => score >= 8 ? '#E53E3E' : score >= 5 ? '#DD6B20' : '#3182CE';
 
 const notifyNewLead = async (lead) => {
   const qual = lead.aiQualification || 'warm';
@@ -38,7 +38,7 @@ const notifyNewLead = async (lead) => {
         },
         ...(lead.aiPainPoints?.length ? [{
           type: 'section',
-          text: { type: 'mrkdwn', text: `*Pain Points:*\n${lead.aiPainPoints.map(p => `• ${p}`).join('\n')}` },
+          text: { type: 'mrkdwn', text: `*Pain Points:*\n${lead.aiPainPoints.map((p) => `• ${p}`).join('\n')}` },
         }] : []),
       ],
     }],
@@ -49,15 +49,13 @@ const notifyProposalGenerated = async (lead, proposal) => {
   await send({
     attachments: [{
       color: '#9F8DD4',
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `📄 *Proposal Generated*\n*${proposal.title}*\nFor: ${lead.companyName}`,
-          },
+      blocks: [{
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `📄 *Proposal Generated*\n*${proposal.title}*\nFor: ${lead.companyName}`,
         },
-      ],
+      }],
     }],
   });
 };
@@ -66,28 +64,21 @@ const notifyFollowUpSent = async (lead) => {
   await send({
     attachments: [{
       color: '#1DD2D7',
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `📧 *Follow-up Sent*\nAuto follow-up email sent to *${lead.companyName}* (${lead.email})`,
-          },
+      blocks: [{
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `📧 *Follow-up Sent*\nAuto follow-up email sent to *${lead.companyName}* (${lead.email})`,
         },
-      ],
+      }],
     }],
   });
 };
 
 const notifyLeadConverted = async (lead) => {
-  if (!process.env.SLACK_WEBHOOK_URL) return;
-  try {
-    await axios.post(process.env.SLACK_WEBHOOK_URL, {
-      text: `🎉 *Lead Converted!* \n*Company:* ${lead.companyName}\n*Contact:* ${lead.contactName || 'N/A'}\n*AI Score:* ${lead.aiScore ?? 'N/A'}/10`,
-    });
-  } catch (err) {
-    console.error('[Slack] Failed to notify converted lead:', err.message);
-  }
+  await send({
+    text: `🎉 *Lead Converted!*\n*Company:* ${lead.companyName}\n*Contact:* ${lead.contactName || 'N/A'}\n*AI Score:* ${lead.aiScore ?? 'N/A'}/10`,
+  });
 };
 
 module.exports = { notifyNewLead, notifyProposalGenerated, notifyFollowUpSent, notifyLeadConverted };

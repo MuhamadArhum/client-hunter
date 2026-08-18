@@ -1,23 +1,19 @@
 const { Resend } = require('resend');
-
-const getClient = () => {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is not configured in .env');
-  }
-  return new Resend(process.env.RESEND_API_KEY);
-};
-
-const FROM_ADDRESS = process.env.EMAIL_FROM || 'Abyte Hunt <onboarding@resend.dev>';
+const configService = require('./configService');
 
 const sendEmail = async ({ to, subject, html, text }) => {
-  const resend = getClient();
+  const apiKey   = await configService.get('RESEND_API_KEY');
+  const fromAddr = (await configService.get('EMAIL_FROM')) || 'Abyte Hunt <onboarding@resend.dev>';
 
+  if (!apiKey) throw new Error('Resend API key is not configured. Add it in Settings → Integrations.');
+
+  const resend = new Resend(apiKey);
   const { data, error } = await resend.emails.send({
-    from: FROM_ADDRESS,
-    to: Array.isArray(to) ? to : [to],
+    from:    fromAddr,
+    to:      Array.isArray(to) ? to : [to],
     subject,
-    html: html || `<p>${text || ''}</p>`,
-    text: text || '',
+    html:    html || `<p>${text || ''}</p>`,
+    text:    text || '',
   });
 
   if (error) throw new Error(error.message);

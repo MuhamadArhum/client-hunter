@@ -3,9 +3,11 @@ const Lead = require('../models/Lead');
 const Proposal = require('../models/Proposal');
 const OutreachLog = require('../models/OutreachLog');
 const emailService = require('./emailService');
+const configService = require('./configService');
 
 const sendDailyDigest = async () => {
-  if (!process.env.DIGEST_EMAIL) return;
+  const digestEmail = await configService.get('DIGEST_EMAIL');
+  if (!digestEmail) return;
   try {
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
@@ -52,11 +54,11 @@ const sendDailyDigest = async () => {
       </div>`;
 
     await emailService.sendEmail({
-      to: process.env.DIGEST_EMAIL,
+      to: digestEmail,
       subject: `📊 Daily Digest — ${new Date().toDateString()}`,
       html,
     });
-    console.log('[Digest] Daily digest sent to', process.env.DIGEST_EMAIL);
+    console.log('[Digest] Daily digest sent to', digestEmail);
   } catch (err) {
     console.error('[Digest] Failed:', err.message);
   }
