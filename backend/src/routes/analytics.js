@@ -7,6 +7,8 @@ const {
   getConversionBySource,
   getProposalStats,
   getAIBreakdown,
+  getEmailTrackingStats,
+  getMonthlyTrend,
 } = require('../controllers/analyticsController');
 const { protect } = require('../middleware/auth');
 
@@ -18,5 +20,7 @@ router.get('/outreach-stats', getOutreachStats);
 router.get('/conversion-by-source', getConversionBySource);
 router.get('/proposal-stats', getProposalStats);
 router.get('/ai-breakdown', getAIBreakdown);
+router.get('/email-tracking', getEmailTrackingStats);
+router.get('/monthly-trend', getMonthlyTrend);
 
 module.exports = router;

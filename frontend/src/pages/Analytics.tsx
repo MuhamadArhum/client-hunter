@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink } from 'lucide-react';
+import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink, Eye, MousePointerClick } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line,
 } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/services/api';
@@ -26,6 +26,8 @@ interface AIBreakdown {
   avgScore: number;
   topLeads: { _id: string; companyName: string; aiScore: number; aiQualification: string; aiRecommendedService: string }[];
 }
+interface EmailTracking { totalSent: number; totalOpened: number; totalClicked: number; openRate: number; clickRate: number; clickToOpenRate: number; }
+interface MonthlyTrend { month: string; emails: number; whatsapp: number; leads: number; }
 
 const ANALYTICS_STAT_CARDS = [
   { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #21F6A8, #10B981)', bgColor: 'rgba(33,246,168,0.08)',  borderColor: 'rgba(33,246,168,0.2)',  glowColor: 'rgba(33,246,168,0.15)',  numClass: 'stat-number-green' },
@@ -103,6 +105,8 @@ export default function Analytics() {
   const [conversionBySource, setConversionBySource] = useState<ConversionBySource[]>([]);
   const [proposalStats, setProposalStats] = useState<ProposalStats | null>(null);
   const [aiBreakdown, setAiBreakdown] = useState<AIBreakdown | null>(null);
+  const [emailTracking, setEmailTracking] = useState<EmailTracking | null>(null);
+  const [monthlyTrend, setMonthlyTrend] = useState<MonthlyTrend[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -113,14 +117,18 @@ export default function Analytics() {
       api.get('/analytics/conversion-by-source'),
       api.get('/analytics/proposal-stats'),
       api.get('/analytics/ai-breakdown'),
+      api.get('/analytics/email-tracking'),
+      api.get('/analytics/monthly-trend'),
     ])
-      .then(([dashRes, srcRes, outRes, convRes, propRes, aiRes]) => {
+      .then(([dashRes, srcRes, outRes, convRes, propRes, aiRes, trackRes, trendRes]) => {
         setDashboard(dashRes.data?.data || dashRes.data);
         setSourceData(Array.isArray(srcRes.data?.data) ? srcRes.data.data : []);
         setOutreachStats(outRes.data?.data || outRes.data);
         setConversionBySource(Array.isArray(convRes.data?.data) ? convRes.data.data : []);
         setProposalStats(propRes.data?.data || null);
         setAiBreakdown(aiRes.data?.data || null);
+        setEmailTracking(trackRes.data?.data || null);
+        setMonthlyTrend(Array.isArray(trendRes.data?.data) ? trendRes.data.data : []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -292,7 +300,27 @@ export default function Analytics() {
         </ChartCard>
       </div>
 
-      {/* Row 3: Outreach + AI */}
+      {/* Row 3: Monthly Trend (full width) */}
+      <ChartCard title="Monthly Trend" subtitle="Leads, emails & WhatsApp over last 6 months" accent="linear-gradient(90deg, #2563EB, #7C3AED)">
+        {monthlyTrend.every(m => m.emails === 0 && m.whatsapp === 0 && m.leads === 0) ? (
+          <EmptyChart message="No trend data yet" hint="Data will appear after your first month of activity" />
+        ) : (
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={monthlyTrend} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend iconType="circle" iconSize={8} formatter={(v) => <span className="text-xs text-muted-foreground capitalize">{v}</span>} />
+              <Line type="monotone" dataKey="leads" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4, fill: '#2563EB' }} name="Leads" />
+              <Line type="monotone" dataKey="emails" stroke="#21F6A8" strokeWidth={2.5} dot={{ r: 4, fill: '#21F6A8' }} name="Emails" />
+              <Line type="monotone" dataKey="whatsapp" stroke="#7C3AED" strokeWidth={2.5} dot={{ r: 4, fill: '#7C3AED' }} name="WhatsApp" />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </ChartCard>
+
+      {/* Row 4: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
         <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #21F6A8)">
           {outreachChartData.every(d => d.count === 0) ? <EmptyChart message="No outreach sent yet" hint="Send emails or WhatsApp messages to see stats" /> : (
@@ -406,6 +434,35 @@ export default function Analytics() {
           )}
         </ChartCard>
       </div>
+
+      {/* Row 5: Email Open & Click Tracking */}
+      <ChartCard title="Email Open & Click Tracking" subtitle="How recipients engage with your emails" accent="linear-gradient(90deg, #0EA5E9, #6366f1)">
+        {!emailTracking || emailTracking.totalSent === 0 ? (
+          <EmptyChart message="No tracked emails yet" hint="Send emails to start seeing open and click rates" />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-3">
+            {[
+              { label: 'Open Rate', value: `${emailTracking.openRate}%`, sub: `${emailTracking.totalOpened} of ${emailTracking.totalSent} opened`, icon: Eye, color: '#0EA5E9', bg: 'rgba(14,165,233,0.08)', border: 'rgba(14,165,233,0.2)' },
+              { label: 'Click Rate', value: `${emailTracking.clickRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalSent} clicked`, icon: MousePointerClick, color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.2)' },
+              { label: 'Click-to-Open', value: `${emailTracking.clickToOpenRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalOpened} who opened`, icon: TrendingUp, color: '#21F6A8', bg: 'rgba(33,246,168,0.08)', border: 'rgba(33,246,168,0.2)' },
+            ].map(({ label, value, sub, icon: Icon, color, bg, border }) => (
+              <div key={label} className="rounded-xl p-4 flex flex-col gap-3" style={{ background: bg, border: `1px solid ${border}` }}>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: color + '20' }}>
+                    <Icon className="h-4 w-4" style={{ color }} />
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{label}</span>
+                </div>
+                <p className="text-3xl font-black" style={{ color }}>{value}</p>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: value, background: color }} />
+                </div>
+                <p className="text-xs text-muted-foreground">{sub}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </ChartCard>
     </div>
   );
 }
