@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 
@@ -24,15 +26,26 @@ const { startSequenceCron } = require('./services/sequenceService');
 
 connectDB();
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const app = express();
 const httpServer = http.createServer(app);
 
-const allowedOrigins = [
+// ── Security headers (helmet) ──
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: isProd ? undefined : false, // only enforce CSP in prod
+}));
+
+const devOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
   'http://localhost:5176',
+];
+const allowedOrigins = [
+  ...(isProd ? [] : devOrigins),
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -45,12 +58,16 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
+app.use(express.json({ limit: '5mb' }));   // reduced from 10mb
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(mongoSanitize());
+if (!isProd) app.use(morgan('dev'));
 
-// Socket.io
-const io = new Server(httpServer, { cors: { origin: allowedOrigins, credentials: true } });
+// ── Socket.io (production uses only FRONTEND_URL) ──
+const ioOrigins = isProd
+  ? [process.env.FRONTEND_URL].filter(Boolean)
+  : allowedOrigins;
+const io = new Server(httpServer, { cors: { origin: ioOrigins, credentials: true } });
 io.on('connection', (socket) => {
   console.log('[WS] Client connected:', socket.id);
   socket.on('disconnect', () => console.log('[WS] Client disconnected:', socket.id));
@@ -85,8 +102,9 @@ app.use((err, req, res, next) => {
   console.error('Global Error:', err.stack);
   res.status(err.statusCode || 500).json({
     success: false,
-    message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    // never expose internal error messages in production
+    message: isProd ? 'An unexpected error occurred.' : (err.message || 'Internal Server Error'),
+    ...(!isProd && { stack: err.stack }),
   });
 });
 

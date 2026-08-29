@@ -8,12 +8,12 @@ const {
 } = require('../controllers/leadsController');
 const { protect } = require('../middleware/auth');
 const { createLeadRules, updateLeadRules, mongoIdParamRules } = require('../middleware/validate');
-const { aiLimiter } = require('../middleware/rateLimiter');
+const { aiLimiter, scrapeLimiter } = require('../middleware/rateLimiter');
 
 router.use(protect);
 
 router.route('/').get(getLeads).post(createLeadRules, createLead);
-router.post('/scrape', scrapeLeads);
+router.post('/scrape', scrapeLimiter, scrapeLeads);
 router.post('/bulk-enrich', bulkEnrichEmails);
 router.post('/bulk-delete', bulkDeleteLeads);
 router.get('/export/csv', exportLeadsCSV);

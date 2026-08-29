@@ -2,6 +2,10 @@ const Lead = require('../models/Lead');
 const Proposal = require('../models/Proposal');
 const OutreachLog = require('../models/OutreachLog');
 
+const isProd = process.env.NODE_ENV === 'production';
+const serverError = (res, error) =>
+  res.status(500).json({ success: false, message: isProd ? 'An unexpected error occurred.' : error.message });
+
 const getDashboardStats = async (req, res) => {
   try {
     const totalLeads = await Lead.countDocuments({ status: { $ne: 'deleted' } });
@@ -37,7 +41,7 @@ const getDashboardStats = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -50,7 +54,7 @@ const getLeadsBySource = async (req, res) => {
     ]);
     res.status(200).json({ success: true, data: sourceData });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -66,7 +70,7 @@ const getOutreachStats = async (req, res) => {
       data: { emailSent, emailFailed, whatsappSent, whatsappFailed },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -99,7 +103,7 @@ const getConversionBySource = async (req, res) => {
     ]);
     res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -123,7 +127,7 @@ const getProposalStats = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -155,7 +159,7 @@ const getAIBreakdown = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -176,7 +180,7 @@ const getEmailTrackingStats = async (req, res) => {
       data: { totalSent, totalOpened, totalClicked, openRate, clickRate, clickToOpenRate },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -233,7 +237,7 @@ const getMonthlyTrend = async (req, res) => {
 
     res.status(200).json({ success: true, data: result });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 

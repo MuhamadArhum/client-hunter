@@ -5,6 +5,10 @@ const { notifyNewLead, notifyLeadConverted } = require('../services/slackService
 const { analyzeWebsite } = require('../services/websiteAnalyzerService');
 const { enrichLead } = require('../services/emailEnrichmentService');
 
+const isProd = process.env.NODE_ENV === 'production';
+const serverError = (res, error) =>
+  res.status(500).json({ success: false, message: isProd ? 'An unexpected error occurred.' : error.message });
+
 const runAIAnalysis = async (lead) => {
   try {
     const analysis = await analyzeLead(lead);
@@ -69,7 +73,7 @@ const getLeads = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -84,7 +88,7 @@ const getLead = async (req, res) => {
     }
     res.status(200).json({ success: true, data: lead });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -116,7 +120,7 @@ const createLead = async (req, res) => {
     // Run AI analysis in background after responding
     runAIAnalysis(lead);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -146,7 +150,7 @@ const updateLead = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Lead updated successfully', data: updatedLead });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -164,7 +168,7 @@ const deleteLead = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Lead deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -199,7 +203,7 @@ const scrapeLeads = async (req, res) => {
     // Run AI analysis for each scraped lead in background
     insertedLeads.forEach((lead) => runAIAnalysis(lead));
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -218,7 +222,7 @@ const analyzeSingleLead = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'AI analysis complete', data: updated });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -236,7 +240,7 @@ const getAutoReplyDraft = async (req, res) => {
     const draft = await generateAutoReplyDraft(lead, message);
     res.status(200).json({ success: true, data: draft });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -263,7 +267,7 @@ const scheduleFollowUp = async (req, res) => {
       data: lead,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -297,7 +301,7 @@ const analyzeLeadWebsite = async (req, res) => {
     const analysis = await analyzeWebsite(url);
     res.status(200).json({ success: true, data: analysis });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -327,7 +331,7 @@ const enrichLeadEmail = async (req, res) => {
       data: updated,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -370,7 +374,7 @@ const bulkEnrichEmails = async (req, res) => {
     }
     console.log(`[Enrich] Done. Enriched ${enriched}/${leads.length} leads.`);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -387,7 +391,7 @@ const saveNotes = async (req, res) => {
     if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' });
     res.status(200).json({ success: true, message: 'Notes saved', data: lead });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -404,7 +408,7 @@ const bulkDeleteLeads = async (req, res) => {
     );
     res.status(200).json({ success: true, message: `${result.modifiedCount} leads deleted` });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -434,7 +438,7 @@ const exportLeadsCSV = async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="leads.csv"');
     res.status(200).send(csv);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -494,7 +498,7 @@ const importLeadsCSV = async (req, res) => {
 
     inserted.forEach((lead) => runAIAnalysis(lead));
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 

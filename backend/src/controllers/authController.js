@@ -3,6 +3,10 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { sendEmail } = require('../services/emailService');
 
+const isProd = process.env.NODE_ENV === 'production';
+const serverError = (res, error) =>
+  res.status(500).json({ success: false, message: isProd ? 'An unexpected error occurred.' : error.message });
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d',
@@ -31,7 +35,7 @@ const register = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -57,7 +61,7 @@ const login = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -71,7 +75,7 @@ const getMe = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, createdAt: user.createdAt },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -101,7 +105,7 @@ const updateProfile = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -126,7 +130,7 @@ const changePassword = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -136,12 +140,14 @@ const uploadAvatar = async (req, res) => {
   try {
     const { avatar } = req.body;
     if (!avatar) return res.status(400).json({ success: false, message: 'Avatar data is required' });
-    if (avatar.length > 2 * 1024 * 1024) // 2MB base64 limit
+    if (!/^data:image\/(jpeg|png|gif|webp);base64,/.test(avatar))
+      return res.status(400).json({ success: false, message: 'Avatar must be a valid image (JPEG, PNG, GIF, or WebP)' });
+    if (avatar.length > 1.5 * 1024 * 1024)
       return res.status(400).json({ success: false, message: 'Avatar must be under 1.5MB' });
     const user = await User.findByIdAndUpdate(req.user.id, { avatar }, { new: true });
     res.status(200).json({ success: true, message: 'Avatar updated', user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -185,7 +191,7 @@ const forgotPassword = async (req, res) => {
       res.status(500).json({ success: false, message: 'Email could not be sent. Please try again.' });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -194,6 +200,8 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { password } = req.body;
+    if (!password || password.length < 6)
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
     const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
     const user = await User.findOne({
@@ -213,7 +221,7 @@ const resetPassword = async (req, res) => {
     const token = generateToken(user._id);
     res.status(200).json({ success: true, message: 'Password reset successful.', token });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 

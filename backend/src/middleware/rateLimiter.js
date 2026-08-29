@@ -27,4 +27,22 @@ const aiLimiter = rateLimit({
   message: { success: false, message: 'Too many AI requests, please try again after 15 minutes.' },
 });
 
-module.exports = { apiLimiter, authLimiter, aiLimiter };
+// Scrape / heavy resource endpoints: 10 per hour per IP
+const scrapeLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many scrape requests, please try again after 1 hour.' },
+});
+
+// Password reset: 5 per hour per IP
+const resetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many password reset attempts, please try again after 1 hour.' },
+});
+
+module.exports = { apiLimiter, authLimiter, aiLimiter, scrapeLimiter, resetLimiter };

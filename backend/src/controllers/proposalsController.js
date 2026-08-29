@@ -4,6 +4,10 @@ const Lead = require('../models/Lead');
 const groqService = require('../services/aiService');
 const { notifyProposalGenerated } = require('../services/slackService');
 
+const isProd = process.env.NODE_ENV === 'production';
+const serverError = (res, error) =>
+  res.status(500).json({ success: false, message: isProd ? 'An unexpected error occurred.' : error.message });
+
 // @desc    Get all proposals with optional filters
 // @route   GET /api/proposals
 // @access  Private
@@ -37,7 +41,7 @@ const getProposals = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -82,7 +86,7 @@ const generateProposal = async (req, res) => {
 
     notifyProposalGenerated(lead, proposal);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -112,7 +116,7 @@ const updateProposal = async (req, res) => {
       data: updatedProposal,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -130,7 +134,7 @@ const deleteProposal = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Proposal deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -150,7 +154,7 @@ const shareProposal = async (req, res) => {
     }
     res.status(200).json({ success: true, data: { publicToken, proposal } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -169,7 +173,7 @@ const revokeShare = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Proposal sharing revoked', data: proposal });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -185,7 +189,7 @@ const getPublicProposal = async (req, res) => {
     }
     res.status(200).json({ success: true, data: proposal });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -209,7 +213,7 @@ const clientRespond = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Response submitted successfully', data: proposal });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 

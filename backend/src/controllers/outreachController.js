@@ -4,6 +4,10 @@ const Lead = require('../models/Lead');
 const emailService = require('../services/emailService');
 const whatsappService = require('../services/whatsappService');
 
+const isProd = process.env.NODE_ENV === 'production';
+const serverError = (res, error) =>
+  res.status(500).json({ success: false, message: isProd ? 'An unexpected error occurred.' : error.message });
+
 // @desc    Send an email to a lead
 // @route   POST /api/outreach/email
 // @access  Private
@@ -67,7 +71,7 @@ const sendEmail = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Email sent successfully', data: log });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -121,7 +125,7 @@ const sendWhatsApp = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'WhatsApp message sent successfully', data: log });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -148,7 +152,7 @@ const getOutreachHistory = async (req, res) => {
       pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -181,7 +185,7 @@ const scheduleFollowUp = async (req, res) => {
 
     res.status(201).json({ success: true, message: 'Follow-up scheduled successfully', data: log });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
@@ -206,7 +210,7 @@ const getAllOutreachLogs = async (req, res) => {
     ]);
     res.status(200).json({ success: true, data: logs, pagination: { total, page: parseInt(page), limit: parseInt(limit) } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    serverError(res, error);
   }
 };
 
