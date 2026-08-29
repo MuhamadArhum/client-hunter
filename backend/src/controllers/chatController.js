@@ -1,9 +1,4 @@
-const Groq = require('groq-sdk');
-
-const getGroqClient = () => {
-  if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY is not configured');
-  return new Groq({ apiKey: process.env.GROQ_API_KEY });
-};
+const { chatWithAI } = require('../services/aiService');
 
 const SYSTEM_PROMPT = `You are an intelligent AI assistant for "Abyte Hunter" — a Client Finding & Outreach Automation System built by Abyte Sol.
 
@@ -25,22 +20,13 @@ exports.chat = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Message is required' });
     }
 
-    const groq = getGroqClient();
-
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
       ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
       { role: 'user', content: message.trim() },
     ];
 
-    const response = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      messages,
-      temperature: 0.7,
-      max_tokens: 800,
-    });
-
-    const reply = response.choices[0].message.content;
+    const reply = await chatWithAI(messages, { temperature: 0.7, maxTokens: 800 });
 
     res.json({ success: true, reply });
   } catch (err) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import {
   LayoutTemplate, Plus, Trash2, Pencil, Copy, Check, Sparkles,
   X, Search, Tag, Clock, TrendingUp,
@@ -33,7 +33,7 @@ const CATEGORY_META: Record<Category | 'all', { label: string; color: string; bg
   'cold-outreach':{ label: 'Cold Outreach',  color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
   'follow-up':    { label: 'Follow Up',      color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
   proposal:       { label: 'Proposal',       color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-  general:        { label: 'General',        color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+  general:        { label: 'General',        color: '#14B8A6', bg: 'rgba(20,184,166,0.1)' },
 };
 
 const EMPTY_FORM = { name: '', subject: '', body: '', category: 'general' as Category };
@@ -452,7 +452,7 @@ function TemplateCard({
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-1 justify-center',
               copied
-                ? 'bg-emerald-500/10 text-emerald-600'
+                ? 'bg-primary/10 text-primary'
                 : 'bg-primary/10 text-primary hover:bg-primary/20',
             )}
           >

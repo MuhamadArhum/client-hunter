@@ -1,27 +1,27 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Zap, ArrowRight, Mail, Lock, User, XCircle, CheckCircle } from 'lucide-react';
 import api from '@/services/api';
 
 const PARTICLES = [
-  { left: '6%',  bottom: '22%', delay: '0.4s', dur: '4.6s', size: 4, color: 'rgba(16,185,129,0.75)' },
-  { left: '18%', bottom: '48%', delay: '2.1s', dur: '3.9s', size: 3, color: 'rgba(33,246,168,0.65)' },
-  { left: '28%', bottom: '15%', delay: '3.5s', dur: '5.1s', size: 2, color: 'rgba(16,185,129,0.5)'  },
+  { left: '6%',  bottom: '22%', delay: '0.4s', dur: '4.6s', size: 4, color: 'rgba(20,184,166,0.75)' },
+  { left: '18%', bottom: '48%', delay: '2.1s', dur: '3.9s', size: 3, color: 'rgba(15,118,110,0.65)' },
+  { left: '28%', bottom: '15%', delay: '3.5s', dur: '5.1s', size: 2, color: 'rgba(20,184,166,0.5)'  },
   { left: '75%', bottom: '18%', delay: '0.9s', dur: '4.4s', size: 5, color: 'rgba(5,150,105,0.55)'  },
-  { left: '85%', bottom: '42%', delay: '3.1s', dur: '3.7s', size: 3, color: 'rgba(33,246,168,0.7)'  },
-  { left: '92%', bottom: '62%', delay: '1.3s', dur: '4.9s', size: 2, color: 'rgba(16,185,129,0.6)'  },
-  { left: '52%', bottom: '7%',  delay: '2.4s', dur: '4.1s', size: 4, color: 'rgba(33,246,168,0.55)' },
+  { left: '85%', bottom: '42%', delay: '3.1s', dur: '3.7s', size: 3, color: 'rgba(15,118,110,0.7)'  },
+  { left: '92%', bottom: '62%', delay: '1.3s', dur: '4.9s', size: 2, color: 'rgba(20,184,166,0.6)'  },
+  { left: '52%', bottom: '7%',  delay: '2.4s', dur: '4.1s', size: 4, color: 'rgba(15,118,110,0.55)' },
   { left: '65%', bottom: '58%', delay: '4.6s', dur: '5.3s', size: 2, color: 'rgba(5,150,105,0.4)'   },
-  { left: '38%', bottom: '75%', delay: '3.9s', dur: '3.6s', size: 3, color: 'rgba(33,246,168,0.45)' },
-  { left: '12%', bottom: '68%', delay: '1.7s', dur: '4.7s', size: 2, color: 'rgba(16,185,129,0.35)' },
+  { left: '38%', bottom: '75%', delay: '3.9s', dur: '3.6s', size: 3, color: 'rgba(15,118,110,0.45)' },
+  { left: '12%', bottom: '68%', delay: '1.7s', dur: '4.7s', size: 2, color: 'rgba(20,184,166,0.35)' },
 ];
 
 function PasswordStrength({ password }: { password: string }) {
   if (!password) return null;
   const s = password.length < 6 ? 1 : password.length < 10 ? 2 : 3;
   const labels = ['', 'Weak', 'Good', 'Strong'];
-  const colors = ['', '#F87171', '#FCD34D', '#21F6A8'];
-  const barColors = ['', 'rgba(248,113,113,0.9)', 'rgba(252,211,77,0.9)', 'rgba(33,246,168,0.9)'];
+  const colors = ['', '#F87171', '#FCD34D', '#0F766E'];
+  const barColors = ['', 'rgba(248,113,113,0.9)', 'rgba(252,211,77,0.9)', 'rgba(15,118,110,0.9)'];
   return (
     <div className="mt-2 space-y-1.5">
       <div className="flex gap-1.5">
@@ -78,9 +78,9 @@ export default function SignUp() {
   };
 
   const focusGreen = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(33,246,168,0.5)';
-    e.target.style.boxShadow   = '0 0 0 3px rgba(33,246,168,0.1), 0 1px 4px rgba(33,246,168,0.15)';
-    e.target.style.background  = 'rgba(33,246,168,0.05)';
+    e.target.style.borderColor = 'rgba(15,118,110,0.5)';
+    e.target.style.boxShadow   = '0 0 0 3px rgba(15,118,110,0.1), 0 1px 4px rgba(15,118,110,0.15)';
+    e.target.style.background  = 'rgba(15,118,110,0.05)';
   };
   const blurReset = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.style.borderColor = 'rgba(255,255,255,0.1)';
@@ -98,14 +98,14 @@ export default function SignUp() {
         <div style={{
           position: 'absolute', top: '-5%', right: '-5%',
           width: 650, height: 650, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(33,246,168,0.18) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(15,118,110,0.18) 0%, transparent 65%)',
           filter: 'blur(60px)',
           animation: 'aurora-drift-2 20s ease-in-out infinite',
         }} />
         <div style={{
           position: 'absolute', bottom: '-10%', left: '-5%',
           width: 580, height: 580, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.14) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(20,184,166,0.14) 0%, transparent 65%)',
           filter: 'blur(60px)',
           animation: 'aurora-drift-1 16s ease-in-out infinite',
         }} />
@@ -143,17 +143,17 @@ export default function SignUp() {
         style={{
           maxWidth: 420,
           background: 'rgba(10, 18, 12, 0.85)',
-          border: '1px solid rgba(33,246,168,0.12)',
+          border: '1px solid rgba(15,118,110,0.12)',
           borderRadius: 20,
           backdropFilter: 'blur(48px)',
           WebkitBackdropFilter: 'blur(48px)',
-          boxShadow: '0 0 0 1px rgba(33,246,168,0.08), 0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
+          boxShadow: '0 0 0 1px rgba(15,118,110,0.08), 0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
         {/* Shimmer top */}
         <div style={{
           height: 1,
-          background: 'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, #0F766E 35%, #14B8A6 65%, transparent 100%)',
           backgroundSize: '200% 100%',
           borderRadius: '20px 20px 0 0',
           animation: 'shimmer-sweep 3s linear infinite',
@@ -162,7 +162,7 @@ export default function SignUp() {
         {/* Scan line */}
         <div className="scan-line pointer-events-none absolute left-0 right-0" style={{
           height: 1,
-          background: 'linear-gradient(90deg, transparent 10%, rgba(33,246,168,0.25) 50%, transparent 90%)',
+          background: 'linear-gradient(90deg, transparent 10%, rgba(15,118,110,0.25) 50%, transparent 90%)',
           zIndex: 2,
         }} />
 
@@ -173,12 +173,12 @@ export default function SignUp() {
             <div className="relative mb-4">
               <div className="halo-pulse" style={{
                 position: 'absolute', inset: -10, borderRadius: 28,
-                background: 'linear-gradient(135deg, rgba(33,246,168,0.3), rgba(16,185,129,0.3))',
+                background: 'linear-gradient(135deg, rgba(15,118,110,0.3), rgba(20,184,166,0.3))',
                 filter: 'blur(20px)', opacity: 0.7,
               }} />
               <div
                 className="logo-float relative flex h-16 w-16 items-center justify-center rounded-2xl"
-                style={{ background: 'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)' }}
               >
                 <Zap className="h-8 w-8 text-gray-900" fill="currentColor" />
                 <div style={{
@@ -188,7 +188,7 @@ export default function SignUp() {
               </div>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight" style={{
-              background: 'linear-gradient(135deg, #21F6A8 0%, #A7F3D0 100%)',
+              background: 'linear-gradient(135deg, #0F766E 0%, #A7F3D0 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
               Abyte Hunt
@@ -213,12 +213,12 @@ export default function SignUp() {
               <div
                 className="flex h-16 w-16 items-center justify-center rounded-2xl"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(33,246,168,0.15), rgba(16,185,129,0.15))',
-                  boxShadow: '0 0 30px rgba(33,246,168,0.2)',
+                  background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(20,184,166,0.15))',
+                  boxShadow: '0 0 30px rgba(15,118,110,0.2)',
                   animation: 'glow-pulse 2s ease-in-out infinite',
                 }}
               >
-                <CheckCircle className="h-8 w-8" style={{ color: '#21F6A8' }} />
+                <CheckCircle className="h-8 w-8" style={{ color: '#0F766E' }} />
               </div>
               <div>
                 <p className="text-base font-bold text-white">Account created!</p>
@@ -297,7 +297,7 @@ export default function SignUp() {
                         color: 'rgba(148,163,184,0.4)', cursor: 'pointer', background: 'none', border: 'none', padding: 0,
                         transition: 'color 0.2s',
                       }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(33,246,168,0.8)'; }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(15,118,110,0.8)'; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.4)'; }}
                     >
                       {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -315,8 +315,8 @@ export default function SignUp() {
                     height: 46, marginTop: 4,
                     borderRadius: 10,
                     background: loading
-                      ? 'rgba(33,246,168,0.35)'
-                      : 'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)',
+                      ? 'rgba(15,118,110,0.35)'
+                      : 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)',
                     border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
                     transition: 'transform 0.15s',
                   }}

@@ -6,21 +6,38 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 
-const navItems = [
-  { title: 'Dashboard', path: '/', icon: LayoutDashboard, exact: true },
-  { title: 'Leads',     path: '/leads',     icon: Users },
-  { title: 'Kanban',    path: '/kanban',    icon: Kanban },
-  { title: 'Proposals', path: '/proposals', icon: FileText },
-  { title: 'Outreach',  path: '/outreach',  icon: Send },
-  { title: 'Sequences', path: '/sequences', icon: GitBranch },
-  { title: 'Analytics', path: '/analytics', icon: BarChart3 },
-  { title: 'AI Chat',   path: '/chat',      icon: MessageSquare },
-  { title: 'Activity',  path: '/activity',  icon: Activity },
-  { title: 'Templates', path: '/templates', icon: LayoutTemplate },
-];
-
-const bottomItems = [
-  { title: 'Notifications', path: '/notifications', icon: Bell },
+const NAV_SECTIONS = [
+  {
+    label: 'Overview',
+    items: [
+      { title: 'Dashboard', path: '/', icon: LayoutDashboard, exact: true },
+      { title: 'Leads',     path: '/leads',     icon: Users },
+      { title: 'Kanban',    path: '/kanban',    icon: Kanban },
+      { title: 'Proposals', path: '/proposals', icon: FileText },
+    ],
+  },
+  {
+    label: 'Outreach',
+    items: [
+      { title: 'Outreach',   path: '/outreach',   icon: Send },
+      { title: 'Sequences',  path: '/sequences',  icon: GitBranch },
+      { title: 'Templates',  path: '/templates',  icon: LayoutTemplate },
+    ],
+  },
+  {
+    label: 'Insights',
+    items: [
+      { title: 'Analytics', path: '/analytics', icon: BarChart3 },
+      { title: 'AI Chat',   path: '/chat',      icon: MessageSquare },
+      { title: 'Activity',  path: '/activity',  icon: Activity },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { title: 'Notifications', path: '/notifications', icon: Bell },
+    ],
+  },
 ];
 
 interface SidebarProps { open: boolean; onClose: () => void; }
@@ -30,230 +47,124 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const navigate = useNavigate();
 
   const initials = user?.name
-    ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+    ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
-        <div
-          className="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 z-20 bg-black/60 lg:hidden" onClick={onClose} />
       )}
 
       <aside
         className={cn(
-          'fixed top-0 left-0 z-30 h-full w-[240px] flex flex-col',
+          'fixed top-0 left-0 z-30 h-full w-[230px] flex flex-col',
           'transition-transform duration-300 ease-in-out',
           'lg:translate-x-0 lg:static lg:z-auto',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
-        style={{
-          background: '#171717',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-        }}
+        style={{ background: '#101318', borderRight: '1px solid rgba(127,216,206,0.25)' }}
       >
-        {/* Top green accent line */}
+        {/* Brand */}
         <div
-          className="h-0.5 shrink-0"
-          style={{ background: 'linear-gradient(90deg, #21F6A8, #10B981)' }}
-        />
-
-        {/* Logo */}
-        <div
-          className="flex items-center gap-3 px-5 py-4 shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+          className="flex items-center gap-2.5 px-5 py-[22px] shrink-0"
+          style={{ borderBottom: '1px solid rgba(127,216,206,0.25)' }}
         >
-          <div
-            className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+          <span className="w-[9px] h-[9px] shrink-0" style={{ background: '#1FB2A6' }} />
+          <span
+            className="text-[17px] font-semibold tracking-[0.04em]"
+            style={{ color: '#F1F4F0', fontFamily: 'Oswald, sans-serif' }}
           >
-            <Zap className="h-4.5 w-4.5 text-gray-900" fill="currentColor" />
-            <div
-              className="absolute inset-0 rounded-xl opacity-50 blur-md"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
-            />
-          </div>
-          <div className="min-w-0">
-            <p
-              className="text-sm font-bold tracking-tight"
-              style={{
-                background: 'linear-gradient(135deg, #21F6A8, #6EE7B7)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Abyte Hunt
-            </p>
-            <p
-              className="text-[10px] font-medium tracking-wider uppercase"
-              style={{ color: 'rgba(255,255,255,0.25)' }}
-            >
-              by Abyte Sol
-            </p>
-          </div>
+            ABYTE HUNT
+          </span>
         </div>
 
-        {/* Main Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3">
-          <p
-            className="px-2 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.22)' }}
-          >
-            Main Menu
-          </p>
-
-          <div className="space-y-0.5">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.exact}
-                onClick={onClose}
-                className={({ isActive }) => cn(
-                  'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                  'transition-all duration-150',
-                  isActive
-                    ? 'text-white'
-                    : 'text-white/40 hover:text-white/80 hover:bg-white/[0.04]',
-                )}
-                style={({ isActive }) => isActive ? {
-                  background: 'rgba(33,246,168,0.12)',
-                } : {}}
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-[18px]">
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.label}>
+              <p
+                className="px-3 pt-3 pb-2 text-[10.5px] tracking-[0.1em] uppercase opacity-45"
+                style={{ fontFamily: 'IBM Plex Mono, monospace', color: '#7FD8CE' }}
               >
-                {({ isActive }) => (
-                  <>
-                    {/* Left active indicator */}
-                    {isActive && (
-                      <span
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                        style={{ background: '#21F6A8' }}
-                      />
+                {section.label}
+              </p>
+              <div className="space-y-[2px]">
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.exact}
+                    onClick={onClose}
+                    className={({ isActive }) => cn(
+                      'flex items-center gap-[11px] px-3 py-[10px] rounded-[4px] text-[13.5px] transition-all duration-150 mb-[2px]',
+                      isActive
+                        ? 'opacity-100'
+                        : 'opacity-[0.82] hover:opacity-100'
                     )}
-
-                    {/* Icon */}
-                    <span
-                      className={cn(
-                        'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all',
-                      )}
-                      style={isActive ? {
-                        background: 'rgba(33,246,168,0.18)',
-                        color: '#21F6A8',
-                      } : {
-                        background: 'rgba(255,255,255,0.06)',
-                        color: 'rgba(255,255,255,0.35)',
-                      }}
-                    >
-                      <item.icon className="h-3.5 w-3.5" />
-                    </span>
-
-                    <span className="flex-1 leading-none">{item.title}</span>
-
-                    {isActive && (
-                      <span
-                        className="h-1.5 w-1.5 rounded-full"
-                        style={{ background: '#21F6A8', boxShadow: '0 0 6px #21F6A8' }}
-                      />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Bottom section nav items */}
-          <div className="mt-4 pt-4 space-y-0.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <p
-              className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest"
-              style={{ color: 'rgba(255,255,255,0.22)' }}
-            >
-              Account
-            </p>
-            {bottomItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={onClose}
-                className={({ isActive }) => cn(
-                  'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                  'transition-all duration-150',
-                  isActive
-                    ? 'text-white'
-                    : 'text-white/40 hover:text-white/80 hover:bg-white/[0.04]',
-                )}
-                style={({ isActive }) => isActive ? { background: 'rgba(33,246,168,0.12)' } : {}}
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full" style={{ background: '#21F6A8' }} />
-                    )}
-                    <span
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all"
-                      style={isActive ? {
-                        background: 'rgba(33,246,168,0.18)', color: '#21F6A8',
-                      } : {
-                        background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)',
-                      }}
-                    >
-                      <item.icon className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="flex-1 leading-none">{item.title}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
+                    style={({ isActive }) => isActive
+                      ? {
+                          background: 'rgba(31,178,166,0.12)',
+                          color: '#F1F4F0',
+                          borderLeft: '2px solid #1FB2A6',
+                          paddingLeft: '10px',
+                        }
+                      : {
+                          color: '#7FD8CE',
+                          borderLeft: '2px solid transparent',
+                        }
+                    }
+                  >
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    <span>{item.title}</span>
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
         </nav>
 
-        {/* User Footer */}
-        <div className="p-3 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          {/* User card */}
+        {/* User footer */}
+        <div
+          className="p-4 shrink-0"
+          style={{ borderTop: '1px solid rgba(127,216,206,0.25)' }}
+        >
           <button
             onClick={() => { navigate('/profile'); onClose(); }}
-            className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 mb-1 transition-all duration-150 hover:bg-white/[0.04] text-left"
+            className="w-full flex items-center gap-3 rounded-[4px] px-3 py-2 mb-2 text-left transition-colors"
+            style={{ color: '#7FD8CE' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(127,216,206,0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            <div className="relative shrink-0">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-gray-900"
-                style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
-              >
-                {initials}
-              </div>
-              <span
-                className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2"
-                style={{ background: '#22C55E', borderColor: '#171717' }}
-              />
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold overflow-hidden"
+              style={{ background: '#1FB2A6', color: '#101318', fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              {user?.avatar
+                ? <img src={user.avatar} alt={user?.name} className="h-8 w-8 object-cover" />
+                : initials
+              }
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              <p className="text-sm font-semibold truncate" style={{ color: '#F1F4F0' }}>
                 {user?.name || 'User'}
               </p>
-              <p className="text-[10px] font-medium capitalize" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              <p className="text-[10px] capitalize opacity-50" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 {user?.role || 'agent'}
               </p>
             </div>
           </button>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 hover:bg-rose-500/10"
-            style={{ color: 'rgba(248,113,113,0.6)' }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(248,113,113,1)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(248,113,113,0.6)'; }}
+            className="w-full flex items-center gap-3 rounded-[4px] px-3 py-2 text-[13px] transition-colors opacity-60 hover:opacity-100"
+            style={{ color: '#7FD8CE' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(127,216,206,0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            <span
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-              style={{ background: 'rgba(248,113,113,0.08)' }}
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </span>
+            <LogOut className="h-4 w-4 shrink-0" />
             Sign out
           </button>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { User, Mail, Shield, FileText, Send, CheckCircle, Camera, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 interface Stats { leads: number; proposals: number; outreach: number; }
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [stats, setStats] = useState<Stats>({ leads: 0, proposals: 0, outreach: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
   const [name, setName]   = useState(user?.name || '');
@@ -54,6 +54,7 @@ export default function Profile() {
     try {
       await api.put('/auth/profile', { name, email });
       setAlert({ type: 'success', msg: 'Profile updated successfully!' });
+      refreshUser();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setAlert({ type: 'error', msg: err?.response?.data?.message || 'Failed to update profile.' });
@@ -72,6 +73,7 @@ export default function Profile() {
         await api.put('/auth/avatar', { avatar: base64 });
         setAvatar(base64);
         setAlert({ type: 'success', msg: 'Avatar updated!' });
+        refreshUser();
       } catch (err: unknown) {
         const e = err as { response?: { data?: { message?: string } } };
         setAlert({ type: 'error', msg: e?.response?.data?.message || 'Failed to update avatar.' });
@@ -85,7 +87,7 @@ export default function Profile() {
     : 'U';
 
   const statItems = [
-    { icon: User,     label: 'Total Leads',    value: stats.leads,    color: '#0D9C6A', bg: 'rgba(33,246,168,0.08)' },
+    { icon: User,     label: 'Total Leads',    value: stats.leads,    color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)' },
     { icon: Send,     label: 'Outreach Sent',  value: stats.outreach, color: '#7C3AED', bg: '#F5F3FF' },
     { icon: FileText, label: 'Proposals',       value: stats.proposals, color: '#059669', bg: '#ECFDF5' },
   ];
@@ -106,7 +108,7 @@ export default function Profile() {
             {/* Cover */}
             <div
               className="h-20 w-full"
-              style={{ background: 'linear-gradient(135deg, #0a2a18 0%, #0D9C6A 50%, #21F6A8 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #0a2a18 0%, #0D9C6A 50%, #0F766E 100%)' }}
             />
             <div className="px-5 pb-5 -mt-10 text-center">
               <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
@@ -121,7 +123,7 @@ export default function Profile() {
                 ) : (
                   <div
                     className="h-full w-full flex items-center justify-center text-xl font-bold text-gray-900"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                   >
                     {avatarLoading
                       ? <span className="h-5 w-5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" />
@@ -141,7 +143,7 @@ export default function Profile() {
               <p className="text-sm text-muted-foreground truncate">{user?.email || '—'}</p>
 
               <div className="flex items-center justify-center gap-2 mt-2">
-                <Badge className="text-xs px-2.5 py-0.5 rounded-full border-0 capitalize" style={{ background: 'rgba(33,246,168,0.1)', color: '#0D9C6A' }}>
+                <Badge className="text-xs px-2.5 py-0.5 rounded-full border-0 capitalize" style={{ background: 'rgba(15,118,110,0.1)', color: '#0D9C6A' }}>
                   <Shield className="h-3 w-3 mr-1" />
                   {user?.role || 'agent'}
                 </Badge>
@@ -178,7 +180,7 @@ export default function Profile() {
         <div className="lg:col-span-2">
           <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(33,246,168,0.08)' }}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
                 <Edit3 className="h-4 w-4" style={{ color: '#0D9C6A' }} />
               </div>
               <div>
@@ -205,7 +207,7 @@ export default function Profile() {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                   <Input
-                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-emerald-500/30"
+                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-primary/30"
                     placeholder="Your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -219,7 +221,7 @@ export default function Profile() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                   <Input
                     type="email"
-                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-emerald-500/30"
+                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-primary/30"
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -237,7 +239,7 @@ export default function Profile() {
               <div className="pt-1">
                 <Button
                   className="h-10 rounded-lg text-sm font-semibold text-gray-900 gap-2"
-                  style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                  style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                   onClick={handleSave}
                   disabled={saveLoading}
                 >

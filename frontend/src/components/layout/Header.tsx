@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -17,13 +17,14 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/proposals':     { title: 'Proposals',     subtitle: 'AI-generated proposals for your leads' },
   '/outreach':      { title: 'Outreach',      subtitle: 'Send emails and WhatsApp messages' },
   '/analytics':     { title: 'Analytics',     subtitle: 'Performance metrics and insights' },
-  '/kanban':        { title: 'Kanban Board',  subtitle: 'Visual pipeline management' },
-  '/sequences':     { title: 'Sequences',     subtitle: 'Automated follow-up campaigns' },
+  '/kanban':        { title: 'Kanban Board',  subtitle: 'Drag-and-drop visual pipeline management' },
+  '/sequences':     { title: 'Sequences',     subtitle: 'Automated multi-step email campaigns' },
   '/chat':          { title: 'AI Assistant',  subtitle: 'Powered by Groq · LLaMA 3.3 70B' },
   '/profile':       { title: 'Profile',       subtitle: 'Manage your account information' },
-  '/settings':      { title: 'Settings',      subtitle: 'App configuration and preferences' },
-  '/notifications': { title: 'Notifications', subtitle: 'Recent activity feed' },
+  '/settings':      { title: 'Settings',      subtitle: 'App configuration and integrations' },
+  '/notifications': { title: 'Notifications', subtitle: 'Recent activity and alerts' },
   '/activity':      { title: 'Agent Activity', subtitle: 'Real-time feed of everything your agent does' },
+  '/templates':     { title: 'Templates',     subtitle: 'Reusable email templates for outreach' },
 };
 
 interface HeaderProps { onMenuClick: () => void; }
@@ -56,32 +57,34 @@ export default function Header({ onMenuClick }: HeaderProps) {
   return (
     <header
       className="sticky top-0 z-10 px-5 py-3 shrink-0"
-      style={{
-        background: 'hsl(var(--background) / 0.90)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid hsl(var(--border) / 0.6)',
-      }}
+      style={{ background: '#F1F4F0', borderBottom: '1px solid #CBD3CF' }}
     >
       <div className="flex items-center justify-between gap-4">
 
         {/* Left: mobile menu + page title */}
         <div className="flex items-center gap-3 min-w-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden h-9 w-9 rounded-lg hover:bg-muted shrink-0"
+          <button
+            className="lg:hidden flex items-center justify-center h-[34px] w-[34px] rounded-[4px] shrink-0 transition-colors"
+            style={{ background: '#fff', border: '1px solid #CBD3CF', color: '#6E7D79' }}
             onClick={onMenuClick}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#E6E9E5')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
           >
-            <Menu className="h-4.5 w-4.5" />
-          </Button>
+            <Menu className="h-4 w-4" />
+          </button>
 
           <div className="min-w-0">
-            <h1 className="text-base font-bold text-foreground leading-tight truncate">
+            <h1
+              className="text-[15px] font-semibold leading-tight truncate uppercase tracking-[0.02em]"
+              style={{ color: '#1B1F2B', fontFamily: 'Oswald, sans-serif' }}
+            >
               {page.title}
             </h1>
             {page.subtitle && (
-              <p className="text-xs text-muted-foreground hidden sm:block leading-tight mt-0.5 truncate">
+              <p
+                className="text-[11px] hidden sm:block leading-tight mt-0.5 truncate"
+                style={{ color: '#6E7D79', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
                 {page.subtitle}
               </p>
             )}
@@ -89,25 +92,28 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* Right: actions */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
 
-          {/* Search placeholder — quick access */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:flex h-9 w-9 rounded-lg hover:bg-muted text-muted-foreground"
-            title="Search"
+          {/* Quick search */}
+          <button
+            className="hidden sm:flex items-center justify-center h-[34px] w-[34px] rounded-[4px] transition-colors"
+            style={{ background: '#fff', border: '1px solid #CBD3CF', color: '#6E7D79' }}
+            title="Search leads (Ctrl+/)"
+            onClick={() => navigate('/leads')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#E6E9E5')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
           >
             <Search className="h-4 w-4" />
-          </Button>
+          </button>
 
           {/* Theme toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative h-9 w-9 rounded-lg hover:bg-muted overflow-hidden"
+          <button
+            className="relative flex items-center justify-center h-[34px] w-[34px] rounded-[4px] overflow-hidden transition-colors"
+            style={{ background: '#fff', border: '1px solid #CBD3CF', color: '#6E7D79' }}
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#E6E9E5')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
           >
             <span
               className="absolute inset-0 flex items-center justify-center transition-all duration-300"
@@ -116,7 +122,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 transform: theme === 'dark' ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.5)',
               }}
             >
-              <Sun className="h-4 w-4 text-amber-500" />
+              <Sun className="h-4 w-4" />
             </span>
             <span
               className="absolute inset-0 flex items-center justify-center transition-all duration-300"
@@ -125,64 +131,81 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 transform: theme === 'light' ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.5)',
               }}
             >
-              <Moon className="h-4 w-4 text-blue-400" />
+              <Moon className="h-4 w-4" />
             </span>
-          </Button>
+          </button>
 
           {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative h-9 w-9 rounded-lg hover:bg-muted text-muted-foreground"
+          <button
+            className="relative flex items-center justify-center h-[34px] w-[34px] rounded-[4px] transition-colors"
+            style={{ background: '#fff', border: '1px solid #CBD3CF', color: '#6E7D79' }}
             onClick={() => navigate('/notifications')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#E6E9E5')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
           >
             <Bell className="h-4 w-4" />
-            <span
-              className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-emerald-400"
-            />
-          </Button>
+            <span className="absolute top-[9px] right-[9px] h-1.5 w-1.5 rounded-full" style={{ background: '#3E8E5A' }} />
+          </button>
 
           {/* Divider */}
-          <div className="h-6 w-px bg-border mx-0.5 hidden sm:block" />
+          <div className="h-6 w-px mx-0.5 hidden sm:block" style={{ background: '#CBD3CF' }} />
 
           {/* Account Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2 px-2 h-9 hover:bg-muted rounded-lg"
+              <button
+                className="flex items-center gap-2 px-2 h-[34px] rounded-[4px] transition-colors"
+                style={{ background: '#fff', border: '1px solid #CBD3CF' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#E6E9E5')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
               >
                 <Avatar className="h-7 w-7">
+                  {user?.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
                   <AvatarFallback
-                    className="text-[11px] font-bold text-gray-900"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    className="text-[11px] font-bold"
+                    style={{ background: '#1FB2A6', color: '#101318', fontFamily: 'IBM Plex Mono, monospace' }}
                   >
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:block text-sm font-medium text-foreground max-w-[100px] truncate">
+                <span
+                  className="hidden sm:block text-sm font-medium max-w-[100px] truncate"
+                  style={{ color: '#1B1F2B' }}
+                >
                   {user?.name || 'Account'}
                 </span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
-              </Button>
+                <ChevronDown className="h-3.5 w-3.5 hidden sm:block" style={{ color: '#6E7D79' }} />
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl border-border/60 shadow-card-hover">
-              <div className="px-3 py-2 border-b border-border/50 mb-1">
-                <p className="text-sm font-semibold text-foreground truncate">{user?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            <DropdownMenuContent
+              align="end"
+              className="w-48 rounded-[4px] shadow-md"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF' }}
+            >
+              <div className="px-3 py-2 mb-1" style={{ borderBottom: '1px solid #CBD3CF' }}>
+                <p className="text-sm font-semibold truncate" style={{ color: '#1B1F2B' }}>{user?.name}</p>
+                <p className="text-xs truncate" style={{ color: '#6E7D79' }}>{user?.email}</p>
               </div>
-              <DropdownMenuItem onClick={() => navigate('/profile')} className="rounded-lg cursor-pointer gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+              <DropdownMenuItem
+                onClick={() => navigate('/profile')}
+                className="rounded-[4px] cursor-pointer gap-2"
+                style={{ color: '#2E3532' }}
+              >
+                <User className="h-4 w-4" style={{ color: '#6E7D79' }} />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-lg cursor-pointer gap-2">
-                <Settings className="h-4 w-4 text-muted-foreground" />
+              <DropdownMenuItem
+                onClick={() => navigate('/settings')}
+                className="rounded-[4px] cursor-pointer gap-2"
+                style={{ color: '#2E3532' }}
+              >
+                <Settings className="h-4 w-4" style={{ color: '#6E7D79' }} />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator style={{ background: '#CBD3CF' }} />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-destructive focus:text-destructive rounded-lg cursor-pointer gap-2"
+                className="text-destructive focus:text-destructive rounded-[4px] cursor-pointer gap-2"
               >
                 <LogOut className="h-4 w-4" />
                 Sign out

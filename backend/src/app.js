@@ -30,6 +30,9 @@ const httpServer = http.createServer(app);
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 

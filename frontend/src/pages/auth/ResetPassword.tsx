@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Zap, XCircle, CheckCircle } from 'lucide-react';
 import api from '@/services/api';
@@ -7,7 +7,7 @@ function PasswordStrength({ password }: { password: string }) {
   if (!password) return null;
   const s = password.length < 6 ? 1 : password.length < 10 ? 2 : 3;
   const labels = ['', 'Weak', 'Good', 'Strong'];
-  const colors = ['', '#f87171', '#fbbf24', '#21F6A8'];
+  const colors = ['', '#f87171', '#fbbf24', '#0F766E'];
   return (
     <div className="mt-2 space-y-1.5">
       <div className="flex gap-1.5">
@@ -45,9 +45,9 @@ export default function ResetPassword() {
   };
 
   const focusGreen = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(33,246,168,0.5)';
-    e.target.style.boxShadow   = '0 0 0 3px rgba(33,246,168,0.1), 0 1px 4px rgba(33,246,168,0.15)';
-    e.target.style.background  = 'rgba(33,246,168,0.04)';
+    e.target.style.borderColor = 'rgba(15,118,110,0.5)';
+    e.target.style.boxShadow   = '0 0 0 3px rgba(15,118,110,0.1), 0 1px 4px rgba(15,118,110,0.15)';
+    e.target.style.background  = 'rgba(15,118,110,0.04)';
   };
   const blurReset = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.style.borderColor = 'rgba(255,255,255,0.09)';
@@ -68,26 +68,26 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background:'#0a0f0a' }}>
       {/* Aurora blobs */}
       <div className="pointer-events-none absolute inset-0">
-        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle, rgba(33,246,168,0.18) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-1 18s ease-in-out infinite' }} />
-        <div style={{ position:'absolute', bottom:'-15%', right:'-5%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(16,185,129,0.16) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-2 22s ease-in-out infinite' }} />
+        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle, rgba(15,118,110,0.18) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-1 18s ease-in-out infinite' }} />
+        <div style={{ position:'absolute', bottom:'-15%', right:'-5%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(20,184,166,0.16) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-2 22s ease-in-out infinite' }} />
         <div style={{ position:'absolute', top:'40%', left:'60%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(5,150,105,0.1) 0%, transparent 65%)', filter:'blur(80px)', animation:'aurora-drift-3 26s ease-in-out infinite' }} />
       </div>
       <div className="pointer-events-none absolute inset-0" style={{ backgroundImage:'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'32px 32px' }} />
 
       {/* Glass card */}
-      <div className="relative z-10 w-full overflow-hidden" style={{ maxWidth:420, background:'rgba(8,18,10,0.82)', border:'1px solid rgba(33,246,168,0.12)', borderRadius:28, backdropFilter:'blur(44px)', WebkitBackdropFilter:'blur(44px)', boxShadow:'0 0 0 1px rgba(33,246,168,0.06), 0 40px 100px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
-        <div style={{ height:1, background:'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)', borderRadius:'28px 28px 0 0', animation:'shimmer-sweep 3s linear infinite' }} />
+      <div className="relative z-10 w-full overflow-hidden" style={{ maxWidth:420, background:'rgba(8,18,10,0.82)', border:'1px solid rgba(15,118,110,0.12)', borderRadius:28, backdropFilter:'blur(44px)', WebkitBackdropFilter:'blur(44px)', boxShadow:'0 0 0 1px rgba(15,118,110,0.06), 0 40px 100px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+        <div style={{ height:1, background:'linear-gradient(90deg, transparent 0%, #0F766E 35%, #14B8A6 65%, transparent 100%)', borderRadius:'28px 28px 0 0', animation:'shimmer-sweep 3s linear infinite' }} />
 
         <div className="px-8 pt-8 pb-7 relative z-10">
           {/* Logo */}
           <div className="flex flex-col items-center text-center mb-7">
             <div className="relative mb-4">
-              <div style={{ position:'absolute', inset:-10, borderRadius:32, background:'linear-gradient(135deg, rgba(33,246,168,0.35), rgba(16,185,129,0.35))', filter:'blur(18px)', opacity:0.75 }} />
-              <div className="logo-float relative flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background:'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)' }}>
+              <div style={{ position:'absolute', inset:-10, borderRadius:32, background:'linear-gradient(135deg, rgba(15,118,110,0.35), rgba(20,184,166,0.35))', filter:'blur(18px)', opacity:0.75 }} />
+              <div className="logo-float relative flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background:'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)' }}>
                 <Zap className="h-8 w-8 text-gray-900" fill="currentColor" />
               </div>
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight" style={{ background:'linear-gradient(135deg, #21F6A8 0%, #6EE7B7 60%, #A7F3D0 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+            <h1 className="text-2xl font-extrabold tracking-tight" style={{ background:'linear-gradient(135deg, #0F766E 0%, #5EEAD4 60%, #A7F3D0 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
               Reset Password
             </h1>
             <p className="text-xs font-medium mt-1" style={{ color:'rgba(180,220,200,0.4)' }}>Abyte Hunt by Abyte Sol</p>
@@ -95,12 +95,12 @@ export default function ResetPassword() {
 
           {success ? (
             <div className="flex flex-col items-center text-center gap-3 py-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'rgba(33,246,168,0.12)', border:'1px solid rgba(33,246,168,0.25)' }}>
-                <CheckCircle className="h-7 w-7" style={{ color:'#21F6A8' }} />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'rgba(15,118,110,0.12)', border:'1px solid rgba(15,118,110,0.25)' }}>
+                <CheckCircle className="h-7 w-7" style={{ color:'#0F766E' }} />
               </div>
               <p className="text-sm font-semibold" style={{ color:'rgba(220,255,240,0.9)' }}>Password reset successful!</p>
               <p className="text-xs" style={{ color:'rgba(180,220,200,0.5)' }}>Redirecting to sign in...</p>
-              <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin mt-2" style={{ borderColor:'rgba(33,246,168,0.4)', borderTopColor:'transparent' }} />
+              <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin mt-2" style={{ borderColor:'rgba(15,118,110,0.4)', borderTopColor:'transparent' }} />
             </div>
           ) : (
             <>
@@ -123,7 +123,7 @@ export default function ResetPassword() {
                     />
                     <button type="button" tabIndex={-1} onClick={() => setShowPass(v => !v)}
                       style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', color:'rgba(180,220,200,0.35)', cursor:'pointer', background:'none', border:'none', padding:0 }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(33,246,168,0.8)'; }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(15,118,110,0.8)'; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(180,220,200,0.35)'; }}
                     >
                       {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -135,7 +135,7 @@ export default function ResetPassword() {
                 <button
                   type="submit" disabled={loading}
                   className={`w-full flex items-center justify-center gap-2 font-bold text-sm text-gray-900 ${!loading ? 'btn-breathe-green' : ''}`}
-                  style={{ height:50, marginTop:4, borderRadius:14, background: loading ? 'rgba(33,246,168,0.35)' : 'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)', border:'none', cursor: loading ? 'not-allowed' : 'pointer', transition:'transform 0.15s, background 0.2s' }}
+                  style={{ height:50, marginTop:4, borderRadius:14, background: loading ? 'rgba(15,118,110,0.35)' : 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)', border:'none', cursor: loading ? 'not-allowed' : 'pointer', transition:'transform 0.15s, background 0.2s' }}
                 >
                   {loading ? (
                     <><span className="h-4 w-4 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" />Resetting...</>
@@ -145,7 +145,7 @@ export default function ResetPassword() {
 
               <div className="mt-5 pt-5 text-center" style={{ borderTop:'1px solid rgba(255,255,255,0.06)' }}>
                 <Link to="/login" className="text-sm font-semibold" style={{ color:'rgba(180,220,200,0.45)', textDecoration:'none' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#21F6A8'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#0F766E'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(180,220,200,0.45)'; }}
                 >
                   Back to Sign In

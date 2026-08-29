@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ArrowRight, Mail, Lock, XCircle, Zap, TrendingUp, Users, Target, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -39,9 +39,9 @@ export default function Login() {
   };
 
   const focusGreen = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(33,246,168,0.5)';
-    e.target.style.boxShadow   = '0 0 0 3px rgba(33,246,168,0.08)';
-    e.target.style.background  = 'rgba(33,246,168,0.04)';
+    e.target.style.borderColor = 'rgba(15,118,110,0.5)';
+    e.target.style.boxShadow   = '0 0 0 3px rgba(15,118,110,0.08)';
+    e.target.style.background  = 'rgba(15,118,110,0.04)';
   };
   const blurReset = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.style.borderColor = 'rgba(255,255,255,0.08)';
@@ -72,15 +72,15 @@ export default function Login() {
         {/* Background grid */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: `
-            linear-gradient(rgba(33,246,168,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(33,246,168,0.03) 1px, transparent 1px)
+            linear-gradient(rgba(15,118,110,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15,118,110,0.03) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px',
         }} />
 
         {/* Aurora blobs */}
-        <div className="absolute pointer-events-none" style={{ top: '-20%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(33,246,168,0.12) 0%, transparent 65%)', filter: 'blur(80px)', animation: 'aurora-drift-1 20s ease-in-out infinite' }} />
-        <div className="absolute pointer-events-none" style={{ bottom: '-10%', right: '10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.10) 0%, transparent 65%)', filter: 'blur(80px)', animation: 'aurora-drift-2 25s ease-in-out infinite' }} />
+        <div className="absolute pointer-events-none" style={{ top: '-20%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(15,118,110,0.12) 0%, transparent 65%)', filter: 'blur(80px)', animation: 'aurora-drift-1 20s ease-in-out infinite' }} />
+        <div className="absolute pointer-events-none" style={{ bottom: '-10%', right: '10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(20,184,166,0.10) 0%, transparent 65%)', filter: 'blur(80px)', animation: 'aurora-drift-2 25s ease-in-out infinite' }} />
         <div className="absolute pointer-events-none" style={{ top: '40%', right: '-5%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(5,150,105,0.08) 0%, transparent 65%)', filter: 'blur(60px)', animation: 'aurora-drift-3 30s ease-in-out infinite' }} />
 
         {/* Top: Logo */}
@@ -88,7 +88,7 @@ export default function Login() {
           <div className="flex items-center gap-3">
             <div
               className="flex h-10 w-10 items-center justify-center rounded-xl"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
             >
               <Zap className="h-5 w-5 text-gray-900" fill="currentColor" />
             </div>
@@ -102,15 +102,15 @@ export default function Login() {
         {/* Middle: Hero text + features */}
         <div className="relative z-10 space-y-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6" style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.15)' }}>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6" style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.15)' }}>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-semibold" style={{ color: '#21F6A8' }}>AI-Powered Sales Platform</span>
+              <span className="text-xs font-semibold" style={{ color: '#0F766E' }}>AI-Powered Sales Platform</span>
             </div>
 
             <h1 className="text-5xl font-black leading-[1.1] tracking-tight text-white mb-4">
               Hunt Clients.<br />
               <span style={{
-                background: 'linear-gradient(135deg, #21F6A8 0%, #6EE7B7 100%)',
+                background: 'linear-gradient(135deg, #0F766E 0%, #5EEAD4 100%)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>
                 Close Deals.
@@ -136,9 +136,9 @@ export default function Login() {
               >
                 <div
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl mt-0.5"
-                  style={{ background: 'rgba(33,246,168,0.1)', border: '1px solid rgba(33,246,168,0.15)' }}
+                  style={{ background: 'rgba(15,118,110,0.1)', border: '1px solid rgba(15,118,110,0.15)' }}
                 >
-                  <f.icon className="h-4 w-4" style={{ color: '#21F6A8' }} />
+                  <f.icon className="h-4 w-4" style={{ color: '#0F766E' }} />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white mb-0.5">{f.title}</p>
@@ -155,7 +155,7 @@ export default function Login() {
             {STATS.map((s) => (
               <div key={s.label} className="text-center">
                 <p className="text-3xl font-black" style={{
-                  background: 'linear-gradient(135deg, #21F6A8, #6EE7B7)',
+                  background: 'linear-gradient(135deg, #0F766E, #5EEAD4)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 }}>
                   {s.value}
@@ -171,7 +171,7 @@ export default function Login() {
                   <div
                     key={init}
                     className="h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold text-gray-900"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', outline: '2px solid #080e09', outlineOffset: '-1px' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', outline: '2px solid #080e09', outlineOffset: '-1px' }}
                   >
                     {init}
                   </div>
@@ -192,12 +192,12 @@ export default function Login() {
 
         {/* Subtle bg glow */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(33,246,168,0.06) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(15,118,110,0.06) 0%, transparent 60%)',
         }} />
 
         {/* Mobile logo */}
         <div className="absolute top-6 left-6 flex items-center gap-2.5 lg:hidden">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
             <Zap className="h-4 w-4 text-gray-900" fill="currentColor" />
           </div>
           <span className="text-sm font-bold text-white">Abyte Hunt</span>
@@ -262,9 +262,9 @@ export default function Login() {
                 <Link
                   to="/forgot-password"
                   className="text-xs font-semibold transition-colors"
-                  style={{ color: 'rgba(33,246,168,0.6)', textDecoration: 'none' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#21F6A8'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(33,246,168,0.6)'; }}
+                  style={{ color: 'rgba(15,118,110,0.6)', textDecoration: 'none' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#0F766E'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(15,118,110,0.6)'; }}
                 >
                   Forgot password?
                 </Link>
@@ -291,7 +291,7 @@ export default function Login() {
                     color: 'rgba(148,163,184,0.35)', cursor: 'pointer', background: 'none', border: 'none', padding: 0,
                     transition: 'color 0.2s',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(33,246,168,0.7)'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(15,118,110,0.7)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.35)'; }}
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -309,12 +309,12 @@ export default function Login() {
                 marginTop: 8,
                 borderRadius: 12,
                 background: loading
-                  ? 'rgba(33,246,168,0.3)'
-                  : 'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)',
+                  ? 'rgba(15,118,110,0.3)'
+                  : 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)',
                 border: 'none',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: 'opacity 0.2s, transform 0.15s',
-                boxShadow: loading ? 'none' : '0 4px 20px rgba(33,246,168,0.25)',
+                boxShadow: loading ? 'none' : '0 4px 20px rgba(15,118,110,0.25)',
               }}
             >
               {loading ? (
@@ -344,7 +344,7 @@ export default function Login() {
             <Link
               to="/sign-up"
               className="font-semibold transition-colors"
-              style={{ color: '#21F6A8', textDecoration: 'none' }}
+              style={{ color: '#0F766E', textDecoration: 'none' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.75'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; }}
             >
@@ -361,7 +361,7 @@ export default function Login() {
                 { icon: Users,        text: 'Real-time Sync' },
               ].map((b) => (
                 <div key={b.text} className="flex items-center gap-1.5">
-                  <b.icon className="h-3 w-3 shrink-0" style={{ color: 'rgba(33,246,168,0.5)' }} />
+                  <b.icon className="h-3 w-3 shrink-0" style={{ color: 'rgba(15,118,110,0.5)' }} />
                   <span className="text-[10px] font-medium" style={{ color: 'rgba(148,163,184,0.35)' }}>{b.text}</span>
                 </div>
               ))}

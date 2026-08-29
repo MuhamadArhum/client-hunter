@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Zap, ArrowLeft, XCircle, CheckCircle } from 'lucide-react';
 import api from '@/services/api';
@@ -33,9 +33,9 @@ export default function ForgotPassword() {
   };
 
   const focusGreen = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(33,246,168,0.5)';
-    e.target.style.boxShadow   = '0 0 0 3px rgba(33,246,168,0.1)';
-    e.target.style.background  = 'rgba(33,246,168,0.05)';
+    e.target.style.borderColor = 'rgba(15,118,110,0.5)';
+    e.target.style.boxShadow   = '0 0 0 3px rgba(15,118,110,0.1)';
+    e.target.style.background  = 'rgba(15,118,110,0.05)';
   };
   const blurReset = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.style.borderColor = 'rgba(255,255,255,0.1)';
@@ -50,8 +50,8 @@ export default function ForgotPassword() {
     >
       {/* Aurora blobs */}
       <div className="pointer-events-none absolute inset-0">
-        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle, rgba(33,246,168,0.18) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-1 18s ease-in-out infinite' }} />
-        <div style={{ position:'absolute', bottom:'-15%', right:'-5%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(16,185,129,0.16) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-2 22s ease-in-out infinite' }} />
+        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle, rgba(15,118,110,0.18) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-1 18s ease-in-out infinite' }} />
+        <div style={{ position:'absolute', bottom:'-15%', right:'-5%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(20,184,166,0.16) 0%, transparent 65%)', filter:'blur(60px)', animation:'aurora-drift-2 22s ease-in-out infinite' }} />
       </div>
       {/* Dot grid */}
       <div className="pointer-events-none absolute inset-0" style={{ backgroundImage:'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'32px 32px' }} />
@@ -62,25 +62,25 @@ export default function ForgotPassword() {
         style={{
           maxWidth: 400,
           background: 'rgba(10, 18, 12, 0.85)',
-          border: '1px solid rgba(33,246,168,0.12)',
+          border: '1px solid rgba(15,118,110,0.12)',
           borderRadius: 20,
           backdropFilter: 'blur(48px)',
           WebkitBackdropFilter: 'blur(48px)',
-          boxShadow: '0 0 0 1px rgba(33,246,168,0.08), 0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
+          boxShadow: '0 0 0 1px rgba(15,118,110,0.08), 0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
-        <div style={{ height:1, background:'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)', borderRadius:'20px 20px 0 0', animation:'shimmer-sweep 3s linear infinite' }} />
+        <div style={{ height:1, background:'linear-gradient(90deg, transparent 0%, #0F766E 35%, #14B8A6 65%, transparent 100%)', borderRadius:'20px 20px 0 0', animation:'shimmer-sweep 3s linear infinite' }} />
 
         <div className="px-7 pt-7 pb-6 relative z-10">
           {/* Logo */}
           <div className="flex flex-col items-center text-center mb-6">
             <div className="relative mb-4">
-              <div style={{ position:'absolute', inset:-10, borderRadius:28, background:'linear-gradient(135deg, rgba(33,246,168,0.3), rgba(16,185,129,0.3))', filter:'blur(20px)', opacity:0.7 }} />
-              <div className="logo-float relative flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)' }}>
+              <div style={{ position:'absolute', inset:-10, borderRadius:28, background:'linear-gradient(135deg, rgba(15,118,110,0.3), rgba(20,184,166,0.3))', filter:'blur(20px)', opacity:0.7 }} />
+              <div className="logo-float relative flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)' }}>
                 <Zap className="h-7 w-7 text-gray-900" fill="currentColor" />
               </div>
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight" style={{ background:'linear-gradient(135deg, #21F6A8 0%, #A7F3D0 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+            <h1 className="text-xl font-extrabold tracking-tight" style={{ background:'linear-gradient(135deg, #0F766E 0%, #A7F3D0 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
               Reset Password
             </h1>
             <p className="text-xs font-medium mt-1" style={{ color:'rgba(148,163,184,0.45)' }}>Abyte Hunt by Abyte Sol</p>
@@ -89,18 +89,18 @@ export default function ForgotPassword() {
           {success ? (
             <div className="space-y-5">
               <div className="flex flex-col items-center text-center gap-3 py-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'rgba(33,246,168,0.1)', border:'1px solid rgba(33,246,168,0.2)' }}>
-                  <CheckCircle className="h-7 w-7" style={{ color: '#21F6A8' }} />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:'rgba(15,118,110,0.1)', border:'1px solid rgba(15,118,110,0.2)' }}>
+                  <CheckCircle className="h-7 w-7" style={{ color: '#0F766E' }} />
                 </div>
                 <p className="text-sm font-semibold" style={{ color:'rgba(226,232,240,0.9)' }}>Check your inbox</p>
                 <p className="text-xs leading-relaxed" style={{ color:'rgba(148,163,184,0.55)' }}>
-                  If an account exists for <span className="font-medium" style={{ color: '#21F6A8' }}>{email}</span>, a reset link has been sent. Check your spam folder too.
+                  If an account exists for <span className="font-medium" style={{ color: '#0F766E' }}>{email}</span>, a reset link has been sent. Check your spam folder too.
                 </p>
               </div>
               <Link
                 to="/login"
                 className="flex items-center justify-center gap-2 w-full font-semibold text-sm"
-                style={{ height:46, borderRadius:10, background:'rgba(33,246,168,0.1)', border:'1px solid rgba(33,246,168,0.2)', color:'#0D9C6A', textDecoration:'none' }}
+                style={{ height:46, borderRadius:10, background:'rgba(15,118,110,0.1)', border:'1px solid rgba(15,118,110,0.2)', color:'#0D9C6A', textDecoration:'none' }}
               >
                 <ArrowLeft className="h-4 w-4" /> Back to Sign In
               </Link>
@@ -134,7 +134,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit" disabled={loading}
                   className="w-full flex items-center justify-center gap-2 font-bold text-sm text-gray-900 btn-breathe-green"
-                  style={{ height:46, borderRadius:10, background: loading ? 'rgba(33,246,168,0.35)' : 'linear-gradient(135deg, #21F6A8 0%, #10B981 100%)', border:'none', cursor: loading ? 'not-allowed' : 'pointer', transition:'transform 0.15s' }}
+                  style={{ height:46, borderRadius:10, background: loading ? 'rgba(15,118,110,0.35)' : 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)', border:'none', cursor: loading ? 'not-allowed' : 'pointer', transition:'transform 0.15s' }}
                 >
                   {loading
                     ? <><span className="h-4 w-4 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" />Sending link...</>

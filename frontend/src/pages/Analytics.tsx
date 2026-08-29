@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink, Eye, MousePointerClick } from 'lucide-react';
 import {
@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
 
-const PIE_COLORS = ['#21F6A8', '#10B981', '#059669', '#f59e0b', '#6366f1', '#f43f5e'];
+const PIE_COLORS = ['#0F766E', '#14B8A6', '#059669', '#f59e0b', '#6366f1', '#f43f5e'];
 
 interface DashboardData {
   totalLeads: number;
@@ -30,8 +30,8 @@ interface EmailTracking { totalSent: number; totalOpened: number; totalClicked: 
 interface MonthlyTrend { month: string; emails: number; whatsapp: number; leads: number; }
 
 const ANALYTICS_STAT_CARDS = [
-  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #21F6A8, #10B981)', bgColor: 'rgba(33,246,168,0.08)',  borderColor: 'rgba(33,246,168,0.2)',  glowColor: 'rgba(33,246,168,0.15)',  numClass: 'stat-number-green' },
-  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(16,185,129,0.08)',  borderColor: 'rgba(16,185,129,0.18)', glowColor: 'rgba(16,185,129,0.15)', numClass: 'stat-number-emerald', suffix: '%' },
+  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #0F766E, #14B8A6)', bgColor: 'rgba(15,118,110,0.08)',  borderColor: 'rgba(15,118,110,0.2)',  glowColor: 'rgba(15,118,110,0.15)',  numClass: 'stat-number-green' },
+  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(20,184,166,0.08)',  borderColor: 'rgba(20,184,166,0.18)', glowColor: 'rgba(20,184,166,0.15)', numClass: 'stat-number-emerald', suffix: '%' },
   { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, gradient: 'linear-gradient(135deg, #7C3AED, #c084fc)', bgColor: 'rgba(124,58,237,0.08)',  borderColor: 'rgba(124,58,237,0.18)', glowColor: 'rgba(124,58,237,0.15)', numClass: 'stat-number-violet' },
   { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, gradient: 'linear-gradient(135deg, #6366f1, #818cf8)', bgColor: 'rgba(99,102,241,0.08)',  borderColor: 'rgba(99,102,241,0.18)', glowColor: 'rgba(99,102,241,0.15)', numClass: 'stat-number-indigo' },
 ];
@@ -62,7 +62,7 @@ function StatCard({ card, value }: { card: typeof ANALYTICS_STAT_CARDS[0]; value
 function ChartCard({ title, subtitle, accent, children }: { title: string; subtitle?: string; accent?: string; children: React.ReactNode }) {
   return (
     <div className="relative rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #0F766E, #14B8A6)' }} />
       <div className="px-5 py-4 border-b border-border/40">
         <h3 className="text-sm font-bold text-foreground">{title}</h3>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
@@ -93,7 +93,7 @@ const QUAL_CONFIG: Record<string, { emoji: string; bg: string; text: string; dot
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: '#21F6A8', contacted: '#f59e0b', proposal_sent: '#7C3AED',
+  new: '#0F766E', contacted: '#f59e0b', proposal_sent: '#7C3AED',
   follow_up: '#6366f1', converted: '#10b981', lost: '#f43f5e',
 };
 
@@ -141,14 +141,14 @@ export default function Analytics() {
   const sourceChartData = sourceData.map(s => ({ name: s._id, value: s.count }));
 
   const outreachChartData = outreachStats ? [
-    { name: 'Email Sent', count: outreachStats.emailSent, color: '#21F6A8' },
+    { name: 'Email Sent', count: outreachStats.emailSent, color: '#0F766E' },
     { name: 'Email Failed', count: outreachStats.emailFailed, color: '#f43f5e' },
     { name: 'WA Sent', count: outreachStats.whatsappSent, color: '#7C3AED' },
     { name: 'WA Failed', count: outreachStats.whatsappFailed, color: '#f59e0b' },
   ] : [];
 
   const proposalChartData = proposalStats ? [
-    { name: 'Accepted', count: proposalStats.accepted, color: '#21F6A8' },
+    { name: 'Accepted', count: proposalStats.accepted, color: '#0F766E' },
     { name: 'Sent', count: proposalStats.sent, color: '#10b981' },
     { name: 'Rejected', count: proposalStats.rejected, color: '#f43f5e' },
     { name: 'Draft', count: proposalStats.draft, color: '#94a3b8' },
@@ -210,7 +210,7 @@ export default function Analytics() {
 
       {/* Row 1: Source + Status */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #21F6A8, #10B981)">
+        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #0F766E, #14B8A6)">
           {sourceChartData.length === 0 ? <EmptyChart message="No leads added yet" hint="Add leads to see source breakdown" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
@@ -224,7 +224,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #10B981, #6366f1)">
+        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #14B8A6, #6366f1)">
           {statusChartData.length === 0 ? <EmptyChart message="No pipeline data" hint="Leads will appear here once added" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={statusChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -234,7 +234,7 @@ export default function Analytics() {
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted) / 0.5)', radius: 6 }} />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={48}>
                   {statusChartData.map((entry) => (
-                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#21F6A8'} />
+                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#0F766E'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -245,7 +245,7 @@ export default function Analytics() {
 
       {/* Row 2: Conversion + Proposals */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #21F6A8)">
+        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #0F766E)">
           {conversionBySource.length === 0 ? <EmptyChart height={180} message="No conversion data" hint="Convert a lead to see rates by source" /> : (
             <div className="space-y-3">
               {conversionBySource.map((item) => (
@@ -260,7 +260,7 @@ export default function Analytics() {
                   <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${item.conversionRate}%`, background: 'linear-gradient(90deg, #21F6A8, #10B981)' }}
+                      style={{ width: `${item.conversionRate}%`, background: 'linear-gradient(90deg, #0F766E, #14B8A6)' }}
                     />
                   </div>
                 </div>
@@ -275,7 +275,7 @@ export default function Analytics() {
               <div className="flex items-center gap-4">
                 <div
                   className="h-16 w-16 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)' }}
+                  style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
                 >
                   <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{proposalStats.acceptanceRate}%</p>
                 </div>
@@ -313,7 +313,7 @@ export default function Analytics() {
               <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} formatter={(v) => <span className="text-xs text-muted-foreground capitalize">{v}</span>} />
               <Line type="monotone" dataKey="leads" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4, fill: '#2563EB' }} name="Leads" />
-              <Line type="monotone" dataKey="emails" stroke="#21F6A8" strokeWidth={2.5} dot={{ r: 4, fill: '#21F6A8' }} name="Emails" />
+              <Line type="monotone" dataKey="emails" stroke="#0F766E" strokeWidth={2.5} dot={{ r: 4, fill: '#0F766E' }} name="Emails" />
               <Line type="monotone" dataKey="whatsapp" stroke="#7C3AED" strokeWidth={2.5} dot={{ r: 4, fill: '#7C3AED' }} name="WhatsApp" />
             </LineChart>
           </ResponsiveContainer>
@@ -322,7 +322,7 @@ export default function Analytics() {
 
       {/* Row 4: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #21F6A8)">
+        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #0F766E)">
           {outreachChartData.every(d => d.count === 0) ? <EmptyChart message="No outreach sent yet" hint="Send emails or WhatsApp messages to see stats" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={outreachChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -338,7 +338,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #21F6A8)">
+        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #0F766E)">
           {!aiBreakdown || (aiBreakdown.topLeads.length === 0 && aiBreakdown.qualBreakdown.length === 0) ? (
             <div className="flex flex-col items-center justify-center h-56 gap-3 text-center">
               <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: '#F0FDF9' }}>
@@ -361,7 +361,7 @@ export default function Analytics() {
               <div className="flex items-center gap-4">
                 <div
                   className="h-16 w-16 rounded-xl flex flex-col items-center justify-center shrink-0"
-                  style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)' }}
+                  style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
                 >
                   <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{aiBreakdown.avgScore}</p>
                   <p className="text-[10px] text-muted-foreground">avg score</p>
@@ -388,9 +388,9 @@ export default function Analytics() {
                     <button
                       onClick={() => navigate('/leads')}
                       className="flex items-center gap-1 text-xs font-semibold transition-colors"
-                      style={{ color: '#10B981' }}
+                      style={{ color: '#14B8A6' }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#065F46'; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#10B981'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'; }}
                     >
                       View All <ExternalLink className="h-2.5 w-2.5" />
                     </button>
@@ -409,7 +409,7 @@ export default function Analytics() {
                         >
                           <div
                             className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
-                            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                           >
                             {lead.companyName.slice(0, 2).toUpperCase()}
                           </div>
@@ -444,7 +444,7 @@ export default function Analytics() {
             {[
               { label: 'Open Rate', value: `${emailTracking.openRate}%`, sub: `${emailTracking.totalOpened} of ${emailTracking.totalSent} opened`, icon: Eye, color: '#0EA5E9', bg: 'rgba(14,165,233,0.08)', border: 'rgba(14,165,233,0.2)' },
               { label: 'Click Rate', value: `${emailTracking.clickRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalSent} clicked`, icon: MousePointerClick, color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.2)' },
-              { label: 'Click-to-Open', value: `${emailTracking.clickToOpenRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalOpened} who opened`, icon: TrendingUp, color: '#21F6A8', bg: 'rgba(33,246,168,0.08)', border: 'rgba(33,246,168,0.2)' },
+              { label: 'Click-to-Open', value: `${emailTracking.clickToOpenRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalOpened} who opened`, icon: TrendingUp, color: '#0F766E', bg: 'rgba(15,118,110,0.08)', border: 'rgba(15,118,110,0.2)' },
             ].map(({ label, value, sub, icon: Icon, color, bg, border }) => (
               <div key={label} className="rounded-xl p-4 flex flex-col gap-3" style={{ background: bg, border: `1px solid ${border}` }}>
                 <div className="flex items-center gap-2">

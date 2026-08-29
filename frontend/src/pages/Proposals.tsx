@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { FileText, Trash2, Eye, Sparkles, Calendar, Building2, Share2, Copy, X, Pencil, Clock, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,7 @@ interface Proposal {
   title?: string;
   content: string;
   status: string;
-  leadId?: { _id: string; companyName: string } | string;
+  lead?: { _id: string; companyName: string } | string;
   createdAt: string;
 }
 
@@ -35,7 +35,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> =
   rejected: { bg: 'bg-rose-50',     text: 'text-rose-700',    dot: 'bg-rose-400' },
 };
 
-function getCompanyName(lead: Proposal['leadId']): string {
+function getCompanyName(lead: Proposal['lead']): string {
   if (!lead || typeof lead === 'string') return '—';
   return lead.companyName || '—';
 }
@@ -158,7 +158,7 @@ export default function Proposals() {
     if (!editProposal) return;
     setEditLoading(true); setEditError('');
     try {
-      await api.patch(`/proposals/${editProposal._id}`, { title: editTitle, content: editContent });
+      await api.put(`/proposals/${editProposal._id}`, { title: editTitle, content: editContent });
       setEditProposal(null);
       fetchProposals();
     } catch (e: unknown) {
@@ -238,7 +238,7 @@ export default function Proposals() {
           <Button
             size="sm"
             className="h-9 rounded-xl gap-2 font-semibold text-sm text-gray-900 shrink-0"
-            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
             onClick={handleOpenGenerate}
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -256,7 +256,7 @@ export default function Proposals() {
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
           <div
             className="h-16 w-16 rounded-xl flex items-center justify-center mb-4"
-            style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.2)' }}
+            style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
           >
             <FileText className="h-7 w-7 text-muted-foreground/50" />
           </div>
@@ -267,7 +267,7 @@ export default function Proposals() {
           <Button
             size="sm"
             className="h-9 rounded-xl gap-2 font-semibold text-sm text-gray-900"
-            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
             onClick={handleOpenGenerate}
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -278,7 +278,7 @@ export default function Proposals() {
         <div className="grid gap-4 md:grid-cols-2">
           {proposals.map((proposal) => {
             const st = STATUS_STYLES[proposal.status] || STATUS_STYLES.draft;
-            const company = getCompanyName(proposal.leadId);
+            const company = getCompanyName(proposal.lead);
             const initials = company.slice(0, 2).toUpperCase();
             return (
               <div
@@ -287,13 +287,13 @@ export default function Proposals() {
               >
                 <div
                   className="h-0.5 w-full"
-                  style={{ background: proposal.status === 'accepted' ? 'linear-gradient(90deg, #21F6A8, #10B981)' : proposal.status === 'sent' ? 'linear-gradient(90deg, #10B981, #059669)' : proposal.status === 'rejected' ? 'linear-gradient(90deg, #f43f5e, #fb7185)' : 'linear-gradient(90deg, #94a3b8, #cbd5e1)' }}
+                  style={{ background: proposal.status === 'accepted' ? 'linear-gradient(90deg, #0F766E, #14B8A6)' : proposal.status === 'sent' ? 'linear-gradient(90deg, #14B8A6, #059669)' : proposal.status === 'rejected' ? 'linear-gradient(90deg, #f43f5e, #fb7185)' : 'linear-gradient(90deg, #94a3b8, #cbd5e1)' }}
                 />
                 <div className="p-5 flex flex-col gap-3 flex-1">
                   <div className="flex items-start gap-3">
                     <div
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-gray-900"
-                      style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                      style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     >
                       {initials}
                     </div>
@@ -396,7 +396,7 @@ export default function Proposals() {
                 onClick={() => setPage(p)}
                 className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
                 style={page === p
-                  ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', border: 'none' }
+                  ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', border: 'none' }
                   : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
                 }
               >
@@ -420,7 +420,7 @@ export default function Proposals() {
         <DialogContent className="max-w-md rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Sparkles className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Generate Proposal with AI
@@ -431,7 +431,7 @@ export default function Proposals() {
               <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{genError}</div>
             )}
             {genLoading && (
-              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(33,246,168,0.06)', border: '1px solid rgba(33,246,168,0.2)' }}>
+              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.2)' }}>
                 <Sparkles className="h-4 w-4 animate-pulse" style={{ color: '#0D9C6A' }} />
                 <span className="text-muted-foreground">AI is crafting your proposal, please wait...</span>
               </div>
@@ -465,7 +465,7 @@ export default function Proposals() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setGenerateOpen(false)} disabled={genLoading}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleGenerate}
               disabled={genLoading}
             >
@@ -482,7 +482,7 @@ export default function Proposals() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">
-              {viewProposal?.title || `Proposal — ${getCompanyName(viewProposal?.leadId)}`}
+              {viewProposal?.title || `Proposal — ${getCompanyName(viewProposal?.lead)}`}
             </DialogTitle>
           </DialogHeader>
           <div className="py-2">
@@ -501,7 +501,7 @@ export default function Proposals() {
         <DialogContent className="max-w-md rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Share2 className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Share Proposal
@@ -512,8 +512,8 @@ export default function Proposals() {
               Generate a public link so your client can view and respond to this proposal without logging in.
             </p>
             {shareLoading && (
-              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(33,246,168,0.06)', border: '1px solid rgba(33,246,168,0.2)' }}>
-                <span className="h-3.5 w-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin shrink-0" />
+              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.2)' }}>
+                <span className="h-3.5 w-3.5 border-2 border-primary/30 border-t-emerald-500 rounded-full animate-spin shrink-0" />
                 <span className="text-muted-foreground">Generating share link...</span>
               </div>
             )}
@@ -529,7 +529,7 @@ export default function Proposals() {
                   <Button
                     size="sm"
                     className="h-9 px-3 rounded-xl text-xs font-semibold text-gray-900 shrink-0 gap-1.5"
-                    style={{ background: shareCopied ? 'linear-gradient(135deg, #10B981, #059669)' : 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: shareCopied ? 'linear-gradient(135deg, #14B8A6, #059669)' : 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     onClick={handleCopyShareUrl}
                   >
                     {shareCopied ? '✓ Copied' : <><Copy className="h-3 w-3" /> Copy</>}
@@ -579,7 +579,7 @@ export default function Proposals() {
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Pencil className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Edit Draft Proposal
@@ -613,7 +613,7 @@ export default function Proposals() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setEditProposal(null)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleEdit}
               disabled={editLoading || !editContent.trim()}
             >

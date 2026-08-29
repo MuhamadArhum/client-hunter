@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, Plus, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ interface Lead {
 
 interface OutreachRecord {
   _id: string;
-  leadId?: { companyName?: string };
+  lead?: { companyName?: string };
   type: string;
   status: string;
   subject?: string;
@@ -266,7 +266,7 @@ export default function Outreach() {
                   </div>
                   <Button
                     className="h-10 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     onClick={handleSendEmail}
                     disabled={emailLoading}
                   >
@@ -308,7 +308,7 @@ export default function Outreach() {
             <p className="text-sm text-muted-foreground">{templates.length} template{templates.length !== 1 ? 's' : ''}</p>
             <Button
               className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={() => setShowNewTemplate((v) => !v)}
             >
               <Plus className="h-3.5 w-3.5" /> New Template
@@ -347,7 +347,7 @@ export default function Outreach() {
                 <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Email body..." value={tmplBody} onChange={(e) => setTmplBody(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
+                <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
                   {tmplSaving ? 'Saving...' : 'Save Template'}
                 </Button>
                 <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowNewTemplate(false)}>Cancel</Button>
@@ -361,7 +361,7 @@ export default function Outreach() {
             </div>
           ) : templates.length === 0 ? (
             <div className="rounded-xl border border-border bg-card shadow-sm p-16 flex flex-col items-center gap-3">
-              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
+              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.06)' }}>
                 <Eye className="h-6 w-6 text-muted-foreground/40" />
               </div>
               <p className="text-sm text-muted-foreground">No templates yet. Create one to reuse emails quickly.</p>
@@ -386,7 +386,7 @@ export default function Outreach() {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Used {tmpl.usageCount}×</span>
-                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-gray-900 gap-1" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={() => handleUseTemplate(tmpl)}>
+                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-gray-900 gap-1" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }} onClick={() => handleUseTemplate(tmpl)}>
                         <Mail className="h-3 w-3" /> Use
                       </Button>
                     </div>
@@ -429,7 +429,7 @@ export default function Outreach() {
                   <tr>
                     <td colSpan={6} className="text-center py-16">
                       <div className="flex flex-col items-center gap-2">
-                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.06)' }}>
                           <Send className="h-5 w-5 text-muted-foreground/40" />
                         </div>
                         <p className="text-sm text-muted-foreground">No outreach history yet</p>
@@ -443,7 +443,7 @@ export default function Outreach() {
                       className="hover:bg-muted/30 transition-colors"
                       style={{ borderBottom: idx === history.length - 1 ? 'none' : '1px solid hsl(var(--border) / 0.4)' }}
                     >
-                      <td className="px-5 py-3 font-medium text-sm">{item.leadId?.companyName || '—'}</td>
+                      <td className="px-5 py-3 font-medium text-sm">{item.lead?.companyName || '—'}</td>
                       <td className="px-5 py-3">
                         <span className={cn(
                           'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',

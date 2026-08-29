@@ -1,8 +1,8 @@
-const cron = require('node-cron');
+﻿const cron = require('node-cron');
 const Lead = require('../models/Lead');
 const OutreachLog = require('../models/OutreachLog');
 const emailService = require('./emailService');
-const { generateFollowUpMessage } = require('./groqService');
+const { generateFollowUpMessage } = require('./aiService');
 const { notifyFollowUpSent } = require('./slackService');
 
 const getIO = () => {
@@ -51,7 +51,7 @@ const processFollowUps = async () => {
 const startFollowUpCron = () => {
   // Run every hour
   cron.schedule('0 * * * *', processFollowUps);
-  console.log('[Follow-up] Cron job started — runs every hour');
+  console.log('[Follow-up] Cron job started â€” runs every hour');
 };
 
 const processProposalFollowUps = async () => {
@@ -89,7 +89,7 @@ const processProposalFollowUps = async () => {
 
 const startProposalFollowUpCron = () => {
   cron.schedule('0 9 * * *', processProposalFollowUps);
-  console.log('[Proposal Follow-up] Cron started — runs daily at 9am');
+  console.log('[Proposal Follow-up] Cron started â€” runs daily at 9am');
 };
 
 module.exports = { startFollowUpCron, processFollowUps, startProposalFollowUpCron };

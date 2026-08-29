@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+﻿import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Activity, Mail, UserPlus, RefreshCw, GitBranch, Zap,
   Circle, Clock,
@@ -21,21 +21,21 @@ interface ActivityItem {
 
 const TYPE_META: Record<string, { color: string; bg: string; Icon: typeof Mail }> = {
   outreach:    { color: '#3B82F6', bg: 'rgba(59,130,246,0.12)',  Icon: Mail      },
-  lead_new:    { color: '#10B981', bg: 'rgba(16,185,129,0.12)',  Icon: UserPlus  },
+  lead_new:    { color: '#14B8A6', bg: 'rgba(20,184,166,0.12)',  Icon: UserPlus  },
   lead_update: { color: '#6366F1', bg: 'rgba(99,102,241,0.12)',  Icon: RefreshCw },
   follow_up:   { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',  Icon: Clock     },
   sequence:    { color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)',  Icon: GitBranch },
 };
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  sent:           { bg: 'rgba(16,185,129,0.1)',  text: '#10B981' },
+  sent:           { bg: 'rgba(20,184,166,0.1)',  text: '#14B8A6' },
   failed:         { bg: 'rgba(239,68,68,0.1)',   text: '#EF4444' },
   pending:        { bg: 'rgba(245,158,11,0.1)',  text: '#F59E0B' },
   new:            { bg: 'rgba(59,130,246,0.1)',  text: '#3B82F6' },
   contacted:      { bg: 'rgba(99,102,241,0.1)',  text: '#6366F1' },
   proposal_sent:  { bg: 'rgba(139,92,246,0.1)',  text: '#8B5CF6' },
   follow_up:      { bg: 'rgba(245,158,11,0.1)',  text: '#F59E0B' },
-  converted:      { bg: 'rgba(16,185,129,0.1)',  text: '#10B981' },
+  converted:      { bg: 'rgba(20,184,166,0.1)',  text: '#14B8A6' },
   lost:           { bg: 'rgba(239,68,68,0.1)',   text: '#EF4444' },
 };
 
@@ -206,7 +206,7 @@ export default function ActivityFeed() {
               <Activity className="h-4 w-4 text-primary" />
               <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Real-time</span>
               {/* Live indicator */}
-              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>
+              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(20,184,166,0.12)', color: '#14B8A6' }}>
                 <Circle className="h-1.5 w-1.5 fill-current animate-pulse" />
                 LIVE
               </span>

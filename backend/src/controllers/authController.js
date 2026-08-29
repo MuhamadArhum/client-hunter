@@ -68,7 +68,7 @@ const getMe = async (req, res) => {
     const user = await User.findById(req.user.id);
     res.status(200).json({
       success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, createdAt: user.createdAt },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+﻿import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Trash2, Download, AtSign, Users, ExternalLink, Upload, FileDown, Tag, Eye, Mail, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,11 +45,11 @@ interface Pagination {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; border: string }> = {
-  new:           { bg: '#ECFDF5', text: '#065F46', dot: '#10B981', border: '#A7F3D0' },
+  new:           { bg: '#ECFDF5', text: '#065F46', dot: '#14B8A6', border: '#A7F3D0' },
   contacted:     { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B', border: '#FDE68A' },
   proposal_sent: { bg: '#F5F3FF', text: '#4C1D95', dot: '#8B5CF6', border: '#DDD6FE' },
   follow_up:     { bg: '#EEF2FF', text: '#3730A3', dot: '#6366F1', border: '#C7D2FE' },
-  converted:     { bg: '#D1FAE5', text: '#064E3B', dot: '#21F6A8', border: '#6EE7B7' },
+  converted:     { bg: '#D1FAE5', text: '#064E3B', dot: '#0F766E', border: '#5EEAD4' },
   lost:          { bg: '#FEF2F2', text: '#991B1B', dot: '#EF4444', border: '#FECACA' },
 };
 
@@ -118,8 +118,8 @@ function LightInput({ placeholder, value, onChange, type = 'text', className = '
         color: '#111827',
       }}
       onFocus={(e) => {
-        e.target.style.borderColor = '#21F6A8';
-        e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.12)';
+        e.target.style.borderColor = '#0F766E';
+        e.target.style.boxShadow = '0 0 0 3px rgba(15,118,110,0.12)';
       }}
       onBlur={(e) => {
         e.target.style.borderColor = '#E5E7EB';
@@ -135,8 +135,8 @@ type SortDir = 'asc' | 'desc';
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey | null; sortDir: SortDir }) {
   if (sortKey !== col) return <ChevronsUpDown className="h-3 w-3 ml-1 opacity-30" />;
   return sortDir === 'asc'
-    ? <ChevronUp className="h-3 w-3 ml-1" style={{ color: '#21F6A8' }} />
-    : <ChevronDown className="h-3 w-3 ml-1" style={{ color: '#21F6A8' }} />;
+    ? <ChevronUp className="h-3 w-3 ml-1" style={{ color: '#0F766E' }} />
+    : <ChevronDown className="h-3 w-3 ml-1" style={{ color: '#0F766E' }} />;
 }
 
 export default function Leads() {
@@ -373,19 +373,19 @@ export default function Leads() {
       <div
         className="relative overflow-hidden rounded-2xl px-6 py-5"
         style={{
-          background: 'linear-gradient(135deg, rgba(33,246,168,0.06) 0%, rgba(16,185,129,0.03) 50%, #FFFFFF 100%)',
+          background: 'linear-gradient(135deg, rgba(15,118,110,0.06) 0%, rgba(20,184,166,0.03) 50%, #FFFFFF 100%)',
           border: '1px solid #E5E7EB',
         }}
       >
         <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, #21F6A8 35%, #10B981 65%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent 0%, #0F766E 35%, #14B8A6 65%, transparent 100%)' }} />
         <div className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: 'radial-gradient(rgba(33,246,168,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          style={{ backgroundImage: 'radial-gradient(rgba(15,118,110,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Users className="h-3.5 w-3.5" style={{ color: '#10B981' }} />
+              <Users className="h-3.5 w-3.5" style={{ color: '#14B8A6' }} />
               <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Pipeline</span>
             </div>
             <h1 className="text-2xl font-extrabold mb-1" style={{ color: '#111827' }}>Leads</h1>
@@ -425,7 +425,7 @@ export default function Leads() {
             <button
               onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
               className="flex items-center gap-2 text-sm font-bold px-4 h-9 rounded-xl transition-all hover:brightness-105"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', boxShadow: '0 4px 16px rgba(33,246,168,0.25)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}
             >
               <Plus className="h-3.5 w-3.5" /> Add Lead
             </button>
@@ -437,7 +437,7 @@ export default function Leads() {
       {someSelected && (
         <div
           className="flex items-center justify-between rounded-xl px-4 py-2.5 gap-3"
-          style={{ background: '#F0FDF9', border: '1px solid rgba(33,246,168,0.3)' }}
+          style={{ background: '#F0FDF9', border: '1px solid rgba(15,118,110,0.3)' }}
         >
           <span className="text-sm font-bold" style={{ color: '#065F46' }}>
             {selectedIds.size} lead{selectedIds.size !== 1 ? 's' : ''} selected
@@ -473,7 +473,7 @@ export default function Leads() {
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="w-full h-11 pl-10 pr-4 text-sm rounded-xl outline-none transition-all"
               style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#111827' }}
-              onFocus={(e) => { e.target.style.borderColor = '#21F6A8'; e.target.style.boxShadow = '0 0 0 3px rgba(33,246,168,0.12)'; }}
+              onFocus={(e) => { e.target.style.borderColor = '#0F766E'; e.target.style.boxShadow = '0 0 0 3px rgba(15,118,110,0.12)'; }}
               onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
@@ -522,7 +522,7 @@ export default function Leads() {
                 <th className="px-4 py-3 w-10">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded cursor-pointer accent-emerald-500"
+                    className="h-4 w-4 rounded cursor-pointer accent-primary"
                     checked={allSelected}
                     onChange={toggleAll}
                   />
@@ -580,7 +580,7 @@ export default function Leads() {
                       </div>
                       <button
                         className="mt-1 flex items-center gap-1.5 text-xs font-bold px-4 h-8 rounded-xl"
-                        style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }}
+                        style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a' }}
                         onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
                       >
                         <Plus className="h-3.5 w-3.5" /> Add First Lead
@@ -602,7 +602,7 @@ export default function Leads() {
                       className="group cursor-pointer transition-colors duration-100"
                       style={{
                         borderBottom: isLast ? 'none' : '1px solid #F3F4F6',
-                        background: isSelected ? 'rgba(33,246,168,0.04)' : 'transparent',
+                        background: isSelected ? 'rgba(15,118,110,0.04)' : 'transparent',
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = '#F9FAFB';
@@ -619,7 +619,7 @@ export default function Leads() {
                       <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded cursor-pointer accent-emerald-500"
+                          className="h-4 w-4 rounded cursor-pointer accent-primary"
                           checked={isSelected}
                           onChange={() => toggleOne(lead._id)}
                         />
@@ -630,12 +630,12 @@ export default function Leads() {
                         <div className="flex items-center gap-3">
                           <div
                             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black"
-                            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }}
+                            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a' }}
                           >
                             {getInitials(lead.companyName)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-semibold text-sm truncate group-hover:text-[#10B981] transition-colors duration-100"
+                            <p className="font-semibold text-sm truncate group-hover:text-[#14B8A6] transition-colors duration-100"
                               style={{ color: '#111827' }}>
                               {lead.companyName}
                             </p>
@@ -649,9 +649,9 @@ export default function Leads() {
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
                                 className="flex items-center gap-0.5 truncate max-w-[140px] text-xs transition-colors"
-                                style={{ color: '#10B981' }}
+                                style={{ color: '#14B8A6' }}
                                 onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#10B981'; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#14B8A6'; }}
                               >
                                 <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                                 {lead.website.replace(/^https?:\/\//, '')}
@@ -684,9 +684,9 @@ export default function Leads() {
                             href={`mailto:${lead.email}`}
                             onClick={(e) => e.stopPropagation()}
                             className="flex items-center gap-1 text-xs truncate max-w-[160px] mt-0.5 transition-colors"
-                            style={{ color: '#10B981' }}
+                            style={{ color: '#14B8A6' }}
                             onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#10B981'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#14B8A6'; }}
                           >
                             <Mail className="h-2.5 w-2.5 shrink-0" />
                             {lead.email}
@@ -734,7 +734,7 @@ export default function Leads() {
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
                             style={{ color: '#9CA3AF' }}
                             onClick={() => navigate(`/leads/${lead._id}`)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#10B981'; (e.currentTarget as HTMLButtonElement).style.background = '#F0FDF9'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'; (e.currentTarget as HTMLButtonElement).style.background = '#F0FDF9'; }}
                             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Mail className="h-3.5 w-3.5" />
@@ -791,7 +791,7 @@ export default function Leads() {
                 onClick={() => setPage(p)}
                 className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
                 style={page === p
-                  ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a', border: 'none' }
+                  ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', border: 'none' }
                   : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
                 }
               >
@@ -815,7 +815,7 @@ export default function Leads() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Plus className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Add New Lead
@@ -883,7 +883,7 @@ export default function Leads() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleAdd} disabled={addLoading}
             >
               {addLoading
@@ -900,7 +900,7 @@ export default function Leads() {
         <DialogContent className="max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Download className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Auto Import Leads
@@ -936,7 +936,7 @@ export default function Leads() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setImportOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleImport} disabled={importLoading}
             >
               {importLoading
@@ -953,7 +953,7 @@ export default function Leads() {
         <DialogContent className="max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Upload className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Import CSV
@@ -968,7 +968,7 @@ export default function Leads() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">CSV File</Label>
-                <button className="text-xs font-semibold underline" style={{ color: '#10B981' }} onClick={handleDownloadTemplate}>
+                <button className="text-xs font-semibold underline" style={{ color: '#14B8A6' }} onClick={handleDownloadTemplate}>
                   Download Template
                 </button>
               </div>
@@ -1003,7 +1003,7 @@ export default function Leads() {
             <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setCsvImportOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleCsvImport} disabled={csvImportLoading || !csvText.trim()}
             >
               {csvImportLoading

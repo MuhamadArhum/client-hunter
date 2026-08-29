@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sparkles, Trash2, Copy, Check, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,8 +38,8 @@ function MessageBubble({ msg }: { msg: Message }) {
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5"
         style={
           isUser
-            ? { background: 'linear-gradient(135deg, #10B981, #21F6A8)' }
-            : { background: 'linear-gradient(135deg, #21F6A8, #10B981)' }
+            ? { background: 'linear-gradient(135deg, #14B8A6, #0F766E)' }
+            : { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }
         }
       >
         {isUser
@@ -57,7 +57,7 @@ function MessageBubble({ msg }: { msg: Message }) {
               ? 'rounded-tr-sm text-gray-900'
               : 'bg-muted text-foreground rounded-tl-sm border border-border/60',
           )}
-          style={isUser ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)' } : {}}
+          style={isUser ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' } : {}}
         >
           <p className="whitespace-pre-wrap">{msg.content}</p>
         </div>
@@ -76,7 +76,7 @@ function MessageBubble({ msg }: { msg: Message }) {
               className="flex items-center gap-1 text-[10px] text-muted-foreground/60 hover:text-foreground transition-colors"
             >
               {copied
-                ? <Check className="h-3 w-3 text-emerald-500" />
+                ? <Check className="h-3 w-3 text-primary" />
                 : <Copy className="h-3 w-3" />
               }
             </button>
@@ -92,7 +92,7 @@ function TypingIndicator() {
     <div className="flex gap-3">
       <div
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-        style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+        style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
       >
         <Bot className="h-3.5 w-3.5 text-gray-900" />
       </div>
@@ -101,7 +101,7 @@ function TypingIndicator() {
           <span
             key={i}
             className="h-2 w-2 rounded-full animate-bounce"
-            style={{ animationDelay: `${i * 0.15}s`, background: '#21F6A8' }}
+            style={{ animationDelay: `${i * 0.15}s`, background: '#0F766E' }}
           />
         ))}
       </div>
@@ -195,21 +195,21 @@ export default function Chat() {
         <div className="flex items-center gap-3">
           <div
             className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
           >
             <Sparkles className="h-4.5 w-4.5 text-gray-900" />
           </div>
           <div>
             <h2 className="text-base font-semibold text-foreground">AI Sales Assistant</h2>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-xs text-muted-foreground">Powered by Groq · LLaMA 3.3 70B</span>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(33,246,168,0.06)', borderColor: 'rgba(33,246,168,0.2)' }}>
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(15,118,110,0.06)', borderColor: 'rgba(15,118,110,0.2)' }}>
             <Zap className="h-3 w-3" style={{ color: '#0D9C6A' }} />
             <span className="text-xs font-medium" style={{ color: '#0D9C6A' }}>Groq AI</span>
           </div>
@@ -248,8 +248,8 @@ export default function Chat() {
                   className="text-left text-xs px-3 py-2.5 rounded-lg border border-border transition-all duration-150 text-muted-foreground hover:text-foreground"
                   style={{}}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(33,246,168,0.4)';
-                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(33,246,168,0.04)';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(15,118,110,0.4)';
+                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(15,118,110,0.04)';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.borderColor = '';
@@ -270,7 +270,7 @@ export default function Chat() {
       <div
         className="shrink-0 rounded-xl border border-border bg-card p-3 transition-colors"
         style={{}}
-        onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(33,246,168,0.4)'; }}
+        onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(15,118,110,0.4)'; }}
         onBlurCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = ''; }}
       >
         <div className="flex items-end gap-2">
@@ -293,7 +293,7 @@ export default function Chat() {
                 ? 'text-gray-900'
                 : 'bg-muted text-muted-foreground',
             )}
-            style={input.trim() && !loading ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)' } : {}}
+            style={input.trim() && !loading ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' } : {}}
           >
             <Send className="h-3.5 w-3.5" />
           </Button>

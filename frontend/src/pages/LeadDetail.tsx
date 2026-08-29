@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Mail, MessageSquare, Clock,
@@ -382,7 +382,7 @@ export default function LeadDetail() {
   if (!lead) {
     return (
       <div className="p-6 flex flex-col items-center justify-center py-20 text-center">
-        <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(33,246,168,0.08)' }}>
+        <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(15,118,110,0.08)' }}>
           <XCircle className="h-7 w-7 text-muted-foreground/40" />
         </div>
         <h2 className="text-base font-semibold text-foreground mb-1">Lead not found</h2>
@@ -390,7 +390,7 @@ export default function LeadDetail() {
         <Button
           size="sm"
           className="h-9 rounded-xl gap-2 text-sm font-semibold text-gray-900"
-          style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+          style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
           onClick={() => navigate('/leads')}
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Leads
@@ -421,7 +421,7 @@ export default function LeadDetail() {
         {/* Left: Lead Info */}
         <div className="space-y-4 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <Card className="border border-border/60 shadow-card overflow-hidden">
-            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #0F766E, #14B8A6)' }} />
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold">{lead.companyName}</CardTitle>
@@ -449,7 +449,7 @@ export default function LeadDetail() {
                     </Button>
                   )}
                 </div>
-                {enrichMsg && <p className={cn('text-xs mt-0.5', enrichMsg.includes('found') || enrichMsg.includes('Email') ? 'text-emerald-600' : 'text-rose-500')}>{enrichMsg}</p>}
+                {enrichMsg && <p className={cn('text-xs mt-0.5', enrichMsg.includes('found') || enrichMsg.includes('Email') ? 'text-primary' : 'text-rose-500')}>{enrichMsg}</p>}
               </div>
               <InfoRow label="Phone" value={lead.phone} />
               <InfoRow label="Website" value={lead.website} />
@@ -466,7 +466,7 @@ export default function LeadDetail() {
                     <span
                       key={tag}
                       className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(33,246,168,0.12)', color: '#0D9C6A' }}
+                      style={{ background: 'rgba(15,118,110,0.12)', color: '#0D9C6A' }}
                     >
                       <Tag className="h-2.5 w-2.5" />
                       {tag}
@@ -494,7 +494,7 @@ export default function LeadDetail() {
                   />
                   <button
                     className="h-7 w-7 rounded-lg flex items-center justify-center text-gray-900 shrink-0 disabled:opacity-50"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     onClick={handleAddTag}
                     disabled={tagsSaving || !tagInput.trim()}
                   >
@@ -525,11 +525,11 @@ export default function LeadDetail() {
 
           {/* AI Analysis Card */}
           <Card className="border border-border/60 shadow-card overflow-hidden">
-            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #10B981, #21F6A8)' }} />
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #14B8A6, #0F766E)' }} />
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
                     <Brain className="h-3.5 w-3.5" style={{ color: '#0D9C6A' }} />
                   </span>
                   AI Analysis
@@ -672,10 +672,10 @@ export default function LeadDetail() {
             {/* Email Tab */}
             <TabsContent value="email">
               <Card className="border border-border/60 shadow-card overflow-hidden">
-                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #0F766E, #14B8A6)' }} />
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
                       <Mail className="h-3.5 w-3.5" style={{ color: '#0D9C6A' }} />
                     </span>
                     Send Email
@@ -697,7 +697,7 @@ export default function LeadDetail() {
                   </div>
                   <Button
                     className="w-full h-10 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     onClick={handleSendEmail}
                     disabled={emailLoading}
                   >
@@ -748,10 +748,10 @@ export default function LeadDetail() {
             {/* AI Auto Reply Tab */}
             <TabsContent value="autoreply">
               <Card className="border border-border/60 shadow-card overflow-hidden">
-                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #21F6A8, #10B981)' }} />
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #0F766E, #14B8A6)' }} />
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
                       <Sparkles className="h-3.5 w-3.5" style={{ color: '#0D9C6A' }} />
                     </span>
                     AI Auto Reply Draft
@@ -773,7 +773,7 @@ export default function LeadDetail() {
                   </div>
                   <Button
                     className="w-full h-10 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-                    style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                     onClick={handleAutoReply}
                     disabled={autoReplyLoading || !autoReplyInput.trim()}
                   >
@@ -808,7 +808,7 @@ export default function LeadDetail() {
             {/* Website Analyzer Tab */}
             <TabsContent value="website">
               <Card className="border border-border/60 shadow-card overflow-hidden">
-                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #3F4D67, #21F6A8)' }} />
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #3F4D67, #0F766E)' }} />
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
                     <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(63,77,103,0.1)' }}>
@@ -957,7 +957,7 @@ export default function LeadDetail() {
             {/* History Tab */}
             <TabsContent value="history">
               <Card className="border border-border/60 shadow-card overflow-hidden">
-                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #6366f1, #21F6A8)' }} />
+                <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #6366f1, #0F766E)' }} />
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
                     <span className="flex h-6 w-6 items-center justify-center rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
@@ -1032,7 +1032,7 @@ export default function LeadDetail() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>
+              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
                 <Pencil className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Edit Lead
@@ -1085,7 +1085,7 @@ export default function LeadDetail() {
             <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setEditOpen(false)}>Cancel</Button>
             <Button
               className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
               onClick={handleEditSave}
               disabled={editSaving}
             >

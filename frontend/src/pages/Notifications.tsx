@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Mail, FileText, Users, Bell, RefreshCw, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> =
 };
 
 const TYPE_CONFIG = {
-  outreach: { Icon: Mail,     color: '#0D9C6A', bg: 'rgba(33,246,168,0.08)', label: 'Outreach' },
+  outreach: { Icon: Mail,     color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)', label: 'Outreach' },
   lead:     { Icon: Users,    color: '#7C3AED', bg: '#F5F3FF', label: 'Lead'     },
   proposal: { Icon: FileText, color: '#059669', bg: '#ECFDF5', label: 'Proposal' },
 };
@@ -63,11 +63,11 @@ export default function Notifications() {
     ])
       .then(([outreachRes, leadsRes, proposalsRes]) => {
         const outreachItems: ActivityItem[] = (Array.isArray(outreachRes.data?.data) ? outreachRes.data.data : []).map(
-          (o: { _id: string; type?: string; subject?: string; leadId?: { companyName?: string }; status?: string; createdAt: string }) => ({
+          (o: { _id: string; type?: string; subject?: string; lead?: { companyName?: string }; status?: string; createdAt: string }) => ({
             id: `outreach-${o._id}`,
             type: 'outreach' as const,
             title: `${o.type === 'email' ? 'Email' : 'WhatsApp'} sent`,
-            subtitle: `To: ${o.leadId?.companyName || 'Unknown'}${o.subject ? ` · "${o.subject}"` : ''}`,
+            subtitle: `To: ${o.lead?.companyName || 'Unknown'}${o.subject ? ` · "${o.subject}"` : ''}`,
             status: o.status,
             date: o.createdAt,
           }),
@@ -85,8 +85,8 @@ export default function Notifications() {
         );
 
         const proposalItems: ActivityItem[] = (Array.isArray(proposalsRes.data?.data) ? proposalsRes.data.data : []).map(
-          (p: { _id: string; title?: string; leadId?: { companyName?: string } | string; status?: string; createdAt: string }) => {
-            const company = typeof p.leadId === 'object' && p.leadId !== null ? p.leadId.companyName || '—' : '—';
+          (p: { _id: string; title?: string; lead?: { companyName?: string } | string; status?: string; createdAt: string }) => {
+            const company = typeof p.lead === 'object' && p.lead !== null ? p.lead.companyName || '—' : '—';
             return {
               id: `proposal-${p._id}`,
               type: 'proposal' as const,
@@ -155,7 +155,7 @@ export default function Notifications() {
                   : 'bg-muted text-muted-foreground',
               )}
             >
-              <span className={cn('h-1.5 w-1.5 rounded-full mr-1.5 inline-block', isLive ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/40')} />
+              <span className={cn('h-1.5 w-1.5 rounded-full mr-1.5 inline-block', isLive ? 'bg-primary animate-pulse' : 'bg-muted-foreground/40')} />
               {isLive ? 'Live' : 'Connected'}
             </Badge>
           </div>
@@ -178,7 +178,7 @@ export default function Notifications() {
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Outreach', count: items.filter(i => i.type === 'outreach').length, color: '#0D9C6A', bg: 'rgba(33,246,168,0.08)', Icon: Mail },
+          { label: 'Outreach', count: items.filter(i => i.type === 'outreach').length, color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)', Icon: Mail },
           { label: 'Leads',    count: items.filter(i => i.type === 'lead').length,     color: '#7C3AED', bg: '#F5F3FF', Icon: Users },
           { label: 'Proposals',count: items.filter(i => i.type === 'proposal').length, color: '#059669', bg: '#ECFDF5', Icon: FileText },
         ].map((s) => (

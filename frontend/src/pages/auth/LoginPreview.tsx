@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { Eye, Zap } from 'lucide-react';
 
 const DESIGNS = [
@@ -8,7 +8,7 @@ const DESIGNS = [
     desc: 'Dark background with Tiffany green accents, split layout with branding panel',
     tags: ['Dark', 'Split Layout', 'Green'],
     preview: 'linear-gradient(135deg, #080e09 0%, #0a1a0c 50%, #071209 100%)',
-    accent: '#21F6A8',
+    accent: '#0F766E',
     path: '/login-v1',
   },
   {
@@ -63,7 +63,7 @@ export default function LoginPreview() {
           <div className="flex items-center gap-3">
             <div
               className="flex h-9 w-9 items-center justify-center rounded-xl"
-              style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
             >
               <Zap className="h-4 w-4 text-gray-900" fill="currentColor" />
             </div>
@@ -74,7 +74,7 @@ export default function LoginPreview() {
           </div>
           <div
             className="px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={{ background: 'rgba(33,246,168,0.08)', border: '1px solid rgba(33,246,168,0.15)', color: '#21F6A8' }}
+            style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.15)', color: '#0F766E' }}
           >
             5 Designs Available
           </div>

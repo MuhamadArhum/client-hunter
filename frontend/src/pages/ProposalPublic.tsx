@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CheckCircle, XCircle, Clock, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -70,8 +70,8 @@ export default function ProposalPublic() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #0f1629 0%, #1a1f35 50%, #0f1629 100%)' }}>
         <div className="text-center space-y-4 max-w-sm">
-          <div className="h-20 w-20 rounded-3xl flex items-center justify-center mx-auto" style={{ background: isAccepted ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isAccepted ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
-            {isAccepted ? <CheckCircle className="h-10 w-10 text-emerald-400" /> : <XCircle className="h-10 w-10 text-rose-400" />}
+          <div className="h-20 w-20 rounded-3xl flex items-center justify-center mx-auto" style={{ background: isAccepted ? 'rgba(20,184,166,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isAccepted ? 'rgba(20,184,166,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
+            {isAccepted ? <CheckCircle className="h-10 w-10 text-primary" /> : <XCircle className="h-10 w-10 text-rose-400" />}
           </div>
           <h2 className="text-2xl font-black text-white">{isAccepted ? 'Proposal Accepted!' : 'Proposal Declined'}</h2>
           <p className="text-sm" style={{ color: 'rgba(210,220,235,0.6)' }}>
@@ -142,11 +142,11 @@ export default function ProposalPublic() {
                 onClick={() => setDecision('accepted')}
                 className="rounded-2xl p-4 border-2 transition-all text-left space-y-1"
                 style={{
-                  background: decision === 'accepted' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.03)',
-                  borderColor: decision === 'accepted' ? 'rgba(16,185,129,0.6)' : 'rgba(255,255,255,0.08)',
+                  background: decision === 'accepted' ? 'rgba(20,184,166,0.15)' : 'rgba(255,255,255,0.03)',
+                  borderColor: decision === 'accepted' ? 'rgba(20,184,166,0.6)' : 'rgba(255,255,255,0.08)',
                 }}
               >
-                <CheckCircle className={`h-6 w-6 ${decision === 'accepted' ? 'text-emerald-400' : 'text-white/30'}`} />
+                <CheckCircle className={`h-6 w-6 ${decision === 'accepted' ? 'text-primary' : 'text-white/30'}`} />
                 <p className="text-sm font-semibold text-white">Accept Proposal</p>
                 <p className="text-xs" style={{ color: 'rgba(210,220,235,0.5)' }}>I'm interested in moving forward</p>
               </button>
@@ -179,7 +179,7 @@ export default function ProposalPublic() {
 
             <Button
               className="w-full h-11 rounded-xl font-semibold text-white"
-              style={{ background: decision === 'accepted' ? 'linear-gradient(135deg, #10B981, #059669)' : decision === 'rejected' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'rgba(255,255,255,0.1)' }}
+              style={{ background: decision === 'accepted' ? 'linear-gradient(135deg, #14B8A6, #059669)' : decision === 'rejected' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'rgba(255,255,255,0.1)' }}
               disabled={!decision || submitting}
               onClick={handleRespond}
             >

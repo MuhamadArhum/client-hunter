@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import {
   Eye, EyeOff, Lock, Info, CheckCircle, Shield, Zap, Server, Brain,
   Bell, Mail, MessageSquare, GitBranch, Plug, RefreshCw, Save,
@@ -186,8 +186,8 @@ function IntegrationCard({
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-foreground">{group.title}</h3>
               {allConfigured ? (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900 dark:text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                   ACTIVE
                 </span>
               ) : anyConfigured ? (
@@ -227,7 +227,7 @@ function IntegrationCard({
                   {status?.configured ? (
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono text-muted-foreground">{status.displayValue}</span>
-                      <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                      <CheckCircle className="h-3.5 w-3.5 text-primary" />
                     </div>
                   ) : (
                     <div className="flex items-center gap-1.5 text-xs text-amber-600">
@@ -241,7 +241,7 @@ function IntegrationCard({
 
             <div className="pt-2">
               {saved ? (
-                <div className="flex items-center gap-1.5 text-xs text-emerald-600">
+                <div className="flex items-center gap-1.5 text-xs text-primary">
                   <CheckCircle className="h-3.5 w-3.5" /> Settings saved successfully!
                 </div>
               ) : (
@@ -340,6 +340,15 @@ export default function Settings() {
   // Integrations
   const [integrations, setIntegrations] = useState<Record<string, IntegrationMeta>>({});
   const [intLoading,   setIntLoading]   = useState(true);
+
+  // AI status
+  const [aiStatus, setAiStatus] = useState<{ groqReady: boolean; ollamaReady: boolean; active: string } | null>(null);
+
+  useEffect(() => {
+    api.get('/settings/ai-status')
+      .then((res) => setAiStatus(res.data?.data || null))
+      .catch(() => {});
+  }, []);
 
   // Notifications
   const [notif, setNotif] = useState<NotifPrefs>(() => {
@@ -486,7 +495,7 @@ export default function Settings() {
         <TabsContent value="security" className="mt-5">
           <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(33,246,168,0.08)' }}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
                 <Lock className="h-4 w-4" style={{ color: '#0D9C6A' }} />
               </div>
               <div>
@@ -519,7 +528,7 @@ export default function Settings() {
                         <div key={level} className={cn('h-1 flex-1 rounded-full transition-all duration-300', level <= passwordStrength ? strengthColor[passwordStrength] : 'bg-muted')} />
                       ))}
                     </div>
-                    <p className={cn('text-xs font-medium', passwordStrength === 1 ? 'text-rose-500' : passwordStrength === 2 ? 'text-amber-500' : 'text-emerald-500')}>
+                    <p className={cn('text-xs font-medium', passwordStrength === 1 ? 'text-rose-500' : passwordStrength === 2 ? 'text-amber-500' : 'text-primary')}>
                       {strengthLabel[passwordStrength]} password
                     </p>
                   </div>
@@ -531,7 +540,7 @@ export default function Settings() {
               <div className="pt-1">
                 <Button
                   className="h-10 rounded-lg text-sm font-semibold text-gray-900 gap-2"
-                  style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                  style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                   onClick={handleChangePassword}
                   disabled={pwLoading}
                 >
@@ -561,7 +570,7 @@ export default function Settings() {
               {([
                 { key: 'emailFollowUp'    as keyof NotifPrefs, icon: Mail,          label: 'Follow-up Email Alerts',    desc: 'Notify when auto follow-up emails are sent',  color: '#3B82F6', bg: 'rgba(59,130,246,0.1)'  },
                 { key: 'emailNewLead'     as keyof NotifPrefs, icon: Bell,          label: 'New Lead Alerts',           desc: 'Notify when a new lead is scraped or added',  color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-                { key: 'whatsappOutreach' as keyof NotifPrefs, icon: MessageSquare, label: 'WhatsApp Outreach Alerts',  desc: 'Notify when WhatsApp messages are sent',      color: '#10B981', bg: 'rgba(16,185,129,0.1)'  },
+                { key: 'whatsappOutreach' as keyof NotifPrefs, icon: MessageSquare, label: 'WhatsApp Outreach Alerts',  desc: 'Notify when WhatsApp messages are sent',      color: '#14B8A6', bg: 'rgba(20,184,166,0.1)'  },
                 { key: 'sequenceAlerts'   as keyof NotifPrefs, icon: GitBranch,     label: 'Sequence Step Alerts',      desc: 'Notify when a sequence step is executed',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)'  },
               ] as const).map((item) => (
                 <div
@@ -598,7 +607,7 @@ export default function Settings() {
               <div className="pt-1">
                 <Button
                   onClick={handleSaveNotif}
-                  className={cn('h-9 text-sm font-semibold gap-2 rounded-lg transition-all', notifSaved && 'bg-emerald-500')}
+                  className={cn('h-9 text-sm font-semibold gap-2 rounded-lg transition-all', notifSaved && 'bg-primary')}
                   style={!notifSaved ? { background: 'linear-gradient(135deg, #2563EB, #7C3AED)', color: '#fff' } : { color: '#fff' }}
                 >
                   {notifSaved
@@ -623,7 +632,7 @@ export default function Settings() {
                   <p className="text-xs text-muted-foreground">Details about this system</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(33,246,168,0.06)', borderColor: 'rgba(33,246,168,0.2)' }}>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(15,118,110,0.06)', borderColor: 'rgba(15,118,110,0.2)' }}>
                 <Zap className="h-3 w-3" style={{ color: '#0D9C6A' }} />
                 <span className="text-xs font-medium" style={{ color: '#0D9C6A' }}>AI Powered</span>
               </div>
@@ -633,7 +642,7 @@ export default function Settings() {
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
                   { icon: Server, label: 'Backend',  value: 'Node.js + Express', color: '#059669', bg: '#ECFDF5' },
-                  { icon: Brain,  label: 'AI',       value: 'Groq LLaMA 3.3',   color: '#0D9C6A', bg: 'rgba(33,246,168,0.08)' },
+                  { icon: Brain,  label: 'AI Engine', value: aiStatus ? (aiStatus.active === 'groq' ? 'Groq LLaMA 3.3' : 'Ollama Local') : 'Groq LLaMA 3.3', color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)' },
                   { icon: Zap,    label: 'Frontend', value: 'React + Vite',     color: '#7C3AED', bg: '#F5F3FF' },
                 ].map((tech) => (
                   <div key={tech.label} className="rounded-lg border border-border/60 p-3 text-center">
@@ -645,6 +654,34 @@ export default function Settings() {
                   </div>
                 ))}
               </div>
+
+              {aiStatus && (
+                <div className="rounded-lg border border-border/60 p-3.5 mb-4 space-y-2">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">AI Provider Status</p>
+                  <div className="flex items-center gap-6 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className={cn('h-2 w-2 rounded-full', aiStatus.groqReady ? 'bg-emerald-400' : 'bg-muted-foreground/30')} />
+                      <span className="text-xs text-foreground font-medium">Groq API</span>
+                      <span className={cn('text-[10px] font-semibold', aiStatus.groqReady ? 'text-emerald-600' : 'text-muted-foreground')}>
+                        {aiStatus.groqReady ? 'Configured' : 'Not set'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={cn('h-2 w-2 rounded-full', aiStatus.ollamaReady ? 'bg-emerald-400' : 'bg-muted-foreground/30')} />
+                      <span className="text-xs text-foreground font-medium">Ollama Local</span>
+                      <span className={cn('text-[10px] font-semibold', aiStatus.ollamaReady ? 'text-emerald-600' : 'text-muted-foreground')}>
+                        {aiStatus.ollamaReady ? 'Running' : 'Offline'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-auto">
+                      <span className="text-[10px] text-muted-foreground">Active:</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(15,118,110,0.1)', color: '#0D9C6A' }}>
+                        {aiStatus.active === 'groq' ? 'Groq LLaMA 3.3' : 'Ollama'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-0 border border-border/60 rounded-lg overflow-hidden">
                 {appInfo.map((row, idx) => (

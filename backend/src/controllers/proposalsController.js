@@ -1,7 +1,7 @@
-const crypto = require('crypto');
+﻿const crypto = require('crypto');
 const Proposal = require('../models/Proposal');
 const Lead = require('../models/Lead');
-const groqService = require('../services/groqService');
+const groqService = require('../services/aiService');
 const { notifyProposalGenerated } = require('../services/slackService');
 
 // @desc    Get all proposals with optional filters

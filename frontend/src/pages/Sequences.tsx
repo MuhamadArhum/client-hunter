@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { GitBranch, Plus, Trash2, Play, Pause, Users, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -129,7 +129,7 @@ export default function Sequences() {
   };
 
   const statusColor: Record<string, string> = {
-    active: 'text-emerald-600 bg-emerald-50',
+    active: 'text-primary bg-emerald-50',
     paused: 'text-amber-600 bg-amber-50',
     completed: 'text-green-600 bg-green-50',
     unsubscribed: 'text-rose-600 bg-rose-50',
@@ -149,7 +149,7 @@ export default function Sequences() {
           </div>
           <Button
             className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-            style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
             onClick={() => setShowCreate((v) => !v)}
           >
             <Plus className="h-3.5 w-3.5" /> New Sequence
@@ -201,7 +201,7 @@ export default function Sequences() {
                           onClick={() => updateStep(idx, 'delayDays', d)}
                           className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md transition-all"
                           style={step.delayDays === d
-                            ? { background: 'linear-gradient(135deg, #21F6A8, #10B981)', color: '#0a0f0a' }
+                            ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a' }
                             : { background: '#F3F4F6', color: '#6B7280', border: '1px solid #E5E7EB' }
                           }
                         >
@@ -224,7 +224,7 @@ export default function Sequences() {
           </div>
 
           <div className="flex gap-2">
-            <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }} onClick={handleCreate} disabled={creating}>
+            <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }} onClick={handleCreate} disabled={creating}>
               {creating ? 'Creating...' : 'Create Sequence'}
             </Button>
             <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowCreate(false)}>Cancel</Button>
@@ -243,13 +243,13 @@ export default function Sequences() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'rgba(33,246,168,0.3)', borderTopColor: '#21F6A8' }} />
+          <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'rgba(15,118,110,0.3)', borderTopColor: '#0F766E' }} />
         </div>
       ) : activeTab === 'sequences' ? (
         <div className="space-y-3">
           {sequences.length === 0 ? (
             <div className="rounded-xl border border-border bg-card shadow-sm p-16 flex flex-col items-center gap-3">
-              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.06)' }}>
+              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.06)' }}>
                 <GitBranch className="h-6 w-6 text-muted-foreground/40" />
               </div>
               <p className="text-sm text-muted-foreground">No sequences yet. Create one to get started.</p>
@@ -258,7 +258,7 @@ export default function Sequences() {
             <div key={seq._id} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpandedId(expandedId === seq._id ? null : seq._id)}>
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(33,246,168,0.08)' }}>
+                  <div className="h-9 w-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.08)' }}>
                     <GitBranch className="h-4 w-4" style={{ color: '#0D9C6A' }} />
                   </div>
                   <div>
@@ -267,7 +267,7 @@ export default function Sequences() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full', seq.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600')}>
+                  <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full', seq.isActive ? 'bg-emerald-50 text-primary' : 'bg-rose-50 text-rose-600')}>
                     {seq.isActive ? 'Active' : 'Inactive'}
                   </span>
                   <button onClick={(e) => { e.stopPropagation(); handleDelete(seq._id); }} className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors">
@@ -282,7 +282,7 @@ export default function Sequences() {
                   {seq.steps.map((step, i) => (
                     <div key={i} className="flex gap-3">
                       <div className="flex flex-col items-center">
-                        <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-gray-900" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}>{step.stepNumber}</div>
+                        <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-gray-900" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>{step.stepNumber}</div>
                         {i < seq.steps.length - 1 && <div className="flex-1 w-px bg-border/40 my-1" />}
                       </div>
                       <div className="flex-1 pb-3">
@@ -296,7 +296,7 @@ export default function Sequences() {
                   <div className="rounded-xl border border-border/40 bg-muted/20 p-3 space-y-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"><Users className="h-3 w-3" /> Enroll a Lead</p>
                     {enrollAlert && enrollSeqId === seq._id && (
-                      <p className={cn('text-xs', enrollAlert.includes('success') ? 'text-emerald-600' : 'text-rose-600')}>{enrollAlert}</p>
+                      <p className={cn('text-xs', enrollAlert.includes('success') ? 'text-primary' : 'text-rose-600')}>{enrollAlert}</p>
                     )}
                     <div className="flex gap-2">
                       <Select value={enrollSeqId === seq._id ? enrollLeadId : ''} onValueChange={(v) => { setEnrollSeqId(seq._id); setEnrollLeadId(v); setEnrollAlert(''); }}>
@@ -309,7 +309,7 @@ export default function Sequences() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button size="sm" className="h-8 rounded-lg text-xs font-semibold text-gray-900 gap-1.5" style={{ background: 'linear-gradient(135deg, #21F6A8, #10B981)' }}
+                      <Button size="sm" className="h-8 rounded-lg text-xs font-semibold text-gray-900 gap-1.5" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
                         onClick={() => { setEnrollSeqId(seq._id); handleEnroll(); }} disabled={enrolling || enrollSeqId !== seq._id || !enrollLeadId}>
                         <Play className="h-3 w-3" /> Enroll
                       </Button>
