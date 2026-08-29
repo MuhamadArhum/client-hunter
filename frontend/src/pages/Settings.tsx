@@ -4,12 +4,10 @@ import {
   Bell, Mail, MessageSquare, GitBranch, Plug, RefreshCw, Save,
   AlertCircle, ExternalLink,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 
 // ─── App Info ────────────────────────────────────────────────────────────────
 const appInfo = [
@@ -47,8 +45,8 @@ const INTEGRATION_GROUPS: IntegrationGroup[] = [
     id: 'email',
     title: 'Email — Resend',
     description: 'Send outreach emails, proposals, and daily digests',
-    color: '#3B82F6',
-    bg: 'rgba(59,130,246,0.08)',
+    color: '#1FB2A6',
+    bg: 'rgba(31,178,166,0.08)',
     icon: Mail,
     docUrl: 'https://resend.com/api-keys',
     fields: [
@@ -61,8 +59,8 @@ const INTEGRATION_GROUPS: IntegrationGroup[] = [
     id: 'whatsapp',
     title: 'WhatsApp — Meta Cloud API',
     description: 'Send WhatsApp messages to leads via Meta Business',
-    color: '#22C55E',
-    bg: 'rgba(34,197,94,0.08)',
+    color: '#3E8E5A',
+    bg: 'rgba(62,142,90,0.08)',
     icon: MessageSquare,
     docUrl: 'https://developers.facebook.com/docs/whatsapp/cloud-api/get-started',
     fields: [
@@ -74,8 +72,8 @@ const INTEGRATION_GROUPS: IntegrationGroup[] = [
     id: 'enrichment',
     title: 'Email Enrichment — Hunter.io',
     description: 'Auto-find email addresses from company domains',
-    color: '#F59E0B',
-    bg: 'rgba(245,158,11,0.08)',
+    color: '#C98A1E',
+    bg: 'rgba(201,138,30,0.08)',
     icon: Zap,
     docUrl: 'https://hunter.io/api-keys',
     fields: [
@@ -86,8 +84,8 @@ const INTEGRATION_GROUPS: IntegrationGroup[] = [
     id: 'notifications',
     title: 'Notifications — Slack',
     description: 'Get Slack alerts for new leads, proposals, and conversions',
-    color: '#8B5CF6',
-    bg: 'rgba(139,92,246,0.08)',
+    color: '#C23B2E',
+    bg: 'rgba(194,59,46,0.08)',
     icon: Bell,
     docUrl: 'https://api.slack.com/messaging/webhooks',
     fields: [
@@ -104,19 +102,21 @@ function PasswordField({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{label}</Label>
+      <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{label}</Label>
       <div className="relative">
         <Input
           type={show ? 'text' : 'password'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 rounded-lg border-border/70 text-sm pr-10 focus-visible:ring-primary/30"
+          className="h-10 text-sm pr-10"
+          style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
           placeholder="••••••••"
         />
         <button
           type="button"
           onClick={onToggleShow}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+          style={{ color: '#9CADB0', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
@@ -175,29 +175,29 @@ function IntegrationCard({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+    <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${group.color}`, overflow: 'hidden' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border/60">
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #CBD3CF' }}>
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: group.bg }}>
+          <div className="flex h-9 w-9 items-center justify-center" style={{ background: group.bg, borderRadius: 4 }}>
             <group.icon className="h-4 w-4" style={{ color: group.color }} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">{group.title}</h3>
+              <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>{group.title}</h3>
               {allConfigured ? (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900 dark:text-primary">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5" style={{ borderRadius: 10, background: 'rgba(31,178,166,0.12)', color: '#1FB2A6', fontFamily: "'IBM Plex Mono', monospace" }}>
+                  <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#1FB2A6' }} />
                   ACTIVE
                 </span>
               ) : anyConfigured ? (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5" style={{ borderRadius: 10, background: 'rgba(201,138,30,0.14)', color: '#C98A1E', fontFamily: "'IBM Plex Mono', monospace" }}>
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#C98A1E' }} />
                   PARTIAL
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border/60">
-                  <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5" style={{ borderRadius: 10, background: 'rgba(110,125,121,0.1)', color: '#6E7D79', fontFamily: "'IBM Plex Mono', monospace" }}>
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#9CADB0' }} />
                   NOT SET
                 </span>
               )}
@@ -226,11 +226,11 @@ function IntegrationCard({
                   <span className="text-xs font-medium text-muted-foreground">{field.label}</span>
                   {status?.configured ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-muted-foreground">{status.displayValue}</span>
-                      <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>{status.displayValue}</span>
+                      <CheckCircle className="h-3.5 w-3.5" style={{ color: '#1FB2A6' }} />
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-xs text-amber-600">
+                    <div className="flex items-center gap-1.5" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#C98A1E' }}>
                       <AlertCircle className="h-3.5 w-3.5" />
                       Not configured
                     </div>
@@ -241,19 +241,18 @@ function IntegrationCard({
 
             <div className="pt-2">
               {saved ? (
-                <div className="flex items-center gap-1.5 text-xs text-primary">
+                <div className="flex items-center gap-1.5" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#1FB2A6' }}>
                   <CheckCircle className="h-3.5 w-3.5" /> Settings saved successfully!
                 </div>
               ) : (
-                <Button
-                  size="sm"
-                  className="h-8 rounded-lg text-xs font-semibold gap-1.5"
-                  style={{ background: `linear-gradient(135deg, ${group.color}, ${group.color}cc)`, color: '#fff' }}
+                <button
+                  className="h-8 px-3 text-xs font-semibold gap-1.5 flex items-center text-white"
+                  style={{ background: group.color, borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                   onClick={handleEdit}
                 >
                   <Plug className="h-3 w-3" />
                   {allConfigured ? 'Update Credentials' : 'Configure'}
-                </Button>
+                </button>
               )}
             </div>
           </>
@@ -271,7 +270,7 @@ function IntegrationCard({
                       placeholder={field.placeholder}
                       value={values[field.key] || ''}
                       onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-                      className="h-9 rounded-lg border-border/70 text-sm pr-10"
+                      className="h-9 text-sm pr-10" style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
                     />
                     <button
                       type="button"
@@ -286,7 +285,7 @@ function IntegrationCard({
                     placeholder={field.placeholder}
                     value={values[field.key] || ''}
                     onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-                    className="h-9 rounded-lg border-border/70 text-sm"
+                    className="h-9 text-sm" style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
                   />
                 )}
                 {statuses[field.key]?.configured && (
@@ -298,25 +297,21 @@ function IntegrationCard({
             ))}
 
             <div className="flex gap-2 pt-1">
-              <Button
-                size="sm"
-                className="h-8 rounded-lg text-xs font-semibold gap-1.5 text-white"
-                style={{ background: `linear-gradient(135deg, ${group.color}, ${group.color}cc)` }}
+              <button
+                className="h-8 px-3 text-xs font-semibold gap-1.5 flex items-center text-white"
+                style={{ background: group.color, borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: saving ? 0.7 : 1 }}
                 onClick={handleSave}
                 disabled={saving}
               >
                 {saving
                   ? <><span className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                   : <><Save className="h-3 w-3" /> Save</>}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 rounded-lg text-xs border-border/60"
+              </button>
+              <button
+                className="h-8 px-3 text-xs font-semibold"
+                style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                 onClick={() => setEditing(false)}
-              >
-                Cancel
-              </Button>
+              >Cancel</button>
             </div>
           </div>
         )}
@@ -414,25 +409,29 @@ export default function Settings() {
     setTimeout(() => setNotifSaved(false), 2000);
   };
 
+  const labelSt: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' };
+  const inputSt: React.CSSProperties = { borderRadius: 4, border: '1px solid #CBD3CF', fontSize: 13 };
+
   return (
-    <div className="space-y-5 p-5 max-w-2xl">
-      <div>
-        <h2 className="text-xl font-bold text-foreground">Settings</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">Manage your account, integrations, and preferences</p>
+    <div className="space-y-5 p-5 max-w-2xl" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B', marginBottom: 4 }}>Settings</h2>
+        <p style={{ fontSize: 13, color: '#6E7D79' }}>Manage your account, integrations, and preferences</p>
       </div>
 
       <Tabs defaultValue="integrations">
-        <TabsList className="h-10 rounded-xl bg-muted/60 p-1 gap-1 w-full">
-          <TabsTrigger value="integrations" className="flex-1 rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-sm">
+        <TabsList className="h-10 p-1 gap-1 w-full" style={{ background: 'rgba(203,211,207,0.4)', borderRadius: 4, border: '1px solid #CBD3CF' }}>
+          <TabsTrigger value="integrations" className="flex-1 text-sm font-medium data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
             <Plug className="mr-2 h-3.5 w-3.5" /> Integrations
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex-1 rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-sm">
+          <TabsTrigger value="security" className="flex-1 text-sm font-medium data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
             <Lock className="mr-2 h-3.5 w-3.5" /> Security
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex-1 rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-sm">
+          <TabsTrigger value="notifications" className="flex-1 text-sm font-medium data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
             <Bell className="mr-2 h-3.5 w-3.5" /> Notifications
           </TabsTrigger>
-          <TabsTrigger value="about" className="flex-1 rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-sm">
+          <TabsTrigger value="about" className="flex-1 text-sm font-medium data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
             <Info className="mr-2 h-3.5 w-3.5" /> About
           </TabsTrigger>
         </TabsList>
@@ -440,31 +439,30 @@ export default function Settings() {
         {/* ── Integrations Tab ── */}
         <TabsContent value="integrations" className="mt-5 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">Configure API credentials for each integration</p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 rounded-lg text-xs border-border/60 gap-1.5"
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>Configure API credentials for each integration</p>
+            <button
+              className="h-8 px-3 text-xs font-semibold gap-1.5 flex items-center"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace" }}
               onClick={fetchIntegrations}
               disabled={intLoading}
             >
-              <RefreshCw className={cn('h-3 w-3', intLoading && 'animate-spin')} />
+              <RefreshCw className={`h-3 w-3 ${intLoading ? 'animate-spin' : ''}`} />
               Refresh
-            </Button>
+            </button>
           </div>
 
           {/* Summary bar */}
           {!intLoading && (
-            <div className="rounded-xl border border-border bg-card shadow-sm p-4 flex items-center gap-4 flex-wrap">
+            <div className="p-4 flex items-center gap-4 flex-wrap" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }}>
               {INTEGRATION_GROUPS.map((group) => {
                 const configured = group.fields.filter((f) => integrations[f.key]?.configured).length;
                 const total      = group.fields.length;
                 const all        = configured === total;
                 return (
                   <div key={group.id} className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full" style={{ background: all ? '#22C55E' : configured > 0 ? '#F59E0B' : '#9CA3AF' }} />
-                    <span className="text-xs text-muted-foreground">{group.title.split(' — ')[0]}</span>
-                    <span className="text-xs font-semibold text-foreground">{configured}/{total}</span>
+                    <div className="h-2 w-2 rounded-full" style={{ background: all ? '#1FB2A6' : configured > 0 ? '#C98A1E' : '#9CADB0' }} />
+                    <span style={{ fontSize: 12, color: '#6E7D79' }}>{group.title.split(' — ')[0]}</span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 700, color: '#1B1F2B' }}>{configured}/{total}</span>
                   </div>
                 );
               })}
@@ -474,7 +472,7 @@ export default function Settings() {
           {intLoading ? (
             <div className="space-y-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="rounded-xl border border-border bg-card shadow-sm h-24 animate-pulse" />
+                <div key={i} className="h-24 animate-pulse" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }} />
               ))}
             </div>
           ) : (
@@ -493,25 +491,29 @@ export default function Settings() {
 
         {/* ── Security Tab ── */}
         <TabsContent value="security" className="mt-5">
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
-                <Lock className="h-4 w-4" style={{ color: '#0D9C6A' }} />
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', overflow: 'hidden' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #CBD3CF' }}>
+              <div className="flex h-8 w-8 items-center justify-center" style={{ background: 'rgba(31,178,166,0.08)', borderRadius: 4 }}>
+                <Lock className="h-4 w-4" style={{ color: '#1FB2A6' }} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-foreground">Security</h3>
-                <p className="text-xs text-muted-foreground">Update your account password</p>
+                <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Security</h3>
+                <p style={{ fontSize: 11, color: '#6E7D79', marginTop: 1 }}>Update your account password</p>
               </div>
             </div>
 
             <div className="p-5 space-y-4">
               {pwAlert && (
-                <div className={cn(
-                  'flex items-center gap-2.5 text-sm rounded-lg p-3 border',
-                  pwAlert.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300'
-                    : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:border-rose-900 dark:text-rose-300',
-                )}>
+                <div
+                  className="flex items-center gap-2.5 text-sm p-3"
+                  style={{
+                    borderRadius: 4,
+                    background: pwAlert.type === 'success' ? 'rgba(62,142,90,0.08)' : 'rgba(194,59,46,0.08)',
+                    border: pwAlert.type === 'success' ? '1px solid rgba(62,142,90,0.3)' : '1px solid rgba(194,59,46,0.25)',
+                    color: pwAlert.type === 'success' ? '#3E8E5A' : '#C23B2E',
+                    fontFamily: "'IBM Plex Sans', sans-serif",
+                  }}
+                >
                   {pwAlert.type === 'success' && <CheckCircle className="h-4 w-4 shrink-0" />}
                   {pwAlert.msg}
                 </div>
@@ -525,10 +527,19 @@ export default function Settings() {
                   <div className="space-y-1">
                     <div className="flex gap-1">
                       {[1, 2, 3].map((level) => (
-                        <div key={level} className={cn('h-1 flex-1 rounded-full transition-all duration-300', level <= passwordStrength ? strengthColor[passwordStrength] : 'bg-muted')} />
+                        <div
+                          key={level}
+                          className="h-1 flex-1 transition-all duration-300"
+                          style={{
+                            borderRadius: 4,
+                            background: level <= passwordStrength
+                              ? (passwordStrength === 1 ? '#C23B2E' : passwordStrength === 2 ? '#C98A1E' : '#3E8E5A')
+                              : '#CBD3CF',
+                          }}
+                        />
                       ))}
                     </div>
-                    <p className={cn('text-xs font-medium', passwordStrength === 1 ? 'text-rose-500' : passwordStrength === 2 ? 'text-amber-500' : 'text-primary')}>
+                    <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 600, color: passwordStrength === 1 ? '#C23B2E' : passwordStrength === 2 ? '#C98A1E' : '#3E8E5A' }}>
                       {strengthLabel[passwordStrength]} password
                     </p>
                   </div>
@@ -538,16 +549,16 @@ export default function Settings() {
               <PasswordField label="Confirm New Password" value={confirmPassword} onChange={setConfirmPassword} show={showConfirm} onToggleShow={() => setShowConfirm((v) => !v)} />
 
               <div className="pt-1">
-                <Button
-                  className="h-10 rounded-lg text-sm font-semibold text-gray-900 gap-2"
-                  style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+                <button
+                  className="h-10 px-5 text-sm font-semibold text-white gap-2 flex items-center"
+                  style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: pwLoading ? 0.7 : 1 }}
                   onClick={handleChangePassword}
                   disabled={pwLoading}
                 >
                   {pwLoading
-                    ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Saving...</>
+                    ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                     : <><Shield className="h-3.5 w-3.5" /> Update Password</>}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
@@ -555,65 +566,65 @@ export default function Settings() {
 
         {/* ── Notifications Tab ── */}
         <TabsContent value="notifications" className="mt-5">
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
-                <Bell className="h-4 w-4" style={{ color: '#6366F1' }} />
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #C98A1E', overflow: 'hidden' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #CBD3CF' }}>
+              <div className="flex h-8 w-8 items-center justify-center" style={{ background: 'rgba(201,138,30,0.1)', borderRadius: 4 }}>
+                <Bell className="h-4 w-4" style={{ color: '#C98A1E' }} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3>
-                <p className="text-xs text-muted-foreground">Control what alerts the agent sends you</p>
+                <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Notification Preferences</h3>
+                <p style={{ fontSize: 11, color: '#6E7D79', marginTop: 1 }}>Control what alerts the agent sends you</p>
               </div>
             </div>
 
             <div className="p-5 space-y-3">
               {([
-                { key: 'emailFollowUp'    as keyof NotifPrefs, icon: Mail,          label: 'Follow-up Email Alerts',    desc: 'Notify when auto follow-up emails are sent',  color: '#3B82F6', bg: 'rgba(59,130,246,0.1)'  },
-                { key: 'emailNewLead'     as keyof NotifPrefs, icon: Bell,          label: 'New Lead Alerts',           desc: 'Notify when a new lead is scraped or added',  color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-                { key: 'whatsappOutreach' as keyof NotifPrefs, icon: MessageSquare, label: 'WhatsApp Outreach Alerts',  desc: 'Notify when WhatsApp messages are sent',      color: '#14B8A6', bg: 'rgba(20,184,166,0.1)'  },
-                { key: 'sequenceAlerts'   as keyof NotifPrefs, icon: GitBranch,     label: 'Sequence Step Alerts',      desc: 'Notify when a sequence step is executed',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)'  },
+                { key: 'emailFollowUp'    as keyof NotifPrefs, icon: Mail,          label: 'Follow-up Email Alerts',    desc: 'Notify when auto follow-up emails are sent',  color: '#1FB2A6', bg: 'rgba(31,178,166,0.1)'  },
+                { key: 'emailNewLead'     as keyof NotifPrefs, icon: Bell,          label: 'New Lead Alerts',           desc: 'Notify when a new lead is scraped or added',  color: '#3E8E5A', bg: 'rgba(62,142,90,0.1)'   },
+                { key: 'whatsappOutreach' as keyof NotifPrefs, icon: MessageSquare, label: 'WhatsApp Outreach Alerts',  desc: 'Notify when WhatsApp messages are sent',      color: '#C98A1E', bg: 'rgba(201,138,30,0.1)'  },
+                { key: 'sequenceAlerts'   as keyof NotifPrefs, icon: GitBranch,     label: 'Sequence Step Alerts',      desc: 'Notify when a sequence step is executed',     color: '#C23B2E', bg: 'rgba(194,59,46,0.1)'   },
               ] as const).map((item) => (
                 <div
                   key={item.key}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3.5 hover:bg-muted/20 transition-colors"
+                  className="flex items-center justify-between gap-4 p-3.5 transition-colors"
+                  style={{ border: '1px solid #CBD3CF', borderRadius: 4 }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: item.bg }}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center" style={{ background: item.bg, borderRadius: 4 }}>
                       <item.icon className="h-3.5 w-3.5" style={{ color: item.color }} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{item.label}</p>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: '#1B1F2B', fontFamily: "'IBM Plex Sans', sans-serif" }}>{item.label}</p>
+                      <p style={{ fontSize: 11, color: '#6E7D79', marginTop: 1 }}>{item.desc}</p>
                     </div>
                   </div>
                   <button
                     role="switch"
                     aria-checked={notif[item.key]}
                     onClick={() => setNotif((p) => ({ ...p, [item.key]: !p[item.key] }))}
-                    className={cn(
-                      'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent',
-                      'transition-colors duration-200 focus:outline-none',
-                      notif[item.key] ? 'bg-primary' : 'bg-muted',
-                    )}
+                    className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
+                    style={{ background: notif[item.key] ? '#1FB2A6' : '#CBD3CF' }}
                   >
-                    <span className={cn(
-                      'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200',
-                      notif[item.key] ? 'translate-x-4' : 'translate-x-0',
-                    )} />
+                    <span
+                      className="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200"
+                      style={{ transform: notif[item.key] ? 'translateX(16px)' : 'translateX(0)' }}
+                    />
                   </button>
                 </div>
               ))}
 
               <div className="pt-1">
-                <Button
+                <button
                   onClick={handleSaveNotif}
-                  className={cn('h-9 text-sm font-semibold gap-2 rounded-lg transition-all', notifSaved && 'bg-primary')}
-                  style={!notifSaved ? { background: 'linear-gradient(135deg, #2563EB, #7C3AED)', color: '#fff' } : { color: '#fff' }}
+                  className="h-9 px-4 text-sm font-semibold gap-2 flex items-center text-white transition-all"
+                  style={{ background: notifSaved ? '#3E8E5A' : '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                 >
                   {notifSaved
                     ? <><CheckCircle className="h-3.5 w-3.5" /> Saved!</>
                     : <><Bell className="h-3.5 w-3.5" /> Save Preferences</>}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
@@ -621,61 +632,61 @@ export default function Settings() {
 
         {/* ── About Tab ── */}
         <TabsContent value="about" className="mt-5">
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border/60">
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1B1F2B', overflow: 'hidden' }}>
+            <div className="flex items-center justify-between gap-3 px-5 py-4" style={{ borderBottom: '1px solid #CBD3CF' }}>
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                  <Info className="h-4 w-4 text-muted-foreground" />
+                <div className="flex h-8 w-8 items-center justify-center" style={{ background: 'rgba(110,125,121,0.1)', borderRadius: 4 }}>
+                  <Info className="h-4 w-4" style={{ color: '#6E7D79' }} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">Application Info</h3>
-                  <p className="text-xs text-muted-foreground">Details about this system</p>
+                  <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Application Info</h3>
+                  <p style={{ fontSize: 11, color: '#6E7D79', marginTop: 1 }}>Details about this system</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(15,118,110,0.06)', borderColor: 'rgba(15,118,110,0.2)' }}>
-                <Zap className="h-3 w-3" style={{ color: '#0D9C6A' }} />
-                <span className="text-xs font-medium" style={{ color: '#0D9C6A' }}>AI Powered</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1" style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}>
+                <Zap className="h-3 w-3" style={{ color: '#1FB2A6' }} />
+                <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#1FB2A6' }}>AI Powered</span>
               </div>
             </div>
 
             <div className="p-5">
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
-                  { icon: Server, label: 'Backend',  value: 'Node.js + Express', color: '#059669', bg: '#ECFDF5' },
-                  { icon: Brain,  label: 'AI Engine', value: aiStatus ? (aiStatus.active === 'groq' ? 'Groq LLaMA 3.3' : 'Ollama Local') : 'Groq LLaMA 3.3', color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)' },
-                  { icon: Zap,    label: 'Frontend', value: 'React + Vite',     color: '#7C3AED', bg: '#F5F3FF' },
+                  { icon: Server, label: 'Backend',   value: 'Node.js + Express', color: '#3E8E5A', bg: 'rgba(62,142,90,0.08)' },
+                  { icon: Brain,  label: 'AI Engine',  value: aiStatus ? (aiStatus.active === 'groq' ? 'Groq LLaMA 3.3' : 'Ollama Local') : 'Groq LLaMA 3.3', color: '#1FB2A6', bg: 'rgba(31,178,166,0.08)' },
+                  { icon: Zap,    label: 'Frontend',   value: 'React + Vite',     color: '#C98A1E', bg: 'rgba(201,138,30,0.08)' },
                 ].map((tech) => (
-                  <div key={tech.label} className="rounded-lg border border-border/60 p-3 text-center">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg mx-auto mb-1.5" style={{ background: tech.bg }}>
+                  <div key={tech.label} className="p-3 text-center" style={{ border: '1px solid #CBD3CF', borderRadius: 4 }}>
+                    <div className="flex h-8 w-8 items-center justify-center mx-auto mb-1.5" style={{ background: tech.bg, borderRadius: 4 }}>
                       <tech.icon className="h-4 w-4" style={{ color: tech.color }} />
                     </div>
-                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{tech.label}</p>
-                    <p className="text-xs font-medium text-foreground mt-0.5">{tech.value}</p>
+                    <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: '#6E7D79' }}>{tech.label}</p>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: '#1B1F2B', marginTop: 2 }}>{tech.value}</p>
                   </div>
                 ))}
               </div>
 
               {aiStatus && (
-                <div className="rounded-lg border border-border/60 p-3.5 mb-4 space-y-2">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">AI Provider Status</p>
+                <div className="p-3.5 mb-4 space-y-2" style={{ border: '1px solid #CBD3CF', borderRadius: 4 }}>
+                  <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79', marginBottom: 8 }}>AI Provider Status</p>
                   <div className="flex items-center gap-6 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <span className={cn('h-2 w-2 rounded-full', aiStatus.groqReady ? 'bg-emerald-400' : 'bg-muted-foreground/30')} />
-                      <span className="text-xs text-foreground font-medium">Groq API</span>
-                      <span className={cn('text-[10px] font-semibold', aiStatus.groqReady ? 'text-emerald-600' : 'text-muted-foreground')}>
+                      <span className="h-2 w-2 rounded-full" style={{ background: aiStatus.groqReady ? '#1FB2A6' : '#9CADB0' }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#1B1F2B' }}>Groq API</span>
+                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, color: aiStatus.groqReady ? '#1FB2A6' : '#6E7D79' }}>
                         {aiStatus.groqReady ? 'Configured' : 'Not set'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={cn('h-2 w-2 rounded-full', aiStatus.ollamaReady ? 'bg-emerald-400' : 'bg-muted-foreground/30')} />
-                      <span className="text-xs text-foreground font-medium">Ollama Local</span>
-                      <span className={cn('text-[10px] font-semibold', aiStatus.ollamaReady ? 'text-emerald-600' : 'text-muted-foreground')}>
+                      <span className="h-2 w-2 rounded-full" style={{ background: aiStatus.ollamaReady ? '#3E8E5A' : '#9CADB0' }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#1B1F2B' }}>Ollama Local</span>
+                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, color: aiStatus.ollamaReady ? '#3E8E5A' : '#6E7D79' }}>
                         {aiStatus.ollamaReady ? 'Running' : 'Offline'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 ml-auto">
-                      <span className="text-[10px] text-muted-foreground">Active:</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(15,118,110,0.1)', color: '#0D9C6A' }}>
+                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79' }}>Active:</span>
+                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: 'rgba(31,178,166,0.12)', color: '#1FB2A6' }}>
                         {aiStatus.active === 'groq' ? 'Groq LLaMA 3.3' : 'Ollama'}
                       </span>
                     </div>
@@ -683,15 +694,17 @@ export default function Settings() {
                 </div>
               )}
 
-              <div className="space-y-0 border border-border/60 rounded-lg overflow-hidden">
+              <div style={{ border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
                 {appInfo.map((row, idx) => (
                   <div
                     key={row.label}
-                    className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
-                    style={{ borderBottom: idx < appInfo.length - 1 ? '1px solid hsl(var(--border) / 0.5)' : 'none' }}
+                    className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4 px-4 py-3 transition-colors"
+                    style={{ borderBottom: idx < appInfo.length - 1 ? '1px solid #CBD3CF' : 'none' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <span className="text-xs font-semibold text-muted-foreground sm:min-w-28 shrink-0">{row.label}</span>
-                    <span className="text-sm text-foreground">{row.value}</span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', color: '#6E7D79', minWidth: 112, flexShrink: 0 }}>{row.label}</span>
+                    <span style={{ fontSize: 13, color: '#1B1F2B' }}>{row.value}</span>
                   </div>
                 ))}
               </div>

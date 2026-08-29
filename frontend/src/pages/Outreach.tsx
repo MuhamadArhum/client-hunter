@@ -1,6 +1,5 @@
-﻿import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, Plus, Trash2, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,7 +9,6 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 
 interface Lead {
   _id: string;
@@ -48,12 +46,16 @@ interface Pagination {
 
 function Alert({ type, msg }: { type: 'success' | 'error'; msg: string }) {
   return (
-    <div className={cn(
-      'flex items-center gap-2.5 text-sm rounded-xl p-3 border',
-      type === 'success'
-        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-        : 'bg-rose-50 text-rose-700 border-rose-200',
-    )}>
+    <div
+      className="flex items-center gap-2.5 text-sm p-3"
+      style={{
+        borderRadius: 4,
+        border: type === 'success' ? '1px solid rgba(62,142,90,0.3)' : '1px solid rgba(194,59,46,0.25)',
+        background: type === 'success' ? 'rgba(62,142,90,0.08)' : 'rgba(194,59,46,0.08)',
+        color: type === 'success' ? '#3E8E5A' : '#C23B2E',
+        fontFamily: "'IBM Plex Sans', sans-serif",
+      }}
+    >
       {type === 'success'
         ? <CheckCircle className="h-4 w-4 shrink-0" />
         : <XCircle className="h-4 w-4 shrink-0" />}
@@ -63,6 +65,28 @@ function Alert({ type, msg }: { type: 'success' | 'error'; msg: string }) {
 }
 
 const CATEGORIES = ['general', 'cold-outreach', 'follow-up', 'proposal'];
+
+const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
+  general:        { bg: 'rgba(110,125,121,0.1)', text: '#6E7D79' },
+  'cold-outreach': { bg: 'rgba(31,178,166,0.12)', text: '#1FB2A6' },
+  'follow-up':     { bg: 'rgba(201,138,30,0.14)', text: '#C98A1E' },
+  proposal:        { bg: 'rgba(62,142,90,0.12)',  text: '#3E8E5A' },
+};
+
+const labelStyle: React.CSSProperties = {
+  fontFamily: "'IBM Plex Mono', monospace",
+  fontSize: 10.5,
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  color: '#6E7D79',
+};
+
+const inputStyle: React.CSSProperties = {
+  borderRadius: 4,
+  border: '1px solid #CBD3CF',
+  fontSize: 13,
+};
 
 export default function Outreach() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -183,35 +207,27 @@ export default function Outreach() {
     } catch (err) { console.error(err); }
   };
 
-  const categoryColor: Record<string, string> = {
-    general: 'bg-muted text-muted-foreground',
-    'cold-outreach': 'bg-emerald-50 text-emerald-700',
-    'follow-up': 'bg-amber-50 text-amber-700',
-    proposal: 'bg-violet-50 text-violet-700',
-  };
-
   return (
-    <div className="space-y-5 p-6">
-      <div className="page-header">
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-1">
-            <Send className="h-4 w-4" style={{ color: '#0D9C6A' }} />
-            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Automation</span>
-          </div>
-          <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Outreach</h1>
-          <p className="text-sm text-muted-foreground font-medium">Send emails and WhatsApp messages to your leads</p>
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Send className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Automation</span>
         </div>
+        <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Outreach</h1>
+        <p style={{ fontSize: 13, color: '#6E7D79' }}>Send emails and WhatsApp messages to your leads</p>
       </div>
 
       <Tabs value={activeOuterTab} onValueChange={setActiveOuterTab}>
-        <TabsList className="h-10 rounded-xl bg-muted/60 p-1 gap-1">
-          <TabsTrigger value="send" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm">
+        <TabsList className="h-10 p-1 gap-1" style={{ background: 'rgba(203,211,207,0.4)', borderRadius: 4, border: '1px solid #CBD3CF' }}>
+          <TabsTrigger value="send" className="text-sm font-medium px-4 data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
             <Send className="mr-2 h-3.5 w-3.5" /> Send Outreach
           </TabsTrigger>
-          <TabsTrigger value="templates" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm" onClick={fetchTemplates}>
+          <TabsTrigger value="templates" className="text-sm font-medium px-4 data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }} onClick={fetchTemplates}>
             <Eye className="mr-2 h-3.5 w-3.5" /> Templates
           </TabsTrigger>
-          <TabsTrigger value="history" className="rounded-lg text-sm font-medium px-4 data-[state=active]:bg-card data-[state=active]:shadow-sm" onClick={fetchHistory}>
+          <TabsTrigger value="history" className="text-sm font-medium px-4 data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }} onClick={fetchHistory}>
             <Clock className="mr-2 h-3.5 w-3.5" /> History
           </TabsTrigger>
         </TabsList>
@@ -219,36 +235,38 @@ export default function Outreach() {
         {/* Send Tab */}
         <TabsContent value="send" className="mt-5">
           <div className="max-w-2xl space-y-4">
-            <div className="rounded-xl border border-border bg-card shadow-sm p-4 space-y-1.5">
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Select Lead</Label>
+            {/* Lead selector */}
+            <div className="p-4 space-y-1.5" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }}>
+              <Label style={labelStyle}>Select Lead</Label>
               <Select value={selectedLeadId} onValueChange={setSelectedLeadId}>
-                <SelectTrigger className="h-10 rounded-xl border-border/60 text-sm">
+                <SelectTrigger className="h-10 text-sm" style={inputStyle}>
                   <SelectValue placeholder="Choose a lead to contact..." />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent style={{ borderRadius: 4 }}>
                   {leads.map((lead) => (
                     <SelectItem key={lead._id} value={lead._id}>
                       <span className="font-medium">{lead.companyName}</span>
-                      {lead.email && <span className="text-muted-foreground ml-2 text-xs">{lead.email}</span>}
+                      {lead.email && <span className="ml-2 text-xs" style={{ color: '#6E7D79' }}>{lead.email}</span>}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {selectedLead?.email && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5 pt-0.5">
+                <p className="flex items-center gap-1.5 pt-0.5" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
                   <Mail className="h-3 w-3" /> {selectedLead.email}
                 </p>
               )}
             </div>
 
-            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+            {/* Email / WhatsApp tabs */}
+            <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
               <Tabs defaultValue="email">
-                <div className="border-b border-border/60 px-4 pt-4 pb-0">
-                  <TabsList className="h-9 rounded-lg bg-muted/60 p-1 gap-1">
-                    <TabsTrigger value="email" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                <div style={{ borderBottom: '1px solid #CBD3CF', padding: '12px 16px 0' }}>
+                  <TabsList className="h-9 p-1 gap-1" style={{ background: 'rgba(203,211,207,0.4)', borderRadius: 4, border: '1px solid #CBD3CF' }}>
+                    <TabsTrigger value="email" className="text-sm font-medium px-3 gap-2 data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
                       <Mail className="h-3.5 w-3.5" /> Email
                     </TabsTrigger>
-                    <TabsTrigger value="whatsapp" className="rounded-md text-sm font-medium px-3 gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                    <TabsTrigger value="whatsapp" className="text-sm font-medium px-3 gap-2 data-[state=active]:shadow-sm" style={{ borderRadius: 4, fontFamily: "'IBM Plex Sans', sans-serif" }}>
                       <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
                     </TabsTrigger>
                   </TabsList>
@@ -257,45 +275,45 @@ export default function Outreach() {
                 <TabsContent value="email" className="p-5 space-y-4">
                   {emailAlert && <Alert type={emailAlert.type} msg={emailAlert.msg} />}
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject</Label>
-                    <Input className="h-10 rounded-xl border-border/60 text-sm" placeholder="Your email subject..." value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
+                    <Label style={labelStyle}>Subject</Label>
+                    <Input className="h-10 text-sm" style={inputStyle} placeholder="Your email subject..." value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
-                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your email message..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
+                    <Label style={labelStyle}>Message</Label>
+                    <Textarea className="text-sm resize-none" style={inputStyle} rows={8} placeholder="Write your email message..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
                   </div>
-                  <Button
-                    className="h-10 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+                  <button
+                    className="h-10 px-5 gap-2 flex items-center font-semibold text-sm text-white"
+                    style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: emailLoading ? 0.7 : 1 }}
                     onClick={handleSendEmail}
                     disabled={emailLoading}
                   >
                     {emailLoading
-                      ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Sending...</>
+                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
                       : <><Mail className="h-3.5 w-3.5" /> Send Email</>}
-                  </Button>
+                  </button>
                 </TabsContent>
 
                 <TabsContent value="whatsapp" className="p-5 space-y-4">
                   {waAlert && <Alert type={waAlert.type} msg={waAlert.msg} />}
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone Number</Label>
-                    <Input className="h-10 rounded-xl border-border/60 text-sm" placeholder="+1234567890" value={waPhone} onChange={(e) => setWaPhone(e.target.value)} />
+                    <Label style={labelStyle}>Phone Number</Label>
+                    <Input className="h-10 text-sm" style={inputStyle} placeholder="+1234567890" value={waPhone} onChange={(e) => setWaPhone(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Message</Label>
-                    <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Write your WhatsApp message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
+                    <Label style={labelStyle}>Message</Label>
+                    <Textarea className="text-sm resize-none" style={inputStyle} rows={8} placeholder="Write your WhatsApp message..." value={waMessage} onChange={(e) => setWaMessage(e.target.value)} />
                   </div>
-                  <Button
-                    className="h-10 rounded-xl text-sm font-semibold gap-2 text-white"
-                    style={{ background: 'linear-gradient(135deg, #7C3AED, #9F5CE8)' }}
+                  <button
+                    className="h-10 px-5 gap-2 flex items-center font-semibold text-sm text-white"
+                    style={{ background: '#C98A1E', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: waLoading ? 0.7 : 1 }}
                     onClick={handleSendWhatsApp}
                     disabled={waLoading}
                   >
                     {waLoading
                       ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
                       : <><MessageSquare className="h-3.5 w-3.5" /> Send WhatsApp</>}
-                  </Button>
+                  </button>
                 </TabsContent>
               </Tabs>
             </div>
@@ -305,32 +323,32 @@ export default function Outreach() {
         {/* Templates Tab */}
         <TabsContent value="templates" className="mt-5 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">{templates.length} template{templates.length !== 1 ? 's' : ''}</p>
-            <Button
-              className="h-9 rounded-xl text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>{templates.length} template{templates.length !== 1 ? 's' : ''}</p>
+            <button
+              className="h-9 px-4 gap-2 flex items-center text-sm font-semibold text-white"
+              style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
               onClick={() => setShowNewTemplate((v) => !v)}
             >
               <Plus className="h-3.5 w-3.5" /> New Template
-            </Button>
+            </button>
           </div>
 
           {showNewTemplate && (
-            <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-4">
-              <h3 className="text-sm font-semibold">New Email Template</h3>
+            <div className="p-5 space-y-4" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6' }}>
+              <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>New Email Template</h3>
               {tmplAlert && <Alert type={tmplAlert.type} msg={tmplAlert.msg} />}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Template Name *</Label>
-                  <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="e.g. Cold Intro Email" value={tmplName} onChange={(e) => setTmplName(e.target.value)} />
+                  <Label style={labelStyle}>Template Name *</Label>
+                  <Input className="h-9 text-sm" style={inputStyle} placeholder="e.g. Cold Intro Email" value={tmplName} onChange={(e) => setTmplName(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Category</Label>
+                  <Label style={labelStyle}>Category</Label>
                   <Select value={tmplCategory} onValueChange={setTmplCategory}>
-                    <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm">
+                    <SelectTrigger className="h-9 text-sm" style={inputStyle}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent style={{ borderRadius: 4 }}>
                       {CATEGORIES.map((c) => (
                         <SelectItem key={c} value={c} className="capitalize">{c.replace('-', ' ')}</SelectItem>
                       ))}
@@ -339,89 +357,112 @@ export default function Outreach() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject *</Label>
-                <Input className="h-9 rounded-xl border-border/60 text-sm" placeholder="Email subject line..." value={tmplSubject} onChange={(e) => setTmplSubject(e.target.value)} />
+                <Label style={labelStyle}>Subject *</Label>
+                <Input className="h-9 text-sm" style={inputStyle} placeholder="Email subject line..." value={tmplSubject} onChange={(e) => setTmplSubject(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Body *</Label>
-                <Textarea className="rounded-xl border-border/60 text-sm resize-none" rows={8} placeholder="Email body..." value={tmplBody} onChange={(e) => setTmplBody(e.target.value)} />
+                <Label style={labelStyle}>Body *</Label>
+                <Textarea className="text-sm resize-none" style={inputStyle} rows={8} placeholder="Email body..." value={tmplBody} onChange={(e) => setTmplBody(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button className="h-9 rounded-xl text-sm font-semibold text-gray-900" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }} onClick={handleCreateTemplate} disabled={tmplSaving}>
+                <button
+                  className="h-9 px-4 text-sm font-semibold text-white flex items-center"
+                  style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: tmplSaving ? 0.7 : 1 }}
+                  onClick={handleCreateTemplate}
+                  disabled={tmplSaving}
+                >
                   {tmplSaving ? 'Saving...' : 'Save Template'}
-                </Button>
-                <Button variant="outline" className="h-9 rounded-xl text-sm border-border/60" onClick={() => setShowNewTemplate(false)}>Cancel</Button>
+                </button>
+                <button
+                  className="h-9 px-4 text-sm font-semibold"
+                  style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                  onClick={() => setShowNewTemplate(false)}
+                >Cancel</button>
               </div>
             </div>
           )}
 
           {templatesLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40" style={{ borderRadius: 4 }} />)}
             </div>
           ) : templates.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card shadow-sm p-16 flex flex-col items-center gap-3">
-              <div className="h-14 w-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.06)' }}>
-                <Eye className="h-6 w-6 text-muted-foreground/40" />
+            <div className="p-16 flex flex-col items-center gap-3" style={{ background: '#F1F4F0', border: '1px dashed #CBD3CF', borderRadius: 4 }}>
+              <div className="h-14 w-14 flex items-center justify-center" style={{ background: 'rgba(31,178,166,0.08)', borderRadius: 4 }}>
+                <Eye className="h-6 w-6" style={{ color: '#6E7D79' }} />
               </div>
-              <p className="text-sm text-muted-foreground">No templates yet. Create one to reuse emails quickly.</p>
+              <p style={{ fontSize: 13, color: '#6E7D79' }}>No templates yet. Create one to reuse emails quickly.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {templates.map((tmpl) => (
-                <div key={tmpl._id} className="rounded-xl border border-border bg-card shadow-sm p-4 space-y-3 transition-colors hover:border-emerald-200 dark:hover:border-emerald-900">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate">{tmpl.name}</p>
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">{tmpl.subject}</p>
+              {templates.map((tmpl) => {
+                const catStyle = CATEGORY_STYLES[tmpl.category] || CATEGORY_STYLES.general;
+                return (
+                  <div key={tmpl._id} className="p-4 space-y-3" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: '#1B1F2B', fontFamily: "'IBM Plex Sans', sans-serif" }}>{tmpl.name}</p>
+                        <p className="text-xs truncate mt-0.5" style={{ color: '#6E7D79' }}>{tmpl.subject}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteTemplate(tmpl._id)}
+                        className="h-7 w-7 flex items-center justify-center transition-colors shrink-0"
+                        style={{ borderRadius: 4, background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.2)', color: '#C23B2E', cursor: 'pointer' }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                    <button onClick={() => handleDeleteTemplate(tmpl._id)} className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors shrink-0">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-3">{tmpl.body}</p>
-                  <div className="flex items-center justify-between pt-1">
-                    <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full capitalize', categoryColor[tmpl.category] || 'bg-muted text-muted-foreground')}>
-                      {tmpl.category.replace('-', ' ')}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Used {tmpl.usageCount}×</span>
-                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-xs font-semibold text-gray-900 gap-1" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }} onClick={() => handleUseTemplate(tmpl)}>
-                        <Mail className="h-3 w-3" /> Use
-                      </Button>
+                    <p className="text-xs line-clamp-3" style={{ color: '#6E7D79' }}>{tmpl.body}</p>
+                    <div className="flex items-center justify-between pt-1">
+                      <span
+                        className="text-xs font-medium px-2 py-0.5 capitalize"
+                        style={{ borderRadius: 10, background: catStyle.bg, color: catStyle.text, fontFamily: "'IBM Plex Mono', monospace", fontSize: 10 }}
+                      >
+                        {tmpl.category.replace('-', ' ')}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79' }}>Used {tmpl.usageCount}×</span>
+                        <button
+                          className="h-7 px-2.5 text-xs font-semibold text-white gap-1 flex items-center"
+                          style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                          onClick={() => handleUseTemplate(tmpl)}
+                        >
+                          <Mail className="h-3 w-3" /> Use
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </TabsContent>
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-5 space-y-4">
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-border/60">
-              <h3 className="text-sm font-semibold text-foreground">Outreach History</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{histPagination.total} total records</p>
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
+            {/* Panel header */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #CBD3CF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Outreach History</h3>
+                <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79', marginTop: 2 }}>{histPagination.total} total records</p>
+              </div>
             </div>
 
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ borderBottom: '1px solid hsl(var(--border) / 0.6)', background: 'hsl(var(--muted) / 0.4)' }}>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Company</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Type</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Status</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Subject</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Tracking</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground tracking-wide">Sent At</th>
+                <tr style={{ borderBottom: '1px solid #CBD3CF', background: 'rgba(203,211,207,0.3)' }}>
+                  {['Company', 'Type', 'Status', 'Subject', 'Tracking', 'Sent At'].map((h) => (
+                    <th key={h} className="text-left px-5 py-3" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {histLoading ? (
                   [...Array(5)].map((_, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid hsl(var(--border) / 0.4)' }}>
+                    <tr key={i} style={{ borderBottom: '1px solid #CBD3CF' }}>
                       {[...Array(6)].map((__, j) => (
-                        <td key={j} className="px-5 py-3"><Skeleton className="h-4 w-full" /></td>
+                        <td key={j} className="px-5 py-3"><Skeleton className="h-4 w-full" style={{ borderRadius: 4 }} /></td>
                       ))}
                     </tr>
                   ))
@@ -429,57 +470,92 @@ export default function Outreach() {
                   <tr>
                     <td colSpan={6} className="text-center py-16">
                       <div className="flex flex-col items-center gap-2">
-                        <div className="h-12 w-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(15,118,110,0.06)' }}>
-                          <Send className="h-5 w-5 text-muted-foreground/40" />
+                        <div className="h-12 w-12 flex items-center justify-center" style={{ background: 'rgba(31,178,166,0.08)', borderRadius: 4 }}>
+                          <Send className="h-5 w-5" style={{ color: '#6E7D79' }} />
                         </div>
-                        <p className="text-sm text-muted-foreground">No outreach history yet</p>
+                        <p style={{ fontSize: 13, color: '#6E7D79' }}>No outreach history yet</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
-                  history.map((item, idx) => (
-                    <tr
-                      key={item._id}
-                      className="hover:bg-muted/30 transition-colors"
-                      style={{ borderBottom: idx === history.length - 1 ? 'none' : '1px solid hsl(var(--border) / 0.4)' }}
-                    >
-                      <td className="px-5 py-3 font-medium text-sm">{item.lead?.companyName || '—'}</td>
-                      <td className="px-5 py-3">
-                        <span className={cn(
-                          'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full capitalize',
-                          item.type === 'email' ? 'bg-emerald-50 text-emerald-700' : 'bg-violet-50 text-violet-700',
-                        )}>
-                          {item.type === 'email' ? <Mail className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
-                          {item.type}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <span className={cn(
-                          'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full',
-                          item.status === 'sent' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700',
-                        )}>
-                          <span className={cn('h-1.5 w-1.5 rounded-full', item.status === 'sent' ? 'bg-emerald-400' : 'bg-rose-400')} />
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3 text-muted-foreground max-w-xs truncate">{item.subject || '—'}</td>
-                      <td className="px-5 py-3">
-                        {item.type === 'email' ? (
-                          <div className="flex gap-1.5">
-                            <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded', item.openedAt ? 'bg-emerald-50 text-emerald-700' : 'bg-muted text-muted-foreground')}>
-                              {item.openedAt ? '✓ Opened' : 'Not opened'}
-                            </span>
-                            {item.clickedAt && (
-                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">✓ Clicked</span>
-                            )}
-                          </div>
-                        ) : '—'}
-                      </td>
-                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
-                        {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                    </tr>
-                  ))
+                  history.map((item, idx) => {
+                    const isEmail = item.type === 'email';
+                    return (
+                      <tr
+                        key={item._id}
+                        style={{
+                          borderBottom: idx === history.length - 1 ? 'none' : '1px solid #CBD3CF',
+                          transition: 'background 0.15s',
+                          cursor: 'default',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        <td className="px-5 py-3 font-medium text-sm" style={{ color: '#1B1F2B', fontFamily: "'IBM Plex Sans', sans-serif" }}>{item.lead?.companyName || '—'}</td>
+                        <td className="px-5 py-3">
+                          <span
+                            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 capitalize"
+                            style={{
+                              borderRadius: 10,
+                              background: isEmail ? 'rgba(31,178,166,0.12)' : 'rgba(201,138,30,0.14)',
+                              color: isEmail ? '#1FB2A6' : '#C98A1E',
+                              fontFamily: "'IBM Plex Mono', monospace",
+                              fontSize: 10.5,
+                            }}
+                          >
+                            {isEmail ? <Mail className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                            {item.type}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1"
+                            style={{
+                              borderRadius: 10,
+                              background: item.status === 'sent' ? 'rgba(62,142,90,0.12)' : 'rgba(194,59,46,0.12)',
+                              color: item.status === 'sent' ? '#3E8E5A' : '#C23B2E',
+                              fontFamily: "'IBM Plex Mono', monospace",
+                              fontSize: 10.5,
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            <span
+                              className="h-1.5 w-1.5 rounded-full"
+                              style={{ background: item.status === 'sent' ? '#3E8E5A' : '#C23B2E' }}
+                            />
+                            {item.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 max-w-xs truncate" style={{ color: '#6E7D79', fontSize: 13 }}>{item.subject || '—'}</td>
+                        <td className="px-5 py-3">
+                          {isEmail ? (
+                            <div className="flex gap-1.5">
+                              <span
+                                className="text-[10px] font-medium px-1.5 py-0.5"
+                                style={{
+                                  borderRadius: 4,
+                                  background: item.openedAt ? 'rgba(62,142,90,0.12)' : 'rgba(110,125,121,0.1)',
+                                  color: item.openedAt ? '#3E8E5A' : '#6E7D79',
+                                  fontFamily: "'IBM Plex Mono', monospace",
+                                }}
+                              >
+                                {item.openedAt ? '✓ Opened' : 'Not opened'}
+                              </span>
+                              {item.clickedAt && (
+                                <span
+                                  className="text-[10px] font-medium px-1.5 py-0.5"
+                                  style={{ borderRadius: 4, background: 'rgba(62,142,90,0.12)', color: '#3E8E5A', fontFamily: "'IBM Plex Mono', monospace" }}
+                                >✓ Clicked</span>
+                              )}
+                            </div>
+                          ) : '—'}
+                        </td>
+                        <td className="px-5 py-3 whitespace-nowrap" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
+                          {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -487,10 +563,18 @@ export default function Outreach() {
 
           {histPagination.pages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">Page {histPage} of {histPagination.pages}</p>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>Page {histPage} of {histPagination.pages}</p>
               <div className="flex gap-1.5">
-                <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs border-border/60" disabled={histPage <= 1} onClick={() => setHistPage((p) => p - 1)}>Previous</Button>
-                <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs border-border/60" disabled={histPage >= histPagination.pages} onClick={() => setHistPage((p) => p + 1)}>Next</Button>
+                <button
+                  style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 600, padding: '0 12px', height: 30, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#1B1F2B', cursor: 'pointer', opacity: histPage <= 1 ? 0.35 : 1 }}
+                  disabled={histPage <= 1}
+                  onClick={() => setHistPage((p) => p - 1)}
+                >Previous</button>
+                <button
+                  style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 600, padding: '0 12px', height: 30, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#1B1F2B', cursor: 'pointer', opacity: histPage >= histPagination.pages ? 0.35 : 1 }}
+                  disabled={histPage >= histPagination.pages}
+                  onClick={() => setHistPage((p) => p + 1)}
+                >Next</button>
               </div>
             </div>
           )}

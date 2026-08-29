@@ -29,10 +29,10 @@ interface Lead {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  draft:    { bg: 'bg-slate-100',   text: 'text-slate-600',   dot: 'bg-slate-400' },
-  sent:     { bg: 'bg-emerald-50',  text: 'text-emerald-700', dot: 'bg-emerald-400' },
-  accepted: { bg: 'bg-green-50',    text: 'text-green-700',   dot: 'bg-green-400' },
-  rejected: { bg: 'bg-rose-50',     text: 'text-rose-700',    dot: 'bg-rose-400' },
+  draft:    { bg: 'rgba(110,125,121,0.1)', text: '#6E7D79', dot: '#6E7D79' },
+  sent:     { bg: 'rgba(31,178,166,0.12)', text: '#1FB2A6', dot: '#1FB2A6' },
+  accepted: { bg: 'rgba(62,142,90,0.12)',  text: '#3E8E5A', dot: '#3E8E5A' },
+  rejected: { bg: 'rgba(194,59,46,0.12)', text: '#C23B2E', dot: '#C23B2E' },
 };
 
 function getCompanyName(lead: Proposal['lead']): string {
@@ -42,18 +42,18 @@ function getCompanyName(lead: Proposal['lead']): string {
 
 function ProposalCardSkeleton() {
   return (
-    <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-3">
+    <div className="p-5 space-y-3" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #CBD3CF' }}>
       <div className="flex items-start justify-between">
         <div className="space-y-2 flex-1">
           <Skeleton className="h-5 w-3/4" />
           <Skeleton className="h-3.5 w-1/2" />
         </div>
-        <Skeleton className="h-6 w-16 rounded-full" />
+        <Skeleton className="h-6 w-16" style={{ borderRadius: 10 }} />
       </div>
-      <Skeleton className="h-20 w-full rounded-lg" />
+      <Skeleton className="h-20 w-full" style={{ borderRadius: 4 }} />
       <div className="flex gap-2">
-        <Skeleton className="h-8 w-20 rounded-lg" />
-        <Skeleton className="h-8 w-20 rounded-lg" />
+        <Skeleton className="h-8 w-20" style={{ borderRadius: 4 }} />
+        <Skeleton className="h-8 w-20" style={{ borderRadius: 4 }} />
       </div>
     </div>
   );
@@ -223,22 +223,22 @@ export default function Proposals() {
   };
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
       {/* Header */}
-      <div className="page-header">
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
         <div className="relative flex items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <FileText className="h-4 w-4" style={{ color: '#0D9C6A' }} />
-              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>AI-Generated</span>
+              <FileText className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>AI-Generated</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Proposals</h1>
-            <p className="text-sm text-muted-foreground font-medium">{pagination.total} proposal{pagination.total !== 1 ? 's' : ''} generated</p>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Proposals</h1>
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>{pagination.total} proposal{pagination.total !== 1 ? 's' : ''} generated</p>
           </div>
           <Button
             size="sm"
-            className="h-9 rounded-xl gap-2 font-semibold text-sm text-gray-900 shrink-0"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+            className="h-9 gap-2 font-semibold text-sm text-white shrink-0"
+            style={{ background: '#1FB2A6', borderRadius: 4 }}
             onClick={handleOpenGenerate}
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -253,21 +253,24 @@ export default function Proposals() {
           {[...Array(4)].map((_, i) => <ProposalCardSkeleton key={i} />)}
         </div>
       ) : proposals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
+        <div
+          className="flex flex-col items-center justify-center py-20 text-center"
+          style={{ background: '#F1F4F0', border: '1px dashed #CBD3CF', borderRadius: 4 }}
+        >
           <div
-            className="h-16 w-16 rounded-xl flex items-center justify-center mb-4"
-            style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
+            className="h-16 w-16 flex items-center justify-center mb-4"
+            style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}
           >
-            <FileText className="h-7 w-7 text-muted-foreground/50" />
+            <FileText className="h-7 w-7" style={{ color: '#6E7D79' }} />
           </div>
-          <h2 className="text-base font-semibold text-foreground">No proposals yet</h2>
-          <p className="text-sm text-muted-foreground mt-1 mb-6">
+          <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>No proposals yet</h2>
+          <p style={{ fontSize: 13, color: '#6E7D79', marginTop: 4, marginBottom: 20 }}>
             Use AI to generate your first proposal from a lead
           </p>
           <Button
             size="sm"
-            className="h-9 rounded-xl gap-2 font-semibold text-sm text-gray-900"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+            className="h-9 gap-2 font-semibold text-sm text-white"
+            style={{ background: '#1FB2A6', borderRadius: 4 }}
             onClick={handleOpenGenerate}
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -283,17 +286,14 @@ export default function Proposals() {
             return (
               <div
                 key={proposal._id}
-                className="rounded-xl border border-border bg-card shadow-sm hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden"
+                className="flex flex-col overflow-hidden"
+                style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${st.dot}` }}
               >
-                <div
-                  className="h-0.5 w-full"
-                  style={{ background: proposal.status === 'accepted' ? 'linear-gradient(90deg, #0F766E, #14B8A6)' : proposal.status === 'sent' ? 'linear-gradient(90deg, #14B8A6, #059669)' : proposal.status === 'rejected' ? 'linear-gradient(90deg, #f43f5e, #fb7185)' : 'linear-gradient(90deg, #94a3b8, #cbd5e1)' }}
-                />
                 <div className="p-5 flex flex-col gap-3 flex-1">
                   <div className="flex items-start gap-3">
                     <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-gray-900"
-                      style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center text-xs font-bold text-white"
+                      style={{ background: '#1FB2A6', borderRadius: 4, fontFamily: "'IBM Plex Mono', monospace" }}
                     >
                       {initials}
                     </div>
@@ -306,13 +306,26 @@ export default function Proposals() {
                         <p className="text-xs text-muted-foreground">{company}</p>
                       </div>
                     </div>
-                    <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full shrink-0', st.bg, st.text)}>
-                      <span className={cn('h-1.5 w-1.5 rounded-full', st.dot)} />
+                    <span style={{
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      fontSize: 10.5,
+                      textTransform: 'uppercase' as const,
+                      padding: '3px 9px',
+                      borderRadius: 10,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      whiteSpace: 'nowrap' as const,
+                      background: st.bg,
+                      color: st.text,
+                      flexShrink: 0,
+                    }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: st.dot, display: 'inline-block' }} />
                       {proposal.status}
                     </span>
                   </div>
 
-                  <p className="text-sm text-muted-foreground line-clamp-3 bg-muted/40 rounded-xl p-3 leading-relaxed">
+                  <p className="text-sm text-muted-foreground line-clamp-3 p-3 leading-relaxed" style={{ background: 'rgba(203,211,207,0.25)', borderRadius: 4 }}>
                     {proposal.content}
                   </p>
 
@@ -323,49 +336,42 @@ export default function Proposals() {
                     </div>
                     <div className="flex gap-2">
                       {proposal.status === 'draft' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 rounded-lg text-xs border-border/60 gap-1.5"
+                        <button
+                          className="h-8 px-2.5 text-xs font-semibold gap-1.5 flex items-center"
+                          style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#1B1F2B', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                           onClick={() => { setEditProposal(proposal); setEditTitle(proposal.title || ''); setEditContent(proposal.content); setEditError(''); }}
                         >
                           <Pencil className="h-3.5 w-3.5" /> Edit
-                        </Button>
+                        </button>
                       )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 rounded-lg text-xs border-border/60 gap-1.5"
+                      <button
+                        className="h-8 px-2.5 text-xs font-semibold gap-1.5 flex items-center"
+                        style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#1B1F2B', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                         onClick={() => setViewProposal(proposal)}
                       >
                         <Eye className="h-3.5 w-3.5" /> View
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 rounded-lg text-xs border-border/60 gap-1.5 hover:text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200"
-                        style={{ color: '#0D9C6A' }}
+                      </button>
+                      <button
+                        className="h-8 px-2.5 text-xs font-semibold gap-1.5 flex items-center"
+                        style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.25)', borderRadius: 4, color: '#1FB2A6', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                         onClick={() => handleShare(proposal._id)}
                       >
                         <Share2 className="h-3.5 w-3.5" /> Share
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 rounded-lg text-xs border-border/60 gap-1.5 hover:text-blue-700 hover:bg-blue-50 hover:border-blue-200"
-                        style={{ color: '#2563EB' }}
+                      </button>
+                      <button
+                        className="h-8 px-2.5 text-xs font-semibold gap-1.5 flex items-center"
+                        style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                         onClick={() => handleDownloadPDF(proposal)}
                       >
                         <FileDown className="h-3.5 w-3.5" /> PDF
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 rounded-lg text-xs border-border/60 gap-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+                      </button>
+                      <button
+                        className="h-8 px-2.5 text-xs font-semibold gap-1.5 flex items-center"
+                        style={{ background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.25)', borderRadius: 4, color: '#C23B2E', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                         onClick={() => setDeleteId(proposal._id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" /> Delete
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -378,15 +384,14 @@ export default function Proposals() {
       {/* Pagination */}
       {pagination.pages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>
+          <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
             Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total}
           </p>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page <= 1}
-              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+              style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 600, padding: '0 10px', height: 30, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#1B1F2B', cursor: 'pointer', opacity: page <= 1 ? 0.35 : 1 }}
             >
               Prev
             </button>
@@ -394,11 +399,7 @@ export default function Proposals() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
-                style={page === p
-                  ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', border: 'none' }
-                  : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
-                }
+                style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 700, width: 30, height: 30, borderRadius: 4, background: page === p ? '#1FB2A6' : '#F1F4F0', border: page === p ? '1px solid #1FB2A6' : '1px solid #CBD3CF', color: page === p ? '#fff' : '#1B1F2B', cursor: 'pointer' }}
               >
                 {p}
               </button>
@@ -406,8 +407,7 @@ export default function Proposals() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= pagination.pages}
-              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+              style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 600, padding: '0 10px', height: 30, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#1B1F2B', cursor: 'pointer', opacity: page >= pagination.pages ? 0.35 : 1 }}
             >
               Next
             </button>
@@ -417,32 +417,32 @@ export default function Proposals() {
 
       {/* Generate Dialog */}
       <Dialog open={generateOpen} onOpenChange={setGenerateOpen}>
-        <DialogContent className="max-w-md rounded-xl">
+        <DialogContent className="max-w-md" style={{ borderRadius: 4 }}>
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
-                <Sparkles className="h-3.5 w-3.5 text-gray-900" />
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
+                <Sparkles className="h-3.5 w-3.5 text-white" />
               </span>
-              Generate Proposal with AI
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Generate Proposal with AI</span>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-1">
             {genError && (
-              <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{genError}</div>
+              <div className="text-sm p-3" style={{ background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.25)', borderRadius: 4, color: '#C23B2E' }}>{genError}</div>
             )}
             {genLoading && (
-              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.2)' }}>
-                <Sparkles className="h-4 w-4 animate-pulse" style={{ color: '#0D9C6A' }} />
-                <span className="text-muted-foreground">AI is crafting your proposal, please wait...</span>
+              <div className="flex items-center gap-3 text-sm p-3" style={{ background: 'rgba(31,178,166,0.06)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}>
+                <Sparkles className="h-4 w-4 animate-pulse" style={{ color: '#1FB2A6' }} />
+                <span style={{ color: '#6E7D79' }}>AI is crafting your proposal, please wait...</span>
               </div>
             )}
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Select Lead</Label>
+              <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>Select Lead</Label>
               <Select value={genLeadId} onValueChange={setGenLeadId} disabled={genLoading}>
-                <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm">
+                <SelectTrigger className="h-9 text-sm" style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}>
                   <SelectValue placeholder="Choose a lead..." />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent style={{ borderRadius: 4 }}>
                   {leads.map((lead) => (
                     <SelectItem key={lead._id} value={lead._id}>{lead.companyName}</SelectItem>
                   ))}
@@ -450,9 +450,10 @@ export default function Proposals() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Custom Instructions <span className="font-normal">(optional)</span></Label>
+              <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>Custom Instructions <span style={{ fontWeight: 400 }}>(optional)</span></Label>
               <Textarea
-                className="rounded-xl border-border/60 text-sm resize-none"
+                className="text-sm resize-none"
+                style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
                 rows={4}
                 placeholder="e.g. Focus on mobile app development, mention our React expertise..."
                 value={genInstructions}
@@ -462,81 +463,89 @@ export default function Proposals() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setGenerateOpen(false)} disabled={genLoading}>Cancel</Button>
-            <Button
-              className="rounded-xl text-sm font-semibold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+            <button
+              className="text-sm font-semibold px-4 h-9"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+              onClick={() => setGenerateOpen(false)}
+              disabled={genLoading}
+            >Cancel</button>
+            <button
+              className="text-sm font-semibold h-9 px-4 gap-2 flex items-center"
+              style={{ background: '#1FB2A6', borderRadius: 4, color: '#fff', cursor: 'pointer', border: 'none', fontFamily: "'IBM Plex Sans', sans-serif", opacity: genLoading ? 0.7 : 1 }}
               onClick={handleGenerate}
               disabled={genLoading}
             >
               {genLoading
-                ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Generating...</>
+                ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generating...</>
                 : <><Sparkles className="h-3.5 w-3.5" /> Generate</>}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* View Dialog */}
       <Dialog open={!!viewProposal} onOpenChange={() => setViewProposal(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-xl">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" style={{ borderRadius: 4 }}>
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold">
+            <DialogTitle style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>
               {viewProposal?.title || `Proposal — ${getCompanyName(viewProposal?.lead)}`}
             </DialogTitle>
           </DialogHeader>
           <div className="py-2">
-            <div className="rounded-xl bg-muted/40 p-4 text-sm leading-relaxed whitespace-pre-wrap text-foreground/80 border border-border/40">
+            <div className="p-4 text-sm leading-relaxed whitespace-pre-wrap" style={{ background: 'rgba(203,211,207,0.2)', borderRadius: 4, border: '1px solid #CBD3CF', color: '#1B1F2B' }}>
               {viewProposal?.content}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setViewProposal(null)}>Close</Button>
+            <button
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: '0 16px', height: 34, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', cursor: 'pointer' }}
+              onClick={() => setViewProposal(null)}
+            >Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Share Dialog */}
       <Dialog open={!!sharingId} onOpenChange={(open) => { if (!open) { setSharingId(null); setShareUrl(''); setShareCopied(false); } }}>
-        <DialogContent className="max-w-md rounded-xl">
+        <DialogContent className="max-w-md" style={{ borderRadius: 4 }}>
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
-                <Share2 className="h-3.5 w-3.5 text-gray-900" />
+            <DialogTitle className="flex items-center gap-2">
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
+                <Share2 className="h-3.5 w-3.5 text-white" />
               </span>
-              Share Proposal
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Share Proposal</span>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-1">
-            <p className="text-sm text-muted-foreground">
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>
               Generate a public link so your client can view and respond to this proposal without logging in.
             </p>
             {shareLoading && (
-              <div className="flex items-center gap-3 text-sm rounded-xl p-3" style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.2)' }}>
-                <span className="h-3.5 w-3.5 border-2 border-primary/30 border-t-emerald-500 rounded-full animate-spin shrink-0" />
-                <span className="text-muted-foreground">Generating share link...</span>
+              <div className="flex items-center gap-3 text-sm p-3" style={{ background: 'rgba(31,178,166,0.06)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}>
+                <span className="h-3.5 w-3.5 border-2 border-teal-300/40 border-t-teal-500 rounded-full animate-spin shrink-0" />
+                <span style={{ color: '#6E7D79' }}>Generating share link...</span>
               </div>
             )}
             {shareUrl && !shareLoading && (
               <div className="space-y-2">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Share URL</Label>
+                <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>Share URL</Label>
                 <div className="flex gap-2">
                   <Input
                     readOnly
                     value={shareUrl}
-                    className="h-9 rounded-xl border-border/60 text-xs font-mono bg-muted/40"
+                    className="h-9 text-xs font-mono"
+                    style={{ borderRadius: 4, border: '1px solid #CBD3CF', background: 'rgba(203,211,207,0.2)' }}
                   />
-                  <Button
-                    size="sm"
-                    className="h-9 px-3 rounded-xl text-xs font-semibold text-gray-900 shrink-0 gap-1.5"
-                    style={{ background: shareCopied ? 'linear-gradient(135deg, #14B8A6, #059669)' : 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+                  <button
+                    className="h-9 px-3 text-xs font-semibold text-white shrink-0 gap-1.5 flex items-center"
+                    style={{ background: shareCopied ? '#3E8E5A' : '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                     onClick={handleCopyShareUrl}
                   >
                     {shareCopied ? '✓ Copied' : <><Copy className="h-3 w-3" /> Copy</>}
-                  </Button>
+                  </button>
                 </div>
-                <p className="text-xs text-muted-foreground">Anyone with this link can view and respond to the proposal.</p>
-                <p className="text-xs text-muted-foreground/60 flex items-center gap-1.5 mt-1">
+                <p style={{ fontSize: 12, color: '#6E7D79' }}>Anyone with this link can view and respond to the proposal.</p>
+                <p className="flex items-center gap-1.5 mt-1" style={{ fontSize: 12, color: '#9CADB0' }}>
                   <Clock className="h-3 w-3" />
                   Generated just now · Revoke to invalidate
                 </p>
@@ -545,63 +554,77 @@ export default function Proposals() {
           </div>
           <DialogFooter className="gap-2">
             {shareUrl && sharingId && (
-              <Button
-                variant="outline"
-                className="rounded-xl border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-sm gap-1.5"
+              <button
+                className="text-sm font-semibold px-3 h-9 gap-1.5 flex items-center"
+                style={{ background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.25)', borderRadius: 4, color: '#C23B2E', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
                 onClick={() => handleRevokeShare(sharingId)}
               >
                 <X className="h-3.5 w-3.5" /> Revoke Link
-              </Button>
+              </button>
             )}
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => { setSharingId(null); setShareUrl(''); setShareCopied(false); }}>
+            <button
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: '0 16px', height: 34, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', cursor: 'pointer' }}
+              onClick={() => { setSharingId(null); setShareUrl(''); setShareCopied(false); }}
+            >
               Close
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent className="max-w-sm rounded-xl">
-          <DialogHeader><DialogTitle className="text-base font-semibold">Delete Proposal?</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">This action is permanent and cannot be undone.</p>
+        <DialogContent className="max-w-sm" style={{ borderRadius: 4 }}>
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Delete Proposal?</DialogTitle>
+          </DialogHeader>
+          <p style={{ fontSize: 13, color: '#6E7D79' }}>This action is permanent and cannot be undone.</p>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setDeleteId(null)}>Cancel</Button>
-            <Button className="rounded-xl text-sm font-semibold bg-rose-500 hover:bg-rose-600 text-white" onClick={handleDelete} disabled={deleteLoading}>
+            <button
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: '0 16px', height: 34, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', cursor: 'pointer' }}
+              onClick={() => setDeleteId(null)}
+            >Cancel</button>
+            <button
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: '0 16px', height: 34, borderRadius: 4, background: '#C23B2E', border: 'none', color: '#fff', cursor: 'pointer', opacity: deleteLoading ? 0.7 : 1 }}
+              onClick={handleDelete}
+              disabled={deleteLoading}
+            >
               {deleteLoading ? 'Deleting...' : 'Delete'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Edit Draft Dialog */}
       <Dialog open={!!editProposal} onOpenChange={(open) => { if (!open) setEditProposal(null); }}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" style={{ borderRadius: 4 }}>
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
-                <Pencil className="h-3.5 w-3.5 text-gray-900" />
+            <DialogTitle className="flex items-center gap-2">
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
+                <Pencil className="h-3.5 w-3.5 text-white" />
               </span>
-              Edit Draft Proposal
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>Edit Draft Proposal</span>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-1">
             {editError && (
-              <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{editError}</div>
+              <div className="text-sm p-3" style={{ background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.25)', borderRadius: 4, color: '#C23B2E' }}>{editError}</div>
             )}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Title</Label>
+              <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>Title</Label>
               <Input
-                className="h-9 rounded-xl border-border/60 text-sm"
+                className="h-9 text-sm"
+                style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
                 placeholder="Proposal title..."
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Content</Label>
+              <Label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>Content</Label>
               <Textarea
-                className="rounded-xl border-border/60 text-sm resize-none"
+                className="text-sm resize-none"
+                style={{ borderRadius: 4, border: '1px solid #CBD3CF' }}
                 rows={14}
                 placeholder="Proposal content..."
                 value={editContent}
@@ -610,18 +633,21 @@ export default function Proposals() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setEditProposal(null)}>Cancel</Button>
-            <Button
-              className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+            <button
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: '0 16px', height: 34, borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', cursor: 'pointer' }}
+              onClick={() => setEditProposal(null)}
+            >Cancel</button>
+            <button
+              className="gap-2 flex items-center"
+              style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13, fontWeight: 700, padding: '0 16px', height: 34, borderRadius: 4, background: '#1FB2A6', border: 'none', color: '#fff', cursor: 'pointer', opacity: (editLoading || !editContent.trim()) ? 0.6 : 1 }}
               onClick={handleEdit}
               disabled={editLoading || !editContent.trim()}
             >
               {editLoading
-                ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Saving...</>
+                ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                 : 'Save Changes'
               }
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

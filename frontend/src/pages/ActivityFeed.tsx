@@ -1,10 +1,8 @@
-﻿import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Activity, Mail, UserPlus, RefreshCw, GitBranch, Zap,
   Circle, Clock,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import api from '@/services/api';
 import { useSocket } from '@/hooks/useSocket';
 import AppPagination, { type PaginationMeta } from '@/components/ui/AppPagination';
@@ -21,23 +19,23 @@ interface ActivityItem {
 }
 
 const TYPE_META: Record<string, { color: string; bg: string; Icon: typeof Mail }> = {
-  outreach:    { color: '#3B82F6', bg: 'rgba(59,130,246,0.12)',  Icon: Mail      },
-  lead_new:    { color: '#14B8A6', bg: 'rgba(20,184,166,0.12)',  Icon: UserPlus  },
-  lead_update: { color: '#6366F1', bg: 'rgba(99,102,241,0.12)',  Icon: RefreshCw },
-  follow_up:   { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',  Icon: Clock     },
-  sequence:    { color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)',  Icon: GitBranch },
+  outreach:    { color: '#1FB2A6', bg: 'rgba(31,178,166,0.12)',  Icon: Mail      },
+  lead_new:    { color: '#3E8E5A', bg: 'rgba(62,142,90,0.12)',   Icon: UserPlus  },
+  lead_update: { color: '#C98A1E', bg: 'rgba(201,138,30,0.14)',  Icon: RefreshCw },
+  follow_up:   { color: '#C23B2E', bg: 'rgba(194,59,46,0.12)',   Icon: Clock     },
+  sequence:    { color: '#1B1F2B', bg: 'rgba(27,31,43,0.08)',    Icon: GitBranch },
 };
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  sent:           { bg: 'rgba(20,184,166,0.1)',  text: '#14B8A6' },
-  failed:         { bg: 'rgba(239,68,68,0.1)',   text: '#EF4444' },
-  pending:        { bg: 'rgba(245,158,11,0.1)',  text: '#F59E0B' },
-  new:            { bg: 'rgba(59,130,246,0.1)',  text: '#3B82F6' },
-  contacted:      { bg: 'rgba(99,102,241,0.1)',  text: '#6366F1' },
-  proposal_sent:  { bg: 'rgba(139,92,246,0.1)',  text: '#8B5CF6' },
-  follow_up:      { bg: 'rgba(245,158,11,0.1)',  text: '#F59E0B' },
-  converted:      { bg: 'rgba(20,184,166,0.1)',  text: '#14B8A6' },
-  lost:           { bg: 'rgba(239,68,68,0.1)',   text: '#EF4444' },
+  sent:           { bg: 'rgba(62,142,90,0.12)',  text: '#3E8E5A' },
+  failed:         { bg: 'rgba(194,59,46,0.12)',  text: '#C23B2E' },
+  pending:        { bg: 'rgba(201,138,30,0.14)', text: '#C98A1E' },
+  new:            { bg: 'rgba(31,178,166,0.12)', text: '#1FB2A6' },
+  contacted:      { bg: 'rgba(201,138,30,0.14)', text: '#C98A1E' },
+  proposal_sent:  { bg: 'rgba(62,142,90,0.12)',  text: '#3E8E5A' },
+  follow_up:      { bg: 'rgba(194,59,46,0.12)',  text: '#C23B2E' },
+  converted:      { bg: 'rgba(62,142,90,0.12)',  text: '#3E8E5A' },
+  lost:           { bg: 'rgba(194,59,46,0.12)',  text: '#C23B2E' },
 };
 
 function timeAgo(dateStr: string): string {
@@ -52,47 +50,48 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-function ActivityRow({ item, isFirst }: { item: ActivityItem; isFirst: boolean }) {
+function ActivityRow({ item }: { item: ActivityItem; isFirst: boolean }) {
   const meta = TYPE_META[item.type] || TYPE_META.lead_update;
   const { Icon } = meta;
   const statusStyle = item.status ? STATUS_COLORS[item.status] : null;
 
   return (
     <div
-      className={cn(
-        'flex gap-3 px-4 py-3.5 transition-all duration-500',
-        'border-b border-border/30 last:border-0 hover:bg-muted/20',
-        item.isNew && 'bg-primary/5 animate-pulse-once',
-        isFirst && 'rounded-t-xl',
-      )}
+      style={{
+        display: 'flex', gap: 12, padding: '12px 20px',
+        borderBottom: '1px solid rgba(203,211,207,0.5)',
+        transition: 'background 0.15s',
+        background: item.isNew ? 'rgba(31,178,166,0.04)' : 'transparent',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+      onMouseLeave={e => (e.currentTarget.style.background = item.isNew ? 'rgba(31,178,166,0.04)' : 'transparent')}
     >
       {/* Icon */}
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5"
-        style={{ background: meta.bg }}
-      >
-        <Icon className="h-3.5 w-3.5" style={{ color: meta.color }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 4, background: meta.bg, flexShrink: 0, marginTop: 2 }}>
+        <Icon style={{ width: 13, height: 13, color: meta.color }} />
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold text-foreground leading-tight truncate">
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#1B1F2B', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {item.title}
           </p>
-          <span className="text-[10px] text-muted-foreground/60 shrink-0 mt-0.5 font-medium">
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0', flexShrink: 0, paddingTop: 2 }}>
             {timeAgo(item.timestamp)}
           </span>
         </div>
-        <div className="flex items-center gap-2 mt-1 flex-wrap">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
           {item.subtitle && (
-            <p className="text-xs text-muted-foreground truncate">{item.subtitle}</p>
+            <p style={{ fontSize: 12, color: '#6E7D79', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.subtitle}</p>
           )}
           {statusStyle && item.status && (
-            <span
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-              style={{ background: statusStyle.bg, color: statusStyle.text }}
-            >
+            <span style={{
+              fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '2px 8px', borderRadius: 10,
+              background: statusStyle.bg, color: statusStyle.text,
+            }}>
               {item.status.replace(/_/g, ' ')}
             </span>
           )}
@@ -104,11 +103,11 @@ function ActivityRow({ item, isFirst }: { item: ActivityItem; isFirst: boolean }
 
 function SkeletonRow() {
   return (
-    <div className="flex gap-3 px-4 py-3.5 border-b border-border/30 animate-pulse">
-      <div className="h-8 w-8 rounded-lg bg-muted shrink-0" />
-      <div className="flex-1 space-y-2 pt-1">
-        <div className="h-3.5 bg-muted rounded w-3/4" />
-        <div className="h-3 bg-muted rounded w-1/2" />
+    <div style={{ display: 'flex', gap: 12, padding: '12px 20px', borderBottom: '1px solid rgba(203,211,207,0.5)' }} className="animate-pulse">
+      <div style={{ width: 32, height: 32, borderRadius: 4, background: '#CBD3CF', flexShrink: 0 }} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 4 }}>
+        <div style={{ height: 12, background: '#CBD3CF', borderRadius: 4, width: '75%' }} />
+        <div style={{ height: 10, background: '#CBD3CF', borderRadius: 4, width: '50%' }} />
       </div>
     </div>
   );
@@ -201,47 +200,51 @@ export default function ActivityFeed() {
     acc[i.type] = (acc[i.type] || 0) + 1;
     return acc;
   }, {});
-  const totalCount = pagination.total;
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+
       {/* Page Header */}
-      <div className="page-header">
-        <div
-          className="absolute inset-0 opacity-40 rounded-2xl"
-          style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-        />
-        <div className="relative flex items-center justify-between flex-wrap gap-3">
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Activity className="h-4 w-4 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Real-time</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Activity style={{ width: 15, height: 15, color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Real-time</span>
               {/* Live indicator */}
-              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(20,184,166,0.12)', color: '#14B8A6' }}>
-                <Circle className="h-1.5 w-1.5 fill-current animate-pulse" />
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+                padding: '2px 8px', borderRadius: 10,
+                background: 'rgba(62,142,90,0.12)', color: '#3E8E5A',
+              }}>
+                <Circle style={{ width: 6, height: 6, fill: '#3E8E5A', color: '#3E8E5A' }} className="animate-pulse" />
                 LIVE
               </span>
               {liveCount > 0 && (
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                <span style={{
+                  fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700,
+                  padding: '2px 8px', borderRadius: 10,
+                  background: 'rgba(31,178,166,0.12)', color: '#1FB2A6',
+                }}>
                   +{liveCount} new
                 </span>
               )}
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Agent Activity</h1>
-            <p className="text-sm text-muted-foreground font-medium">
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Agent Activity</h1>
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>
               Everything your agent does — emails, follow-ups, leads, sequences
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-2 text-xs border-border/60"
+          <button
+            className="h-8 px-3 gap-2 flex items-center text-xs font-semibold"
+            style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace" }}
             onClick={() => fetchActivity(1, typeFilter)}
             disabled={loading}
           >
-            <RefreshCw className={cn('h-3.5 w-3.5', loading && 'animate-spin')} />
-            Refresh
-          </Button>
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
         </div>
       </div>
 
@@ -255,31 +258,32 @@ export default function ActivityFeed() {
         ].map((stat) => (
           <div
             key={stat.key}
-            className="rounded-xl border border-border/60 bg-card p-3.5 flex items-center gap-3"
+            style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${stat.color}`, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: stat.bg }}>
-              <stat.Icon className="h-3.5 w-3.5" style={{ color: stat.color }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 4, background: stat.bg, flexShrink: 0 }}>
+              <stat.Icon style={{ width: 13, height: 13, color: stat.color }} />
             </div>
             <div>
-              <p className="text-lg font-black text-foreground leading-none">{typeCounts[stat.key] || 0}</p>
-              <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">{stat.label}</p>
+              <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700, color: stat.color, lineHeight: 1 }}>{typeCounts[stat.key] || 0}</p>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6E7D79', marginTop: 3 }}>{stat.label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Activity timeline */}
-      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-primary" />
-            <span className="text-sm font-bold text-foreground">Recent Activity</span>
-            <span className="text-xs text-muted-foreground/60">
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
+        {/* Panel header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderBottom: '1px solid #CBD3CF', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Zap style={{ width: 15, height: 15, color: '#1FB2A6' }} />
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B' }}>Recent Activity</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0' }}>
               · Last updated {timeAgo(lastRefresh.toISOString())}
             </span>
           </div>
           {/* Type filter */}
-          <div className="flex items-center gap-1">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {[
               { key: 'all', label: 'All' },
               { key: 'outreach', label: 'Emails' },
@@ -289,13 +293,13 @@ export default function ActivityFeed() {
               <button
                 key={f.key}
                 onClick={() => { setTypeFilter(f.key); setPage(1); }}
-                className={cn(
-                  'px-2.5 py-1 rounded-[4px] text-[11px] font-semibold transition-colors border',
-                  typeFilter === f.key
-                    ? 'text-white border-transparent'
-                    : 'border-border text-muted-foreground hover:text-foreground bg-background',
-                )}
-                style={typeFilter === f.key ? { background: '#1FB2A6' } : {}}
+                style={{
+                  padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600,
+                  fontFamily: "'IBM Plex Mono', monospace", cursor: 'pointer', transition: 'all 0.15s',
+                  background: typeFilter === f.key ? '#1FB2A6' : '#F1F4F0',
+                  color: typeFilter === f.key ? '#fff' : '#6E7D79',
+                  border: typeFilter === f.key ? '1px solid #1FB2A6' : '1px solid #CBD3CF',
+                }}
               >
                 {f.label}
               </button>
@@ -308,12 +312,12 @@ export default function ActivityFeed() {
             {[...Array(8)].map((_, i) => <SkeletonRow key={i} />)}
           </div>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl mb-3" style={{ background: 'rgba(99,102,241,0.1)' }}>
-              <Activity className="h-5 w-5" style={{ color: '#6366F1' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 4, background: 'rgba(203,211,207,0.4)', marginBottom: 12 }}>
+              <Activity style={{ width: 20, height: 20, color: '#9CADB0' }} />
             </div>
-            <p className="text-sm font-bold text-foreground mb-1">No activity yet</p>
-            <p className="text-xs text-muted-foreground">
+            <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B', marginBottom: 6 }}>No activity yet</p>
+            <p style={{ fontSize: 12, color: '#6E7D79', maxWidth: 320 }}>
               When your agent sends emails, adds leads, or runs follow-ups — they'll appear here in real-time.
             </p>
           </div>
@@ -322,7 +326,7 @@ export default function ActivityFeed() {
             {items.map((item, idx) => (
               <ActivityRow key={item.id} item={item} isFirst={idx === 0} />
             ))}
-            <div className="border-t border-border/40 px-4">
+            <div style={{ borderTop: '1px solid #CBD3CF', padding: '0 16px' }}>
               <AppPagination
                 pagination={pagination}
                 onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}

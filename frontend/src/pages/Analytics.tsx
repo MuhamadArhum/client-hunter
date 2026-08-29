@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/services/api';
 import { cn } from '@/lib/utils';
 
-const PIE_COLORS = ['#0F766E', '#14B8A6', '#059669', '#f59e0b', '#6366f1', '#f43f5e'];
+const PIE_COLORS = ['#1FB2A6', '#3E8E5A', '#C98A1E', '#C23B2E', '#1B1F2B', '#6E7D79'];
 
 interface DashboardData {
   totalLeads: number;
@@ -30,42 +30,39 @@ interface EmailTracking { totalSent: number; totalOpened: number; totalClicked: 
 interface MonthlyTrend { month: string; emails: number; whatsapp: number; leads: number; }
 
 const ANALYTICS_STAT_CARDS = [
-  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, gradient: 'linear-gradient(135deg, #0F766E, #14B8A6)', bgColor: 'rgba(15,118,110,0.08)',  borderColor: 'rgba(15,118,110,0.2)',  glowColor: 'rgba(15,118,110,0.15)',  numClass: 'stat-number-green' },
-  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, gradient: 'linear-gradient(135deg, #10b981, #34d399)', bgColor: 'rgba(20,184,166,0.08)',  borderColor: 'rgba(20,184,166,0.18)', glowColor: 'rgba(20,184,166,0.15)', numClass: 'stat-number-emerald', suffix: '%' },
-  { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, gradient: 'linear-gradient(135deg, #7C3AED, #c084fc)', bgColor: 'rgba(124,58,237,0.08)',  borderColor: 'rgba(124,58,237,0.18)', glowColor: 'rgba(124,58,237,0.15)', numClass: 'stat-number-violet' },
-  { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, gradient: 'linear-gradient(135deg, #6366f1, #818cf8)', bgColor: 'rgba(99,102,241,0.08)',  borderColor: 'rgba(99,102,241,0.18)', glowColor: 'rgba(99,102,241,0.15)', numClass: 'stat-number-indigo' },
+  { icon: Users,     label: 'Total Leads',      key: 'totalLeads'     as const, accentColor: '#1FB2A6', bgColor: 'rgba(31,178,166,0.08)',  borderColor: 'rgba(31,178,166,0.2)'  },
+  { icon: TrendingUp,label: 'Conversion Rate',  key: 'conversionRate' as const, accentColor: '#3E8E5A', bgColor: 'rgba(62,142,90,0.08)',   borderColor: 'rgba(62,142,90,0.2)',  suffix: '%' },
+  { icon: FileText,  label: 'Proposals Sent',   key: 'sentProposals'  as const, accentColor: '#C98A1E', bgColor: 'rgba(201,138,30,0.08)',  borderColor: 'rgba(201,138,30,0.2)'  },
+  { icon: Mail,      label: 'Emails Sent',      key: 'totalEmails'    as const, accentColor: '#C23B2E', bgColor: 'rgba(194,59,46,0.08)',   borderColor: 'rgba(194,59,46,0.2)'   },
 ];
 
 function StatCard({ card, value }: { card: typeof ANALYTICS_STAT_CARDS[0]; value: string | number }) {
   return (
     <div
-      className="relative rounded-xl p-5 overflow-hidden cursor-default group transition-all duration-300 hover:-translate-y-1"
-      style={{ background: card.bgColor, border: `1px solid ${card.borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)' }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 20px ${card.glowColor}, 0 8px 40px rgba(0,0,0,0.1)`; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)'; }}
+      className="p-5"
+      style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${card.accentColor}` }}
     >
-      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: card.gradient }} />
-      <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full opacity-30 blur-2xl transition-opacity group-hover:opacity-60" style={{ background: card.gradient }} />
       <div className="flex items-start justify-between mb-4">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
-             style={{ background: card.gradient, boxShadow: `0 4px 14px ${card.glowColor}` }}>
-          <card.icon className="h-5 w-5 text-white" />
+        <div
+          className="flex h-10 w-10 items-center justify-center"
+          style={{ background: card.bgColor, border: `1px solid ${card.borderColor}`, borderRadius: 4 }}
+        >
+          <card.icon className="h-5 w-5" style={{ color: card.accentColor }} />
         </div>
-        <ArrowUpRight className="h-4 w-4 text-muted-foreground/30 transition-all group-hover:text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <ArrowUpRight className="h-4 w-4" style={{ color: '#CBD3CF' }} />
       </div>
-      <p className={cn('text-4xl font-black tracking-tight mb-0.5', card.numClass)}>{value}</p>
-      <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
+      <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 32, fontWeight: 700, color: card.accentColor, lineHeight: 1, marginBottom: 4 }}>{value}</p>
+      <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{card.label}</p>
     </div>
   );
 }
 
-function ChartCard({ title, subtitle, accent, children }: { title: string; subtitle?: string; accent?: string; children: React.ReactNode }) {
+function ChartCard({ title, subtitle, accentColor, children }: { title: string; subtitle?: string; accent?: string; accentColor?: string; children: React.ReactNode }) {
   return (
-    <div className="relative rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent || 'linear-gradient(90deg, #0F766E, #14B8A6)' }} />
-      <div className="px-5 py-4 border-b border-border/40">
-        <h3 className="text-sm font-bold text-foreground">{title}</h3>
-        {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+    <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${accentColor || '#1FB2A6'}`, overflow: 'hidden' }}>
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid #CBD3CF' }}>
+        <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>{title}</h3>
+        {subtitle && <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79', marginTop: 2 }}>{subtitle}</p>}
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -87,14 +84,14 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 };
 
 const QUAL_CONFIG: Record<string, { emoji: string; bg: string; text: string; dot: string }> = {
-  hot:  { emoji: '🔥', bg: 'bg-rose-50',   text: 'text-rose-700',   dot: 'bg-rose-400' },
-  warm: { emoji: '⚡', bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-400' },
-  cold: { emoji: '❄️', bg: 'bg-sky-50',    text: 'text-sky-700',    dot: 'bg-sky-400' },
+  hot:  { emoji: '🔥', bg: 'rgba(194,59,46,0.1)',  text: '#C23B2E', dot: '#C23B2E' },
+  warm: { emoji: '⚡', bg: 'rgba(201,138,30,0.12)', text: '#C98A1E', dot: '#C98A1E' },
+  cold: { emoji: '❄️', bg: 'rgba(110,125,121,0.1)', text: '#6E7D79', dot: '#6E7D79' },
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: '#0F766E', contacted: '#f59e0b', proposal_sent: '#7C3AED',
-  follow_up: '#6366f1', converted: '#10b981', lost: '#f43f5e',
+  new: '#1FB2A6', contacted: '#C98A1E', proposal_sent: '#3E8E5A',
+  follow_up: '#C23B2E', converted: '#3E8E5A', lost: '#C23B2E',
 };
 
 export default function Analytics() {
@@ -141,17 +138,17 @@ export default function Analytics() {
   const sourceChartData = sourceData.map(s => ({ name: s._id, value: s.count }));
 
   const outreachChartData = outreachStats ? [
-    { name: 'Email Sent', count: outreachStats.emailSent, color: '#0F766E' },
-    { name: 'Email Failed', count: outreachStats.emailFailed, color: '#f43f5e' },
-    { name: 'WA Sent', count: outreachStats.whatsappSent, color: '#7C3AED' },
-    { name: 'WA Failed', count: outreachStats.whatsappFailed, color: '#f59e0b' },
+    { name: 'Email Sent',   count: outreachStats.emailSent,     color: '#1FB2A6' },
+    { name: 'Email Failed', count: outreachStats.emailFailed,   color: '#C23B2E' },
+    { name: 'WA Sent',      count: outreachStats.whatsappSent,  color: '#C98A1E' },
+    { name: 'WA Failed',    count: outreachStats.whatsappFailed, color: '#6E7D79' },
   ] : [];
 
   const proposalChartData = proposalStats ? [
-    { name: 'Accepted', count: proposalStats.accepted, color: '#0F766E' },
-    { name: 'Sent', count: proposalStats.sent, color: '#10b981' },
-    { name: 'Rejected', count: proposalStats.rejected, color: '#f43f5e' },
-    { name: 'Draft', count: proposalStats.draft, color: '#94a3b8' },
+    { name: 'Accepted', count: proposalStats.accepted, color: '#3E8E5A' },
+    { name: 'Sent',     count: proposalStats.sent,     color: '#1FB2A6' },
+    { name: 'Rejected', count: proposalStats.rejected, color: '#C23B2E' },
+    { name: 'Draft',    count: proposalStats.draft,    color: '#6E7D79' },
   ] : [];
 
   if (loading) {
@@ -160,18 +157,18 @@ export default function Analytics() {
         <Skeleton className="h-7 w-36" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-5 space-y-3">
-              <Skeleton className="h-11 w-11 rounded-xl" />
-              <Skeleton className="h-9 w-20" />
-              <Skeleton className="h-4 w-28" />
+            <div key={i} className="p-5 space-y-3" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #CBD3CF' }}>
+              <Skeleton className="h-10 w-10" style={{ borderRadius: 4 }} />
+              <Skeleton className="h-9 w-20" style={{ borderRadius: 4 }} />
+              <Skeleton className="h-4 w-28" style={{ borderRadius: 4 }} />
             </div>
           ))}
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-5">
-              <Skeleton className="h-4 w-32 mb-4" />
-              <Skeleton className="h-56 w-full rounded-xl" />
+            <div key={i} className="p-5" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #CBD3CF' }}>
+              <Skeleton className="h-4 w-32 mb-4" style={{ borderRadius: 4 }} />
+              <Skeleton className="h-56 w-full" style={{ borderRadius: 4 }} />
             </div>
           ))}
         </div>
@@ -187,16 +184,15 @@ export default function Analytics() {
   );
 
   return (
-    <div className="space-y-5 p-6">
-      <div className="page-header">
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-1">
-            <Target className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Performance</span>
-          </div>
-          <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Analytics</h1>
-          <p className="text-sm text-muted-foreground font-medium">Performance metrics and pipeline insights</p>
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Target className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Performance</span>
         </div>
+        <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Analytics</h1>
+        <p style={{ fontSize: 13, color: '#6E7D79' }}>Performance metrics and pipeline insights</p>
       </div>
 
       {/* Stat Cards */}
@@ -210,7 +206,7 @@ export default function Analytics() {
 
       {/* Row 1: Source + Status */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accent="linear-gradient(90deg, #0F766E, #14B8A6)">
+        <ChartCard title="Leads by Source" subtitle="Where your leads come from" accentColor="#1FB2A6">
           {sourceChartData.length === 0 ? <EmptyChart message="No leads added yet" hint="Add leads to see source breakdown" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
@@ -224,7 +220,7 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accent="linear-gradient(90deg, #14B8A6, #6366f1)">
+        <ChartCard title="Leads by Status" subtitle="Pipeline stage distribution" accentColor="#C98A1E">
           {statusChartData.length === 0 ? <EmptyChart message="No pipeline data" hint="Leads will appear here once added" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={statusChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -245,7 +241,7 @@ export default function Analytics() {
 
       {/* Row 2: Conversion + Proposals */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accent="linear-gradient(90deg, #10b981, #0F766E)">
+        <ChartCard title="Conversion Rate by Source" subtitle="How each source performs" accentColor="#3E8E5A">
           {conversionBySource.length === 0 ? <EmptyChart height={180} message="No conversion data" hint="Convert a lead to see rates by source" /> : (
             <div className="space-y-3">
               {conversionBySource.map((item) => (
@@ -254,13 +250,13 @@ export default function Analytics() {
                     <span className="text-sm font-medium capitalize">{item.source}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">{item.total} leads</span>
-                      <span className="text-sm font-bold" style={{ color: '#0D9C6A' }}>{item.conversionRate}%</span>
+                      <span className="text-sm font-bold" style={{ color: '#1FB2A6' }}>{item.conversionRate}%</span>
                     </div>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-2 w-full overflow-hidden" style={{ background: '#CBD3CF', borderRadius: 4 }}>
                     <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${item.conversionRate}%`, background: 'linear-gradient(90deg, #0F766E, #14B8A6)' }}
+                      className="h-full transition-all duration-500"
+                      style={{ width: `${item.conversionRate}%`, background: '#1FB2A6', borderRadius: 4 }}
                     />
                   </div>
                 </div>
@@ -269,15 +265,15 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accent="linear-gradient(90deg, #7C3AED, #c084fc)">
+        <ChartCard title="Proposal Acceptance Rate" subtitle="Overall proposal performance" accentColor="#C98A1E">
           {!proposalStats ? <EmptyChart height={180} message="No proposals yet" hint="Generate a proposal to see acceptance stats" /> : (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div
                   className="h-16 w-16 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
+                  style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}
                 >
-                  <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{proposalStats.acceptanceRate}%</p>
+                  <p className="text-xl font-bold" style={{ color: '#1FB2A6' }}>{proposalStats.acceptanceRate}%</p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">Acceptance Rate</p>
@@ -301,7 +297,7 @@ export default function Analytics() {
       </div>
 
       {/* Row 3: Monthly Trend (full width) */}
-      <ChartCard title="Monthly Trend" subtitle="Leads, emails & WhatsApp over last 6 months" accent="linear-gradient(90deg, #2563EB, #7C3AED)">
+      <ChartCard title="Monthly Trend" subtitle="Leads, emails & WhatsApp over last 6 months" accentColor="#1B1F2B">
         {monthlyTrend.every(m => m.emails === 0 && m.whatsapp === 0 && m.leads === 0) ? (
           <EmptyChart message="No trend data yet" hint="Data will appear after your first month of activity" />
         ) : (
@@ -312,9 +308,9 @@ export default function Analytics() {
               <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} formatter={(v) => <span className="text-xs text-muted-foreground capitalize">{v}</span>} />
-              <Line type="monotone" dataKey="leads" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4, fill: '#2563EB' }} name="Leads" />
-              <Line type="monotone" dataKey="emails" stroke="#0F766E" strokeWidth={2.5} dot={{ r: 4, fill: '#0F766E' }} name="Emails" />
-              <Line type="monotone" dataKey="whatsapp" stroke="#7C3AED" strokeWidth={2.5} dot={{ r: 4, fill: '#7C3AED' }} name="WhatsApp" />
+              <Line type="monotone" dataKey="leads" stroke="#1B1F2B" strokeWidth={2.5} dot={{ r: 4, fill: '#1B1F2B' }} name="Leads" />
+              <Line type="monotone" dataKey="emails" stroke="#1FB2A6" strokeWidth={2.5} dot={{ r: 4, fill: '#1FB2A6' }} name="Emails" />
+              <Line type="monotone" dataKey="whatsapp" stroke="#C98A1E" strokeWidth={2.5} dot={{ r: 4, fill: '#C98A1E' }} name="WhatsApp" />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -322,7 +318,7 @@ export default function Analytics() {
 
       {/* Row 4: Outreach + AI */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accent="linear-gradient(90deg, #6366f1, #0F766E)">
+        <ChartCard title="Outreach Performance" subtitle="Email and WhatsApp statistics" accentColor="#C23B2E">
           {outreachChartData.every(d => d.count === 0) ? <EmptyChart message="No outreach sent yet" hint="Send emails or WhatsApp messages to see stats" /> : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={outreachChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -338,20 +334,20 @@ export default function Analytics() {
           )}
         </ChartCard>
 
-        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accent="linear-gradient(90deg, #f59e0b, #0F766E)">
+        <ChartCard title="AI Lead Intelligence" subtitle="AI-powered scoring and qualification" accentColor="#C98A1E">
           {!aiBreakdown || (aiBreakdown.topLeads.length === 0 && aiBreakdown.qualBreakdown.length === 0) ? (
             <div className="flex flex-col items-center justify-center h-56 gap-3 text-center">
-              <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: '#F0FDF9' }}>
-                <Brain className="h-6 w-6" style={{ color: '#9CA3AF' }} />
+              <div className="h-14 w-14 flex items-center justify-center" style={{ background: 'rgba(31,178,166,0.08)', borderRadius: 4, border: '1px solid rgba(31,178,166,0.2)' }}>
+                <Brain className="h-6 w-6" style={{ color: '#6E7D79' }} />
               </div>
               <div>
-                <p className="text-sm font-semibold" style={{ color: '#111827' }}>No AI data yet</p>
-                <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>Open a lead and run AI analysis to see scores here</p>
+                <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>No AI data yet</p>
+                <p style={{ fontSize: 12, color: '#6E7D79', marginTop: 2 }}>Open a lead and run AI analysis to see scores here</p>
               </div>
               <button
                 onClick={() => navigate('/leads')}
-                className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
-                style={{ background: '#F0FDF9', border: '1px solid #A7F3D0', color: '#065F46' }}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 transition-colors"
+                style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.25)', borderRadius: 4, color: '#1FB2A6', cursor: 'pointer' }}
               >
                 <ExternalLink className="h-3 w-3" /> Go to Leads
               </button>
@@ -361,9 +357,9 @@ export default function Analytics() {
               <div className="flex items-center gap-4">
                 <div
                   className="h-16 w-16 rounded-xl flex flex-col items-center justify-center shrink-0"
-                  style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}
+                  style={{ background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.2)', borderRadius: 4 }}
                 >
-                  <p className="text-xl font-bold" style={{ color: '#0D9C6A' }}>{aiBreakdown.avgScore}</p>
+                  <p className="text-xl font-bold" style={{ color: '#1FB2A6' }}>{aiBreakdown.avgScore}</p>
                   <p className="text-[10px] text-muted-foreground">avg score</p>
                 </div>
                 <div className="flex gap-2 flex-wrap">
@@ -371,10 +367,10 @@ export default function Analytics() {
                     const cfg = QUAL_CONFIG[q._id];
                     if (!cfg) return null;
                     return (
-                      <div key={q._id} className={cn('flex flex-col items-center rounded-xl px-3 py-2', cfg.bg)}>
+                      <div key={q._id} className="flex flex-col items-center px-3 py-2" style={{ background: cfg.bg, borderRadius: 4 }}>
                         <span className="text-base">{cfg.emoji}</span>
-                        <span className={cn('text-lg font-bold', cfg.text)}>{q.count}</span>
-                        <span className={cn('text-[10px] capitalize', cfg.text)}>{q._id}</span>
+                        <span className="text-lg font-bold" style={{ color: cfg.text }}>{q.count}</span>
+                        <span className="text-[10px] capitalize" style={{ color: cfg.text }}>{q._id}</span>
                       </div>
                     );
                   })}
@@ -384,13 +380,13 @@ export default function Analytics() {
               {aiBreakdown.topLeads.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🔥 Hottest Leads</p>
+                    <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>🔥 Hottest Leads</p>
                     <button
                       onClick={() => navigate('/leads')}
                       className="flex items-center gap-1 text-xs font-semibold transition-colors"
-                      style={{ color: '#14B8A6' }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#065F46'; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'; }}
+                      style={{ color: '#189187', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11.5 }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#1B1F2B'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#189187'; }}
                     >
                       View All <ExternalLink className="h-2.5 w-2.5" />
                     </button>
@@ -404,12 +400,12 @@ export default function Analytics() {
                           className="flex items-center gap-3 rounded-xl p-2.5 cursor-pointer transition-colors"
                           style={{ background: 'transparent' }}
                           onClick={() => navigate(`/leads/${lead._id}`)}
-                          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#F9FAFB'; }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(154,198,232,0.06)'; }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
                         >
                           <div
-                            className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
-                            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+                            className="h-8 w-8 shrink-0 flex items-center justify-center text-xs font-bold text-white"
+                            style={{ background: '#1FB2A6', borderRadius: 4 }}
                           >
                             {lead.companyName.slice(0, 2).toUpperCase()}
                           </div>
@@ -420,7 +416,7 @@ export default function Analytics() {
                             )}
                           </div>
                           {cfg && (
-                            <span className={cn('inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0', cfg.bg, cfg.text)}>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 shrink-0" style={{ borderRadius: 10, background: cfg.bg, color: cfg.text }}>
                               {cfg.emoji} {lead.aiScore}/10
                             </span>
                           )}
@@ -436,28 +432,28 @@ export default function Analytics() {
       </div>
 
       {/* Row 5: Email Open & Click Tracking */}
-      <ChartCard title="Email Open & Click Tracking" subtitle="How recipients engage with your emails" accent="linear-gradient(90deg, #0EA5E9, #6366f1)">
+      <ChartCard title="Email Open & Click Tracking" subtitle="How recipients engage with your emails" accentColor="#1FB2A6">
         {!emailTracking || emailTracking.totalSent === 0 ? (
           <EmptyChart message="No tracked emails yet" hint="Send emails to start seeing open and click rates" />
         ) : (
           <div className="grid gap-6 sm:grid-cols-3">
             {[
-              { label: 'Open Rate', value: `${emailTracking.openRate}%`, sub: `${emailTracking.totalOpened} of ${emailTracking.totalSent} opened`, icon: Eye, color: '#0EA5E9', bg: 'rgba(14,165,233,0.08)', border: 'rgba(14,165,233,0.2)' },
-              { label: 'Click Rate', value: `${emailTracking.clickRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalSent} clicked`, icon: MousePointerClick, color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.2)' },
-              { label: 'Click-to-Open', value: `${emailTracking.clickToOpenRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalOpened} who opened`, icon: TrendingUp, color: '#0F766E', bg: 'rgba(15,118,110,0.08)', border: 'rgba(15,118,110,0.2)' },
+              { label: 'Open Rate',     value: `${emailTracking.openRate}%`,        sub: `${emailTracking.totalOpened} of ${emailTracking.totalSent} opened`,     icon: Eye,             color: '#1FB2A6', bg: 'rgba(31,178,166,0.08)', border: 'rgba(31,178,166,0.2)' },
+              { label: 'Click Rate',    value: `${emailTracking.clickRate}%`,        sub: `${emailTracking.totalClicked} of ${emailTracking.totalSent} clicked`,    icon: MousePointerClick, color: '#C98A1E', bg: 'rgba(201,138,30,0.08)', border: 'rgba(201,138,30,0.2)' },
+              { label: 'Click-to-Open', value: `${emailTracking.clickToOpenRate}%`, sub: `${emailTracking.totalClicked} of ${emailTracking.totalOpened} who opened`, icon: TrendingUp,      color: '#3E8E5A', bg: 'rgba(62,142,90,0.08)',  border: 'rgba(62,142,90,0.2)'  },
             ].map(({ label, value, sub, icon: Icon, color, bg, border }) => (
-              <div key={label} className="rounded-xl p-4 flex flex-col gap-3" style={{ background: bg, border: `1px solid ${border}` }}>
+              <div key={label} className="p-4 flex flex-col gap-3" style={{ background: bg, border: `1px solid ${border}`, borderRadius: 4 }}>
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: color + '20' }}>
+                  <div className="h-8 w-8 flex items-center justify-center" style={{ background: color + '20', borderRadius: 4 }}>
                     <Icon className="h-4 w-4" style={{ color }} />
                   </div>
-                  <span className="text-sm font-semibold text-foreground">{label}</span>
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{label}</span>
                 </div>
-                <p className="text-3xl font-black" style={{ color }}>{value}</p>
-                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: value, background: color }} />
+                <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 28, fontWeight: 700, color }}>{value}</p>
+                <div className="h-2 w-full overflow-hidden" style={{ background: '#CBD3CF', borderRadius: 4 }}>
+                  <div className="h-full transition-all duration-700" style={{ width: value, background: color, borderRadius: 4 }} />
                 </div>
-                <p className="text-xs text-muted-foreground">{sub}</p>
+                <p style={{ fontSize: 11, color: '#6E7D79' }}>{sub}</p>
               </div>
             ))}
           </div>

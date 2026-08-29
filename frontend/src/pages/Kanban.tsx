@@ -1,6 +1,5 @@
-﻿import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Kanban as KanbanIcon, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import api from '@/services/api';
 
 interface Lead {
@@ -13,12 +12,12 @@ interface Lead {
 }
 
 const COLUMNS: { key: string; label: string; color: string; bg: string }[] = [
-  { key: 'new',           label: 'New',           color: '#3B82F6', bg: 'rgba(59,130,246,0.1)'  },
-  { key: 'contacted',     label: 'Contacted',     color: '#6366F1', bg: 'rgba(99,102,241,0.1)'  },
-  { key: 'proposal_sent', label: 'Proposal Sent', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)'  },
-  { key: 'follow_up',     label: 'Follow Up',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)'  },
-  { key: 'converted',     label: 'Converted',     color: '#14B8A6', bg: 'rgba(20,184,166,0.1)'  },
-  { key: 'lost',          label: 'Lost',           color: '#EF4444', bg: 'rgba(239,68,68,0.1)'  },
+  { key: 'new',           label: 'New',           color: '#1FB2A6', bg: 'rgba(31,178,166,0.1)'   },
+  { key: 'contacted',     label: 'Contacted',     color: '#C98A1E', bg: 'rgba(201,138,30,0.1)'   },
+  { key: 'proposal_sent', label: 'Proposal Sent', color: '#3E8E5A', bg: 'rgba(62,142,90,0.1)'    },
+  { key: 'follow_up',     label: 'Follow Up',     color: '#C23B2E', bg: 'rgba(194,59,46,0.1)'    },
+  { key: 'converted',     label: 'Converted',     color: '#1FB2A6', bg: 'rgba(31,178,166,0.08)'  },
+  { key: 'lost',          label: 'Lost',           color: '#6E7D79', bg: 'rgba(110,125,121,0.1)' },
 ];
 
 export default function Kanban() {
@@ -48,35 +47,38 @@ export default function Kanban() {
     try {
       await api.put(`/leads/${dragging}`, { status: targetStatus });
     } catch {
-      fetchLeads(); // revert on error
+      fetchLeads();
     }
     setDragging(null);
     setDragOverCol(null);
   };
 
   return (
-    <div className="space-y-5 p-6 h-full flex flex-col">
-      <div className="page-header">
-        <div className="absolute inset-0 opacity-40 rounded-2xl"
-             style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-        <div className="relative flex items-center justify-between">
+    <div className="space-y-5 p-6 h-full flex flex-col" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <KanbanIcon className="h-4 w-4 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">Pipeline</span>
+              <KanbanIcon className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Pipeline</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Kanban Board</h1>
-            <p className="text-sm text-muted-foreground font-medium">Drag leads across pipeline stages</p>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Kanban Board</h1>
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>Drag leads across pipeline stages</p>
           </div>
-          <Button variant="outline" size="sm" className="h-8 gap-2 text-xs border-border/60" onClick={fetchLeads}>
+          <button
+            className="h-8 px-3 gap-2 flex items-center text-xs font-semibold"
+            style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace" }}
+            onClick={fetchLeads}
+          >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
-          </Button>
+          </button>
         </div>
       </div>
 
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'rgba(31,178,166,0.3)', borderTopColor: '#1FB2A6' }} />
         </div>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-4 flex-1" style={{ minHeight: 0 }}>
@@ -86,24 +88,27 @@ export default function Kanban() {
             return (
               <div
                 key={col.key}
-                className="flex-shrink-0 w-64 flex flex-col rounded-2xl border transition-all"
+                className="flex-shrink-0 w-64 flex flex-col transition-all"
                 style={{
-                  background: isDragOver ? col.bg : 'hsl(var(--card))',
-                  borderColor: isDragOver ? col.color : 'hsl(var(--border) / 0.6)',
-                  boxShadow: isDragOver ? `0 0 0 2px ${col.color}40` : undefined,
+                  background: isDragOver ? col.bg : '#F1F4F0',
+                  border: isDragOver ? `1px solid ${col.color}` : '1px solid #CBD3CF',
+                  borderRadius: 4,
+                  borderTop: `3px solid ${col.color}`,
+                  boxShadow: isDragOver ? `0 0 0 2px ${col.color}30` : undefined,
                 }}
                 onDragOver={(e) => { e.preventDefault(); setDragOverCol(col.key); }}
                 onDragLeave={() => setDragOverCol(null)}
                 onDrop={() => handleDrop(col.key)}
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+                <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #CBD3CF' }}>
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: col.color }} />
-                    <span className="text-sm font-semibold text-foreground">{col.label}</span>
+                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>{col.label}</span>
                   </div>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                        style={{ background: col.bg, color: col.color }}>
+                  <span
+                    style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: col.bg, color: col.color }}
+                  >
                     {colLeads.length}
                   </span>
                 </div>
@@ -111,8 +116,8 @@ export default function Kanban() {
                 {/* Cards */}
                 <div className="flex-1 overflow-y-auto p-2 space-y-2">
                   {colLeads.length === 0 ? (
-                    <div className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-border/30">
-                      <p className="text-xs text-muted-foreground/50">Drop here</p>
+                    <div className="flex items-center justify-center h-24" style={{ border: '2px dashed #CBD3CF', borderRadius: 4 }}>
+                      <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#9CADB0' }}>Drop here</p>
                     </div>
                   ) : (
                     colLeads.map((lead) => (
@@ -121,23 +126,24 @@ export default function Kanban() {
                         draggable
                         onDragStart={() => setDragging(lead._id)}
                         onDragEnd={() => { setDragging(null); setDragOverCol(null); }}
-                        className="rounded-xl p-3 border cursor-grab active:cursor-grabbing transition-all select-none"
+                        className="p-3 cursor-grab active:cursor-grabbing transition-all select-none"
                         style={{
-                          background: dragging === lead._id ? col.bg : 'hsl(var(--background))',
-                          borderColor: dragging === lead._id ? col.color : 'hsl(var(--border) / 0.5)',
+                          background: dragging === lead._id ? col.bg : '#fff',
+                          border: dragging === lead._id ? `1px solid ${col.color}` : '1px solid #CBD3CF',
+                          borderRadius: 4,
                           opacity: dragging === lead._id ? 0.6 : 1,
-                          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                         }}
                       >
-                        <p className="text-sm font-semibold text-foreground truncate">{lead.companyName}</p>
-                        {lead.industry && <p className="text-xs text-muted-foreground mt-0.5 truncate">{lead.industry}</p>}
-                        {lead.email && <p className="text-xs text-muted-foreground truncate">{lead.email}</p>}
+                        <p style={{ fontSize: 12, fontWeight: 600, color: '#1B1F2B', fontFamily: "'IBM Plex Sans', sans-serif" }} className="truncate">{lead.companyName}</p>
+                        {lead.industry && <p style={{ fontSize: 11, color: '#6E7D79', marginTop: 2 }} className="truncate">{lead.industry}</p>}
+                        {lead.email && <p style={{ fontSize: 11, color: '#6E7D79', fontFamily: "'IBM Plex Mono', monospace" }} className="truncate">{lead.email}</p>}
                         {lead.aiScore != null && (
                           <div className="mt-2 flex items-center gap-1.5">
-                            <div className="flex-1 h-1 rounded-full bg-border/50">
-                              <div className="h-full rounded-full" style={{ width: `${lead.aiScore}%`, background: col.color }} />
+                            <div className="flex-1 h-1 overflow-hidden" style={{ background: '#CBD3CF', borderRadius: 4 }}>
+                              <div className="h-full" style={{ width: `${lead.aiScore}%`, background: col.color, borderRadius: 4 }} />
                             </div>
-                            <span className="text-[10px] font-bold" style={{ color: col.color }}>{lead.aiScore}</span>
+                            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: col.color }}>{lead.aiScore}</span>
                           </div>
                         )}
                       </div>

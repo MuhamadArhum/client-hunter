@@ -1,10 +1,7 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Mail, FileText, Users, Bell, RefreshCw, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useSocket } from '@/hooks/useSocket';
 
@@ -29,24 +26,24 @@ function getRelativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  sent:          { bg: 'bg-emerald-50 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-400' },
-  failed:        { bg: 'bg-rose-50 dark:bg-rose-950/40',    text: 'text-rose-700 dark:text-rose-300',    dot: 'bg-rose-400' },
-  new:           { bg: 'bg-sky-50 dark:bg-sky-950/40',      text: 'text-sky-700 dark:text-sky-300',      dot: 'bg-sky-400' },
-  contacted:     { bg: 'bg-amber-50 dark:bg-amber-950/40',  text: 'text-amber-700 dark:text-amber-300',  dot: 'bg-amber-400' },
-  proposal_sent: { bg: 'bg-violet-50 dark:bg-violet-950/40',text: 'text-violet-700 dark:text-violet-300',dot: 'bg-violet-400' },
-  follow_up:     { bg: 'bg-indigo-50 dark:bg-indigo-950/40',text: 'text-indigo-700 dark:text-indigo-300',dot: 'bg-indigo-400' },
-  converted:     { bg: 'bg-emerald-50 dark:bg-emerald-950/40',text:'text-emerald-700 dark:text-emerald-300',dot:'bg-emerald-400'},
-  lost:          { bg: 'bg-rose-50 dark:bg-rose-950/40',    text: 'text-rose-700 dark:text-rose-300',    dot: 'bg-rose-400' },
-  draft:         { bg: 'bg-slate-100 dark:bg-slate-800',    text: 'text-slate-600 dark:text-slate-300',  dot: 'bg-slate-400' },
-  accepted:      { bg: 'bg-emerald-50 dark:bg-emerald-950/40',text:'text-emerald-700 dark:text-emerald-300',dot:'bg-emerald-400'},
-  rejected:      { bg: 'bg-rose-50 dark:bg-rose-950/40',    text: 'text-rose-700 dark:text-rose-300',    dot: 'bg-rose-400' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; dotColor: string }> = {
+  sent:          { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dotColor: '#3E8E5A' },
+  failed:        { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dotColor: '#C23B2E' },
+  new:           { bg: 'rgba(31,178,166,0.12)',  text: '#1FB2A6', dotColor: '#1FB2A6' },
+  contacted:     { bg: 'rgba(201,138,30,0.14)',  text: '#C98A1E', dotColor: '#C98A1E' },
+  proposal_sent: { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dotColor: '#3E8E5A' },
+  follow_up:     { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dotColor: '#C23B2E' },
+  converted:     { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dotColor: '#3E8E5A' },
+  lost:          { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dotColor: '#C23B2E' },
+  draft:         { bg: 'rgba(110,125,121,0.1)',  text: '#6E7D79', dotColor: '#6E7D79' },
+  accepted:      { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dotColor: '#3E8E5A' },
+  rejected:      { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dotColor: '#C23B2E' },
 };
 
 const TYPE_CONFIG = {
-  outreach: { Icon: Mail,     color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)', label: 'Outreach' },
-  lead:     { Icon: Users,    color: '#7C3AED', bg: '#F5F3FF', label: 'Lead'     },
-  proposal: { Icon: FileText, color: '#059669', bg: '#ECFDF5', label: 'Proposal' },
+  outreach: { Icon: Mail,     color: '#1FB2A6', bg: 'rgba(31,178,166,0.1)',  label: 'Outreach' },
+  lead:     { Icon: Users,    color: '#C98A1E', bg: 'rgba(201,138,30,0.1)', label: 'Lead'     },
+  proposal: { Icon: FileText, color: '#3E8E5A', bg: 'rgba(62,142,90,0.1)',  label: 'Proposal' },
 };
 
 export default function Notifications() {
@@ -140,82 +137,89 @@ export default function Notifications() {
   }, {});
 
   return (
-    <div className="space-y-5 p-5">
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-bold text-foreground">Activity Feed</h2>
-            <Badge
-              className={cn(
-                'text-xs font-medium px-2 py-0.5 rounded-full border-0',
-                isLive
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                  : 'bg-muted text-muted-foreground',
-              )}
-            >
-              <span className={cn('h-1.5 w-1.5 rounded-full mr-1.5 inline-block', isLive ? 'bg-primary animate-pulse' : 'bg-muted-foreground/40')} />
-              {isLive ? 'Live' : 'Connected'}
-            </Badge>
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Bell className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Feed</span>
+              {/* Live indicator */}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+                padding: '2px 8px', borderRadius: 10,
+                background: isLive ? 'rgba(62,142,90,0.12)' : 'rgba(110,125,121,0.1)',
+                color: isLive ? '#3E8E5A' : '#6E7D79',
+              }}>
+                <span style={{
+                  display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
+                  background: isLive ? '#3E8E5A' : '#9CADB0',
+                  animation: isLive ? 'pulse 2s infinite' : undefined,
+                }} />
+                {isLive ? 'Live' : 'Connected'}
+              </span>
+            </div>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Activity Feed</h1>
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>
+              {items.length} recent {items.length === 1 ? 'activity' : 'activities'} across your pipeline
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {items.length} recent {items.length === 1 ? 'activity' : 'activities'} across your pipeline
-          </p>
+          <button
+            className="h-8 px-3 gap-2 flex items-center text-xs font-semibold"
+            style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace" }}
+            onClick={fetchData}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 rounded-lg gap-2 text-sm border-border/60"
-          onClick={fetchData}
-          disabled={loading}
-        >
-          <RefreshCw className={cn('h-3.5 w-3.5', loading && 'animate-spin')} />
-          Refresh
-        </Button>
       </div>
 
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Outreach', count: items.filter(i => i.type === 'outreach').length, color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)', Icon: Mail },
-          { label: 'Leads',    count: items.filter(i => i.type === 'lead').length,     color: '#7C3AED', bg: '#F5F3FF', Icon: Users },
-          { label: 'Proposals',count: items.filter(i => i.type === 'proposal').length, color: '#059669', bg: '#ECFDF5', Icon: FileText },
+          { label: 'Outreach',  count: items.filter(i => i.type === 'outreach').length,  color: '#1FB2A6', bg: 'rgba(31,178,166,0.1)',  Icon: Mail     },
+          { label: 'Leads',     count: items.filter(i => i.type === 'lead').length,       color: '#C98A1E', bg: 'rgba(201,138,30,0.1)', Icon: Users    },
+          { label: 'Proposals', count: items.filter(i => i.type === 'proposal').length,   color: '#3E8E5A', bg: 'rgba(62,142,90,0.1)',  Icon: FileText },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-3.5 flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: s.bg }}>
-              <s.Icon className="h-4 w-4" style={{ color: s.color }} />
+          <div key={s.label} style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: `3px solid ${s.color}`, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 4, background: s.bg, flexShrink: 0 }}>
+              <s.Icon style={{ color: s.color, width: 16, height: 16 }} />
             </div>
             <div>
-              <p className="text-xl font-bold text-foreground leading-none">{s.count}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+              <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.count}</p>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79', marginTop: 3 }}>{s.label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Activity list */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
         {loading ? (
-          <div className="p-5 space-y-4">
+          <div style={{ padding: '20px 24px' }} className="space-y-4">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="flex items-start gap-3">
-                <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
+                <Skeleton className="h-9 w-9 shrink-0" style={{ borderRadius: 4 }} />
                 <div className="flex-1 space-y-1.5 pt-0.5">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-4 w-3/4" style={{ borderRadius: 4 }} />
+                  <Skeleton className="h-3 w-1/2" style={{ borderRadius: 4 }} />
                 </div>
-                <Skeleton className="h-3 w-12" />
+                <Skeleton className="h-3 w-12" style={{ borderRadius: 4 }} />
               </div>
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-4 bg-muted">
-              <Activity className="h-6 w-6 text-muted-foreground/40" />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center' }}>
+            <div style={{ width: 48, height: 48, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(203,211,207,0.4)', marginBottom: 16 }}>
+              <Activity style={{ width: 20, height: 20, color: '#9CADB0' }} />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">No activity yet</h3>
-            <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+            <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B', marginBottom: 6 }}>No activity yet</p>
+            <p style={{ fontSize: 12, color: '#6E7D79', maxWidth: 280 }}>
               Your activity feed will populate once you start adding leads and sending outreach.
             </p>
           </div>
@@ -225,16 +229,17 @@ export default function Notifications() {
               <div key={dateLabel}>
                 {/* Date header */}
                 <div
-                  className="flex items-center gap-3 px-5 py-2.5"
                   style={{
-                    background: 'hsl(var(--muted) / 0.5)',
-                    borderBottom: '1px solid hsl(var(--border) / 0.5)',
-                    borderTop: groupIdx > 0 ? '1px solid hsl(var(--border) / 0.5)' : undefined,
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '8px 20px',
+                    background: 'rgba(203,211,207,0.3)',
+                    borderBottom: '1px solid #CBD3CF',
+                    borderTop: groupIdx > 0 ? '1px solid #CBD3CF' : undefined,
                   }}
                 >
-                  <Bell className="h-3 w-3 text-muted-foreground/50" />
-                  <span className="text-xs font-semibold text-muted-foreground">{dateLabel}</span>
-                  <span className="text-xs text-muted-foreground/50">· {groupItems.length}</span>
+                  <Bell style={{ width: 11, height: 11, color: '#9CADB0' }} />
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{dateLabel}</span>
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0' }}>· {groupItems.length}</span>
                 </div>
 
                 {/* Items */}
@@ -246,32 +251,38 @@ export default function Notifications() {
                   return (
                     <div
                       key={item.id}
-                      className="flex items-start gap-4 px-5 py-3.5 hover:bg-muted/30 transition-colors"
-                      style={{ borderBottom: isLastInGroup ? 'none' : '1px solid hsl(var(--border) / 0.4)' }}
+                      className="flex items-start gap-4"
+                      style={{
+                        padding: '14px 20px',
+                        borderBottom: isLastInGroup ? 'none' : '1px solid rgba(203,211,207,0.5)',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       {/* Icon */}
-                      <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg mt-0.5"
-                        style={{ background: config.bg }}
-                      >
-                        <config.Icon className="h-4 w-4" style={{ color: config.color }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 4, background: config.bg, flexShrink: 0, marginTop: 2 }}>
+                        <config.Icon style={{ width: 15, height: 15, color: config.color }} />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="text-sm font-semibold text-foreground leading-tight">{item.title}</p>
-                          <span className="text-xs text-muted-foreground/60 shrink-0 pt-0.5 whitespace-nowrap">
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: '#1B1F2B', lineHeight: 1.3 }}>{item.title}</p>
+                          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0', flexShrink: 0, paddingTop: 2, whiteSpace: 'nowrap' }}>
                             {getRelativeTime(item.date)}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-tight">{item.subtitle}</p>
+                        <p style={{ fontSize: 12, color: '#6E7D79', marginTop: 3, lineHeight: 1.4 }}>{item.subtitle}</p>
                         {statusStyle && (
-                          <span className={cn(
-                            'inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full mt-1.5',
-                            statusStyle.bg, statusStyle.text,
-                          )}>
-                            <span className={cn('h-1.5 w-1.5 rounded-full', statusStyle.dot)} />
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 6,
+                            fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700,
+                            textTransform: 'uppercase', letterSpacing: '0.05em',
+                            padding: '3px 9px', borderRadius: 10,
+                            background: statusStyle.bg, color: statusStyle.text,
+                          }}>
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusStyle.dotColor, display: 'inline-block', flexShrink: 0 }} />
                             {item.status?.replace(/_/g, ' ')}
                           </span>
                         )}

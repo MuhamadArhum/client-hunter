@@ -1,13 +1,10 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { User, Mail, Shield, FileText, Send, CheckCircle, Camera, Edit3 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import api from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
-import { cn } from '@/lib/utils';
 
 interface Stats { leads: number; proposals: number; outreach: number; }
 
@@ -39,7 +36,7 @@ export default function Profile() {
     ])
       .then(([leadsRes, proposalsRes, outreachRes]) => {
         setStats({
-          leads:    leadsRes.data?.pagination?.total ?? 0,
+          leads:     leadsRes.data?.pagination?.total ?? 0,
           proposals: proposalsRes.data?.pagination?.total ?? 0,
           outreach:  outreachRes.data?.pagination?.total ?? 0,
         });
@@ -87,16 +84,41 @@ export default function Profile() {
     : 'U';
 
   const statItems = [
-    { icon: User,     label: 'Total Leads',    value: stats.leads,    color: '#0D9C6A', bg: 'rgba(15,118,110,0.08)' },
-    { icon: Send,     label: 'Outreach Sent',  value: stats.outreach, color: '#7C3AED', bg: '#F5F3FF' },
-    { icon: FileText, label: 'Proposals',       value: stats.proposals, color: '#059669', bg: '#ECFDF5' },
+    { icon: User,     label: 'Total Leads',   value: stats.leads,     color: '#1FB2A6', bg: 'rgba(31,178,166,0.1)'  },
+    { icon: Send,     label: 'Outreach Sent', value: stats.outreach,  color: '#C98A1E', bg: 'rgba(201,138,30,0.1)' },
+    { icon: FileText, label: 'Proposals',      value: stats.proposals, color: '#3E8E5A', bg: 'rgba(62,142,90,0.1)'  },
   ];
 
+  const labelSt: React.CSSProperties = {
+    fontFamily: "'IBM Plex Mono', monospace",
+    fontSize: 10.5,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    color: '#6E7D79',
+    display: 'block',
+    marginBottom: 6,
+  };
+
+  const inputSt: React.CSSProperties = {
+    borderRadius: 4,
+    border: '1px solid #CBD3CF',
+    background: '#fff',
+    fontSize: 13,
+    color: '#1B1F2B',
+  };
+
   return (
-    <div className="space-y-5 p-5">
-      <div>
-        <h2 className="text-xl font-bold text-foreground">Profile</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">Manage your account information</p>
+    <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
+
+      {/* Header */}
+      <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
+        <div className="flex items-center gap-2 mb-1">
+          <User className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Account</span>
+        </div>
+        <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Profile</h1>
+        <p style={{ fontSize: 13, color: '#6E7D79' }}>Manage your account information</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
@@ -104,150 +126,167 @@ export default function Profile() {
         {/* Left: Profile card */}
         <div className="lg:col-span-1 space-y-4">
           {/* Avatar & identity */}
-          <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
             {/* Cover */}
-            <div
-              className="h-20 w-full"
-              style={{ background: 'linear-gradient(135deg, #0a2a18 0%, #0D9C6A 50%, #0F766E 100%)' }}
-            />
-            <div className="px-5 pb-5 -mt-10 text-center">
+            <div style={{ height: 80, width: '100%', background: '#1FB2A6' }} />
+            <div style={{ padding: '0 20px 20px', marginTop: -40, textAlign: 'center' }}>
               <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               <button
-                className="relative h-20 w-20 rounded-xl ring-4 ring-card shadow-md overflow-hidden group mx-auto focus:outline-none"
+                style={{ position: 'relative', width: 80, height: 80, borderRadius: 4, border: '4px solid #F1F4F0', overflow: 'hidden', cursor: 'pointer', display: 'inline-block', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
                 onClick={() => avatarInputRef.current?.click()}
                 disabled={avatarLoading}
                 title="Click to change avatar"
+                className="group focus:outline-none"
               >
                 {avatar ? (
-                  <img src={avatar} alt="Avatar" className="h-full w-full object-cover" />
+                  <img src={avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div
-                    className="h-full w-full flex items-center justify-center text-xl font-bold text-gray-900"
-                    style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
-                  >
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1FB2A6' }}>
                     {avatarLoading
-                      ? <span className="h-5 w-5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" />
-                      : initials
+                      ? <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      : <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700, color: '#fff' }}>{initials}</span>
                     }
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   {avatarLoading
                     ? <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <Camera className="h-5 w-5 text-white" />
+                    : <Camera style={{ width: 18, height: 18, color: '#fff' }} />
                   }
                 </div>
               </button>
 
-              <h3 className="text-base font-bold text-foreground mt-3">{user?.name || '—'}</h3>
-              <p className="text-sm text-muted-foreground truncate">{user?.email || '—'}</p>
+              <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B', marginTop: 12, marginBottom: 4 }}>{user?.name || '—'}</h3>
+              <p style={{ fontSize: 12, color: '#6E7D79', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email || '—'}</p>
 
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <Badge className="text-xs px-2.5 py-0.5 rounded-full border-0 capitalize" style={{ background: 'rgba(15,118,110,0.1)', color: '#0D9C6A' }}>
-                  <Shield className="h-3 w-3 mr-1" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 8 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.05em',
+                  padding: '3px 9px', borderRadius: 10,
+                  background: 'rgba(31,178,166,0.12)', color: '#1FB2A6',
+                }}>
+                  <Shield style={{ width: 10, height: 10 }} />
                   {user?.role || 'agent'}
-                </Badge>
+                </span>
               </div>
 
-              <p className="text-xs text-muted-foreground/60 mt-2.5">Click avatar to change photo</p>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0', marginTop: 10 }}>Click avatar to change photo</p>
             </div>
           </div>
 
           {/* Activity stats */}
-          <div className="rounded-xl border border-border bg-card p-4 shadow-sm space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Activity Stats</h4>
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, padding: '16px 20px' }}>
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79', marginBottom: 12 }}>Activity Stats</p>
             {statsLoading ? (
               <div className="space-y-2">
-                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" style={{ borderRadius: 4 }} />)}
               </div>
             ) : (
-              statItems.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-3 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: stat.bg }}>
-                    <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
+              <div className="space-y-2">
+                {statItems.map((stat) => (
+                  <div
+                    key={stat.label}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 4, border: '1px solid #CBD3CF', background: '#fff', transition: 'background 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(154,198,232,0.06)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 4, background: stat.bg, flexShrink: 0 }}>
+                      <stat.icon style={{ width: 15, height: 15, color: stat.color }} />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#6E7D79', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</p>
+                      <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700, color: stat.color, lineHeight: 1.1 }}>{stat.value}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <p className="text-lg font-bold text-foreground leading-tight">{stat.value}</p>
-                  </div>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </div>
         </div>
 
         {/* Right: Edit form */}
         <div className="lg:col-span-2">
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'rgba(15,118,110,0.08)' }}>
-                <Edit3 className="h-4 w-4" style={{ color: '#0D9C6A' }} />
+          <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderBottom: '1px solid #CBD3CF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 4, background: 'rgba(31,178,166,0.1)', flexShrink: 0 }}>
+                <Edit3 style={{ width: 15, height: 15, color: '#1FB2A6' }} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-foreground">Edit Profile</h3>
-                <p className="text-xs text-muted-foreground">Update your personal information</p>
+                <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B' }}>Edit Profile</p>
+                <p style={{ fontSize: 12, color: '#6E7D79' }}>Update your personal information</p>
               </div>
             </div>
 
-            <div className="p-5 space-y-4">
+            <div style={{ padding: '20px 24px' }} className="space-y-4">
               {alert && (
-                <div className={cn(
-                  'flex items-center gap-2.5 text-sm rounded-lg p-3 border',
-                  alert.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300'
-                    : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:border-rose-900 dark:text-rose-300',
-                )}>
-                  {alert.type === 'success' && <CheckCircle className="h-4 w-4 shrink-0" />}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 14px', borderRadius: 4,
+                  border: `1px solid ${alert.type === 'success' ? 'rgba(62,142,90,0.3)' : 'rgba(194,59,46,0.3)'}`,
+                  background: alert.type === 'success' ? 'rgba(62,142,90,0.08)' : 'rgba(194,59,46,0.08)',
+                  color: alert.type === 'success' ? '#3E8E5A' : '#C23B2E',
+                  fontSize: 13,
+                }}>
+                  {alert.type === 'success' && <CheckCircle style={{ width: 15, height: 15, flexShrink: 0 }} />}
                   {alert.msg}
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+              <div>
+                <Label style={labelSt}>Full Name</Label>
+                <div style={{ position: 'relative' }}>
+                  <User style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: '#9CADB0' }} />
                   <Input
-                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-primary/30"
+                    style={{ ...inputSt, paddingLeft: 32 }}
                     placeholder="Your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className="h-9"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email Address</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+              <div>
+                <Label style={labelSt}>Email Address</Label>
+                <div style={{ position: 'relative' }}>
+                  <Mail style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: '#9CADB0' }} />
                   <Input
                     type="email"
-                    className="h-10 rounded-lg border-border/70 text-sm pl-9 focus-visible:ring-primary/30"
+                    style={{ ...inputSt, paddingLeft: 32 }}
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="h-9"
                   />
                 </div>
               </div>
 
-              <div className="rounded-lg p-3.5 bg-muted/40 border border-border/50 space-y-1">
-                <p className="text-xs font-semibold text-muted-foreground">Account Details</p>
-                <p className="text-xs text-muted-foreground">
-                  Role: <span className="font-medium text-foreground capitalize">{user?.role || 'agent'}</span>
+              <div style={{ padding: '12px 14px', borderRadius: 4, background: 'rgba(203,211,207,0.3)', border: '1px solid #CBD3CF' }}>
+                <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6E7D79', marginBottom: 4 }}>Account Details</p>
+                <p style={{ fontSize: 12, color: '#6E7D79' }}>
+                  Role: <span style={{ fontWeight: 600, color: '#1B1F2B', textTransform: 'capitalize' }}>{user?.role || 'agent'}</span>
                 </p>
               </div>
 
-              <div className="pt-1">
-                <Button
-                  className="h-10 rounded-lg text-sm font-semibold text-gray-900 gap-2"
-                  style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+              <div style={{ paddingTop: 4 }}>
+                <button
+                  style={{
+                    background: '#1FB2A6', color: '#fff', border: 'none', borderRadius: 4,
+                    padding: '0 20px', height: 38, fontSize: 13, fontWeight: 600,
+                    fontFamily: "'IBM Plex Mono', monospace", cursor: saveLoading ? 'not-allowed' : 'pointer',
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    opacity: saveLoading ? 0.7 : 1,
+                  }}
                   onClick={handleSave}
                   disabled={saveLoading}
                 >
                   {saveLoading
-                    ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Saving...</>
+                    ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                     : 'Save Changes'
                   }
-                </Button>
+                </button>
               </div>
             </div>
           </div>

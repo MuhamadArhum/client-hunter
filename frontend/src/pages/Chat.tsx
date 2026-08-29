@@ -1,9 +1,7 @@
-﻿import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sparkles, Trash2, Copy, Check, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import api from '@/services/api';
-import { cn } from '@/lib/utils';
 
 interface Message {
   id: string;
@@ -32,52 +30,49 @@ function MessageBubble({ msg }: { msg: Message }) {
   };
 
   return (
-    <div className={cn('flex gap-3 group', isUser && 'flex-row-reverse')}>
+    <div style={{ display: 'flex', gap: 12, flexDirection: isUser ? 'row-reverse' : 'row' }} className="group">
       {/* Avatar */}
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5"
-        style={
-          isUser
-            ? { background: 'linear-gradient(135deg, #14B8A6, #0F766E)' }
-            : { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }
-        }
-      >
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 32, height: 32, borderRadius: 4, flexShrink: 0, marginTop: 2,
+        background: '#1FB2A6',
+      }}>
         {isUser
-          ? <User className="h-3.5 w-3.5 text-gray-900" />
-          : <Bot className="h-3.5 w-3.5 text-gray-900" />
+          ? <User style={{ width: 13, height: 13, color: '#fff' }} />
+          : <Bot style={{ width: 13, height: 13, color: '#fff' }} />
         }
       </div>
 
       {/* Bubble */}
-      <div className={cn('flex flex-col max-w-[80%]', isUser && 'items-end')}>
-        <div
-          className={cn(
-            'relative rounded-2xl px-4 py-3 text-sm leading-relaxed',
-            isUser
-              ? 'rounded-tr-sm text-gray-900'
-              : 'bg-muted text-foreground rounded-tl-sm border border-border/60',
-          )}
-          style={isUser ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' } : {}}
-        >
-          <p className="whitespace-pre-wrap">{msg.content}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '80%', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
+        <div style={{
+          padding: '10px 14px', fontSize: 13, lineHeight: 1.6,
+          borderRadius: 4,
+          background: isUser ? '#1FB2A6' : '#fff',
+          color: isUser ? '#fff' : '#1B1F2B',
+          border: isUser ? 'none' : '1px solid #CBD3CF',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+        }}>
+          <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{msg.content}</p>
         </div>
 
         {/* Time + Copy */}
-        <div className={cn(
-          'flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity',
-          isUser && 'flex-row-reverse',
-        )}>
-          <span className="text-[10px] text-muted-foreground/60">
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, marginTop: 4,
+          flexDirection: isUser ? 'row-reverse' : 'row',
+          opacity: 0, transition: 'opacity 0.15s',
+        }} className="group-hover:opacity-100">
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0' }}>
             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
           {!isUser && (
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1 text-[10px] text-muted-foreground/60 hover:text-foreground transition-colors"
+              style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
               {copied
-                ? <Check className="h-3 w-3 text-primary" />
-                : <Copy className="h-3 w-3" />
+                ? <Check style={{ width: 11, height: 11, color: '#1FB2A6' }} />
+                : <Copy style={{ width: 11, height: 11, color: '#9CADB0' }} />
               }
             </button>
           )}
@@ -89,19 +84,16 @@ function MessageBubble({ msg }: { msg: Message }) {
 
 function TypingIndicator() {
   return (
-    <div className="flex gap-3">
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-        style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
-      >
-        <Bot className="h-3.5 w-3.5 text-gray-900" />
+    <div style={{ display: 'flex', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 4, background: '#1FB2A6', flexShrink: 0 }}>
+        <Bot style={{ width: 13, height: 13, color: '#fff' }} />
       </div>
-      <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm px-4 py-3 bg-muted border border-border/60">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 14px', borderRadius: 4, background: '#fff', border: '1px solid #CBD3CF' }}>
         {[0, 1, 2].map((i) => (
           <span
             key={i}
             className="h-2 w-2 rounded-full animate-bounce"
-            style={{ animationDelay: `${i * 0.15}s`, background: '#0F766E' }}
+            style={{ animationDelay: `${i * 0.15}s`, background: '#1FB2A6', display: 'inline-block' }}
           />
         ))}
       </div>
@@ -188,45 +180,42 @@ export default function Chat() {
   const showSuggestions = messages.length <= 1;
 
   return (
-    <div className="flex flex-col p-5" style={{ height: 'calc(100vh - 70px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', padding: 24, height: 'calc(100vh - 70px)', background: '#E6E9E5' }}>
 
-      {/* ── Chat header ── */}
-      <div className="flex items-center justify-between mb-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
-          >
-            <Sparkles className="h-4.5 w-4.5 text-gray-900" />
+      {/* Chat header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 4, background: '#1FB2A6', flexShrink: 0 }}>
+            <Sparkles style={{ width: 18, height: 18, color: '#fff' }} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-foreground">AI Sales Assistant</h2>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-muted-foreground">Powered by Groq · LLaMA 3.3 70B</span>
+            <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', margin: 0 }}>AI Sales Assistant</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#1FB2A6', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79' }}>Powered by Groq · LLaMA 3.3 70B</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border" style={{ background: 'rgba(15,118,110,0.06)', borderColor: 'rgba(15,118,110,0.2)' }}>
-            <Zap className="h-3 w-3" style={{ color: '#0D9C6A' }} />
-            <span className="text-xs font-medium" style={{ color: '#0D9C6A' }}>Groq AI</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 4, background: 'rgba(31,178,166,0.08)', border: '1px solid rgba(31,178,166,0.2)' }}>
+            <Zap style={{ width: 11, height: 11, color: '#1FB2A6' }} />
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 700, color: '#1FB2A6' }}>Groq AI</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={clearChat}
-            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 4, background: '#F1F4F0', border: '1px solid #CBD3CF', cursor: 'pointer', color: '#6E7D79', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11 }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C23B2E'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(194,59,46,0.3)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#CBD3CF'; }}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 style={{ width: 13, height: 13 }} />
             Clear
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* ── Messages area ── */}
-      <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card p-4 space-y-4 mb-3">
+      {/* Messages area */}
+      <div style={{ flex: 1, overflowY: 'auto', borderRadius: 4, border: '1px solid #CBD3CF', background: '#F1F4F0', padding: 16, marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {messages.map((msg) => (
           <MessageBubble key={msg.id} msg={msg} />
@@ -236,24 +225,29 @@ export default function Chat() {
 
         {/* Quick suggestions */}
         {showSuggestions && !loading && (
-          <div className="pt-2">
-            <p className="text-xs text-muted-foreground text-center mb-3">
+          <div style={{ paddingTop: 8 }}>
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#9CADB0', textAlign: 'center', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Quick suggestions to get started
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
-                  className="text-left text-xs px-3 py-2.5 rounded-lg border border-border transition-all duration-150 text-muted-foreground hover:text-foreground"
-                  style={{}}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(15,118,110,0.4)';
-                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(15,118,110,0.04)';
+                  style={{
+                    textAlign: 'left', fontSize: 12, padding: '10px 12px', borderRadius: 4,
+                    border: '1px solid #CBD3CF', background: '#fff', color: '#6E7D79', cursor: 'pointer',
+                    transition: 'all 0.15s', fontFamily: "'IBM Plex Sans', sans-serif",
                   }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '';
-                    (e.currentTarget as HTMLButtonElement).style.background = '';
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(31,178,166,0.4)';
+                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(31,178,166,0.04)';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#1B1F2B';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#CBD3CF';
+                    (e.currentTarget as HTMLButtonElement).style.background = '#fff';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79';
                   }}
                 >
                   {s}
@@ -266,14 +260,13 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input area ── */}
+      {/* Input area */}
       <div
-        className="shrink-0 rounded-xl border border-border bg-card p-3 transition-colors"
-        style={{}}
-        onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(15,118,110,0.4)'; }}
-        onBlurCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = ''; }}
+        style={{ flexShrink: 0, borderRadius: 4, border: '1px solid #CBD3CF', background: '#F1F4F0', padding: 12, transition: 'border-color 0.15s' }}
+        onFocusCapture={e => (e.currentTarget.style.borderColor = 'rgba(31,178,166,0.5)')}
+        onBlurCapture={e => (e.currentTarget.style.borderColor = '#CBD3CF')}
       >
-        <div className="flex items-end gap-2">
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
           <Textarea
             ref={textareaRef}
             value={input}
@@ -281,26 +274,25 @@ export default function Chat() {
             onKeyDown={handleKeyDown}
             placeholder="Ask anything about leads, outreach, proposals, or sales strategy..."
             rows={1}
-            className="flex-1 resize-none border-0 bg-transparent text-sm focus-visible:ring-0 min-h-[36px] max-h-[100px] p-0 placeholder:text-muted-foreground/60"
+            style={{ flex: 1, resize: 'none', border: 'none', background: 'transparent', fontSize: 13, color: '#1B1F2B', outline: 'none', boxShadow: 'none', minHeight: 36, maxHeight: 100, padding: 0 }}
+            className="focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          <Button
+          <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || loading}
-            size="sm"
-            className={cn(
-              'h-8 w-8 p-0 rounded-lg shrink-0 transition-all',
-              input.trim() && !loading
-                ? 'text-gray-900'
-                : 'bg-muted text-muted-foreground',
-            )}
-            style={input.trim() && !loading ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)' } : {}}
+            style={{
+              width: 34, height: 34, borderRadius: 4, border: 'none', cursor: (!input.trim() || loading) ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              background: (input.trim() && !loading) ? '#1FB2A6' : '#CBD3CF',
+              transition: 'background 0.15s',
+            }}
           >
-            <Send className="h-3.5 w-3.5" />
-          </Button>
+            <Send style={{ width: 13, height: 13, color: '#fff' }} />
+          </button>
         </div>
       </div>
 
-      <p className="text-center text-[10px] text-muted-foreground/50 mt-2 shrink-0">
+      <p style={{ textAlign: 'center', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#9CADB0', marginTop: 8, flexShrink: 0 }}>
         Press Enter to send · Shift+Enter for new line
       </p>
     </div>

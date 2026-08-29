@@ -45,21 +45,21 @@ interface Pagination {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; border: string }> = {
-  new:           { bg: '#ECFDF5', text: '#065F46', dot: '#14B8A6', border: '#A7F3D0' },
-  contacted:     { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B', border: '#FDE68A' },
-  proposal_sent: { bg: '#F5F3FF', text: '#4C1D95', dot: '#8B5CF6', border: '#DDD6FE' },
-  follow_up:     { bg: '#EEF2FF', text: '#3730A3', dot: '#6366F1', border: '#C7D2FE' },
-  converted:     { bg: '#D1FAE5', text: '#064E3B', dot: '#0F766E', border: '#5EEAD4' },
-  lost:          { bg: '#FEF2F2', text: '#991B1B', dot: '#EF4444', border: '#FECACA' },
+  new:           { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dot: '#3E8E5A', border: 'rgba(62,142,90,0.25)'  },
+  contacted:     { bg: 'rgba(201,138,30,0.14)',  text: '#C98A1E', dot: '#C98A1E', border: 'rgba(201,138,30,0.3)'  },
+  proposal_sent: { bg: 'rgba(31,178,166,0.12)',  text: '#1FB2A6', dot: '#1FB2A6', border: 'rgba(31,178,166,0.3)'  },
+  follow_up:     { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dot: '#C23B2E', border: 'rgba(194,59,46,0.25)'  },
+  converted:     { bg: 'rgba(62,142,90,0.12)',   text: '#3E8E5A', dot: '#3E8E5A', border: 'rgba(62,142,90,0.25)'  },
+  lost:          { bg: 'rgba(194,59,46,0.12)',   text: '#C23B2E', dot: '#C23B2E', border: 'rgba(194,59,46,0.25)'  },
 };
 
 const SOURCE_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  manual:     { bg: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
-  upwork:     { bg: '#F0FDF9', color: '#065F46', border: '#A7F3D0' },
-  freelancer: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' },
-  crunchbase: { bg: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
-  clutch:     { bg: '#FFF1F2', color: '#BE123C', border: '#FECDD3' },
-  linkedin:   { bg: '#F0F9FF', color: '#0369A1', border: '#BAE6FD' },
+  manual:     { bg: 'rgba(110,125,121,0.1)',  color: '#6E7D79', border: '#CBD3CF' },
+  upwork:     { bg: 'rgba(62,142,90,0.10)',   color: '#3E8E5A', border: 'rgba(62,142,90,0.3)'  },
+  freelancer: { bg: 'rgba(31,178,166,0.10)',  color: '#1FB2A6', border: 'rgba(31,178,166,0.3)' },
+  crunchbase: { bg: 'rgba(201,138,30,0.10)',  color: '#C98A1E', border: 'rgba(201,138,30,0.3)' },
+  clutch:     { bg: 'rgba(194,59,46,0.10)',   color: '#C23B2E', border: 'rgba(194,59,46,0.25)' },
+  linkedin:   { bg: 'rgba(27,31,43,0.08)',    color: '#1B1F2B', border: 'rgba(27,31,43,0.2)'   },
 };
 
 const SOURCES = ['manual', 'upwork', 'freelancer', 'crunchbase', 'clutch', 'linkedin'];
@@ -84,10 +84,10 @@ function AiScoreBadge({ score, qualification }: { score: number; qualification?:
   const isWarm = qualification === 'warm' || (score >= 5 && score < 8);
 
   const style = isHot
-    ? { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' }
+    ? { bg: 'rgba(194,59,46,0.12)',  color: '#C23B2E', border: 'rgba(194,59,46,0.3)'  }
     : isWarm
-    ? { bg: '#FFFBEB', color: '#92400E', border: '#FDE68A' }
-    : { bg: '#EEF2FF', color: '#3730A3', border: '#C7D2FE' };
+    ? { bg: 'rgba(201,138,30,0.14)', color: '#C98A1E', border: 'rgba(201,138,30,0.3)' }
+    : { bg: 'rgba(110,125,121,0.1)', color: '#6E7D79', border: '#CBD3CF' };
 
   const emoji = isHot ? '🔥' : isWarm ? '⚡' : '❄️';
   const label = isHot ? 'Hot' : isWarm ? 'Warm' : 'Cold';
@@ -111,18 +111,18 @@ function LightInput({ placeholder, value, onChange, type = 'text', className = '
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full h-9 px-3 text-sm rounded-xl outline-none transition-all ${className}`}
+      className={`w-full h-9 px-3 text-sm rounded-[4px] outline-none transition-all ${className}`}
       style={{
         background: '#FFFFFF',
-        border: '1px solid #E5E7EB',
-        color: '#111827',
+        border: '1px solid #CBD3CF',
+        color: '#101211',
       }}
       onFocus={(e) => {
-        e.target.style.borderColor = '#0F766E';
-        e.target.style.boxShadow = '0 0 0 3px rgba(15,118,110,0.12)';
+        e.target.style.borderColor = '#1FB2A6';
+        e.target.style.boxShadow = '0 0 0 2px rgba(31,178,166,0.15)';
       }}
       onBlur={(e) => {
-        e.target.style.borderColor = '#E5E7EB';
+        e.target.style.borderColor = '#CBD3CF';
         e.target.style.boxShadow = 'none';
       }}
     />
@@ -135,8 +135,8 @@ type SortDir = 'asc' | 'desc';
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey | null; sortDir: SortDir }) {
   if (sortKey !== col) return <ChevronsUpDown className="h-3 w-3 ml-1 opacity-30" />;
   return sortDir === 'asc'
-    ? <ChevronUp className="h-3 w-3 ml-1" style={{ color: '#0F766E' }} />
-    : <ChevronDown className="h-3 w-3 ml-1" style={{ color: '#0F766E' }} />;
+    ? <ChevronUp className="h-3 w-3 ml-1" style={{ color: '#1FB2A6' }} />
+    : <ChevronDown className="h-3 w-3 ml-1" style={{ color: '#1FB2A6' }} />;
 }
 
 export default function Leads() {
@@ -367,39 +367,36 @@ export default function Leads() {
   ];
 
   return (
-    <div className="page-content space-y-5 p-5">
+    <div className="page-content space-y-5 p-5" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
 
       {/* ── Hero Header ── */}
       <div
-        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        className="relative overflow-hidden px-6 py-5"
         style={{
-          background: 'linear-gradient(135deg, rgba(15,118,110,0.06) 0%, rgba(20,184,166,0.03) 50%, #FFFFFF 100%)',
-          border: '1px solid #E5E7EB',
+          background: '#F1F4F0',
+          border: '1px solid #CBD3CF',
+          borderRadius: 4,
+          borderTop: '3px solid #1FB2A6',
         }}
       >
-        <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, #0F766E 35%, #14B8A6 65%, transparent 100%)' }} />
-        <div className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: 'radial-gradient(rgba(15,118,110,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Users className="h-3.5 w-3.5" style={{ color: '#14B8A6' }} />
-              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#0D9C6A' }}>Pipeline</span>
+              <Users className="h-3.5 w-3.5" style={{ color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Pipeline</span>
             </div>
-            <h1 className="text-2xl font-extrabold mb-1" style={{ color: '#111827' }}>Leads</h1>
-            <p className="text-sm font-medium" style={{ color: '#6B7280' }}>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Leads</h1>
+            <p className="text-sm font-medium" style={{ color: '#6E7D79' }}>
               {pagination.total} total leads
-              {hotLeads > 0 && <> · <span style={{ color: '#DC2626', fontWeight: 700 }}>{hotLeads} 🔥 hot</span></>}
-              {convertedLeads > 0 && <> · <span style={{ color: '#065F46', fontWeight: 700 }}>{convertedLeads} converted</span></>}
+              {hotLeads > 0 && <> · <span style={{ color: '#C23B2E', fontWeight: 700 }}>{hotLeads} hot</span></>}
+              {convertedLeads > 0 && <> · <span style={{ color: '#3E8E5A', fontWeight: 700 }}>{convertedLeads} converted</span></>}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2 items-center">
             {bulkEnrichMsg && (
-              <span className="text-xs font-semibold px-3 py-1.5 rounded-xl self-center"
-                style={{ background: '#F0FDF9', color: '#065F46', border: '1px solid #A7F3D0' }}>
+              <span className="text-xs font-semibold px-3 py-1.5 self-center"
+                style={{ background: 'rgba(62,142,90,0.1)', color: '#3E8E5A', border: '1px solid rgba(62,142,90,0.3)', borderRadius: 4 }}>
                 {bulkEnrichMsg}
               </span>
             )}
@@ -413,10 +410,10 @@ export default function Leads() {
                 key={label}
                 onClick={onClick}
                 disabled={disabled}
-                className="flex items-center gap-2 text-sm font-medium px-3 h-9 rounded-xl transition-all disabled:opacity-50"
-                style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#D1D5DB'; (e.currentTarget as HTMLButtonElement).style.color = '#111827'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E5E7EB'; (e.currentTarget as HTMLButtonElement).style.color = '#4B5563'; }}
+                className="flex items-center gap-2 text-sm font-medium px-3 h-9 disabled:opacity-50"
+                style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', borderRadius: 4 }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#1FB2A6'; (e.currentTarget as HTMLButtonElement).style.color = '#101211'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#CBD3CF'; (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79'; }}
               >
                 <Icon className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{label}</span>
@@ -424,8 +421,10 @@ export default function Leads() {
             ))}
             <button
               onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
-              className="flex items-center gap-2 text-sm font-bold px-4 h-9 rounded-xl transition-all hover:brightness-105"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}
+              className="flex items-center gap-2 text-sm font-bold px-4 h-9"
+              style={{ background: '#1FB2A6', color: '#fff', borderRadius: 4, border: 'none' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#189187'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#1FB2A6'; }}
             >
               <Plus className="h-3.5 w-3.5" /> Add Lead
             </button>
@@ -436,24 +435,24 @@ export default function Leads() {
       {/* ── Bulk Action Bar ── */}
       {someSelected && (
         <div
-          className="flex items-center justify-between rounded-xl px-4 py-2.5 gap-3"
-          style={{ background: '#F0FDF9', border: '1px solid rgba(15,118,110,0.3)' }}
+          className="flex items-center justify-between px-4 py-2.5 gap-3"
+          style={{ background: 'rgba(31,178,166,0.07)', border: '1px solid rgba(31,178,166,0.25)', borderRadius: 4 }}
         >
-          <span className="text-sm font-bold" style={{ color: '#065F46' }}>
+          <span className="text-sm font-bold" style={{ color: '#1FB2A6', fontFamily: "'IBM Plex Mono', monospace" }}>
             {selectedIds.size} lead{selectedIds.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportSelected}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
-              style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46' }}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8"
+              style={{ background: 'rgba(62,142,90,0.1)', border: '1px solid rgba(62,142,90,0.3)', color: '#3E8E5A', borderRadius: 4 }}
             >
               <FileDown className="h-3.5 w-3.5" /> Export Selected
             </button>
             <button
               onClick={() => setBulkDeleteOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8 rounded-lg transition-colors"
-              style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B' }}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 h-8"
+              style={{ background: 'rgba(194,59,46,0.1)', border: '1px solid rgba(194,59,46,0.25)', color: '#C23B2E', borderRadius: 4 }}
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete Selected
             </button>
@@ -466,22 +465,22 @@ export default function Leads() {
         {/* Search bar + source select */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" style={{ color: '#9CA3AF' }} />
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" style={{ color: '#6E7D79' }} />
             <input
               placeholder="Search by company, contact or email..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full h-11 pl-10 pr-4 text-sm rounded-xl outline-none transition-all"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#111827' }}
-              onFocus={(e) => { e.target.style.borderColor = '#0F766E'; e.target.style.boxShadow = '0 0 0 3px rgba(15,118,110,0.12)'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
+              className="w-full h-11 pl-10 pr-4 text-sm outline-none transition-all"
+              style={{ background: '#FFFFFF', border: '1px solid #CBD3CF', color: '#101211', borderRadius: 4, padding: '8px 12px 8px 40px' }}
+              onFocus={(e) => { e.target.style.borderColor = '#1FB2A6'; e.target.style.boxShadow = '0 0 0 2px rgba(31,178,166,0.15)'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#CBD3CF'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
           <Select value={sourceFilter} onValueChange={(v) => { setSourceFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-full sm:w-36 h-11 rounded-xl text-sm border-[#E5E7EB] bg-white text-[#111827]">
+            <SelectTrigger className="w-full sm:w-36 h-11 text-sm" style={{ borderRadius: 4, borderColor: '#CBD3CF', background: '#F1F4F0', color: '#101211' }}>
               <SelectValue placeholder="All Sources" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
+            <SelectContent>
               <SelectItem value="all">All Sources</SelectItem>
               {SOURCES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
             </SelectContent>
@@ -497,13 +496,18 @@ export default function Leads() {
               <button
                 key={s}
                 onClick={() => { setStatusFilter(s); setPage(1); }}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 h-7 rounded-full transition-all"
-                style={isActive
-                  ? sStyle
-                    ? { background: sStyle.bg, color: sStyle.text, border: `1.5px solid ${sStyle.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
-                    : { background: '#111827', color: '#FFFFFF', border: '1.5px solid #111827' }
-                  : { background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }
-                }
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 h-7 transition-all"
+                style={{
+                  borderRadius: 10,
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 10.5,
+                  textTransform: 'uppercase' as const,
+                  ...(isActive
+                    ? sStyle
+                      ? { background: sStyle.bg, color: sStyle.text, border: `1.5px solid ${sStyle.border}` }
+                      : { background: '#1B1F2B', color: '#FFFFFF', border: '1.5px solid #1B1F2B' }
+                    : { background: '#F1F4F0', color: '#6E7D79', border: '1px solid #CBD3CF' })
+                }}
               >
                 {isActive && sStyle && <span className="h-1.5 w-1.5 rounded-full" style={{ background: sStyle.dot }} />}
                 {s === 'all' ? 'All Statuses' : s.replace(/_/g, ' ')}
@@ -514,15 +518,16 @@ export default function Leads() {
       </div>
 
       {/* ── Leads Table ── */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+      <div className="overflow-hidden" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid #F3F4F6', background: '#F9FAFB' }}>
+              <tr style={{ borderBottom: `1px solid #CBD3CF`, background: '#E6E9E5' }}>
                 <th className="px-4 py-3 w-10">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded cursor-pointer accent-primary"
+                    className="h-4 w-4 cursor-pointer accent-primary"
+                    style={{ borderRadius: 2 }}
                     checked={allSelected}
                     onChange={toggleAll}
                   />
@@ -530,8 +535,8 @@ export default function Leads() {
                 {SORTABLE_COLS.map(({ key, label }) => (
                   <th
                     key={key}
-                    className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap cursor-pointer select-none"
-                    style={{ color: '#9CA3AF' }}
+                    className="text-left px-4 py-3 whitespace-nowrap cursor-pointer select-none"
+                    style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#6E7D79' }}
                     onClick={() => handleSort(key)}
                   >
                     <span className="inline-flex items-center">
@@ -546,22 +551,22 @@ export default function Leads() {
             <tbody>
               {loading ? (
                 [...Array(6)].map((_, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                  <tr key={i} style={{ borderBottom: `1px solid #CBD3CF` }}>
                     <td className="px-4 py-3.5">
-                      <div className="h-4 w-4 rounded animate-pulse" style={{ background: '#F3F4F6' }} />
+                      <div className="h-4 w-4 rounded animate-pulse" style={{ background: '#CBD3CF' }} />
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl shrink-0 animate-pulse" style={{ background: '#F3F4F6' }} />
+                        <div className="h-9 w-9 shrink-0 animate-pulse" style={{ background: '#CBD3CF', borderRadius: 4 }} />
                         <div className="space-y-2">
-                          <div className="h-3.5 w-28 rounded animate-pulse" style={{ background: '#F3F4F6' }} />
-                          <div className="h-3 w-20 rounded animate-pulse" style={{ background: '#F9FAFB' }} />
+                          <div className="h-3.5 w-28 rounded animate-pulse" style={{ background: '#CBD3CF' }} />
+                          <div className="h-3 w-20 rounded animate-pulse" style={{ background: '#E6E9E5' }} />
                         </div>
                       </div>
                     </td>
                     {[24, 20, 20, 16, 16].map((w, j) => (
                       <td key={j} className="px-4 py-3.5">
-                        <div className={`h-4 w-${w} rounded animate-pulse`} style={{ background: '#F3F4F6' }} />
+                        <div className={`h-4 w-${w} rounded animate-pulse`} style={{ background: '#CBD3CF' }} />
                       </td>
                     ))}
                     <td className="px-4 py-3.5" />
@@ -571,16 +576,16 @@ export default function Leads() {
                 <tr>
                   <td colSpan={7} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="h-14 w-14 rounded-2xl flex items-center justify-center" style={{ background: '#F0FDF9' }}>
-                        <Users className="h-6 w-6" style={{ color: '#9CA3AF' }} />
+                      <div className="h-14 w-14 flex items-center justify-center" style={{ background: 'rgba(31,178,166,0.08)', borderRadius: 4 }}>
+                        <Users className="h-6 w-6" style={{ color: '#6E7D79' }} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: '#111827' }}>No leads found</p>
-                        <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>Try adjusting filters or add a new lead</p>
+                        <p className="text-sm font-semibold" style={{ color: '#101211' }}>No leads found</p>
+                        <p className="text-xs mt-1" style={{ color: '#6E7D79' }}>Try adjusting filters or add a new lead</p>
                       </div>
                       <button
-                        className="mt-1 flex items-center gap-1.5 text-xs font-bold px-4 h-8 rounded-xl"
-                        style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a' }}
+                        className="mt-1 flex items-center gap-1.5 text-xs font-bold px-4 h-8"
+                        style={{ background: '#1FB2A6', color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}
                         onClick={() => { setAddError(''); setAddForm({ ...emptyForm }); setAddOpen(true); }}
                       >
                         <Plus className="h-3.5 w-3.5" /> Add First Lead
@@ -601,11 +606,11 @@ export default function Leads() {
                       tabIndex={0}
                       className="group cursor-pointer transition-colors duration-100"
                       style={{
-                        borderBottom: isLast ? 'none' : '1px solid #F3F4F6',
-                        background: isSelected ? 'rgba(15,118,110,0.04)' : 'transparent',
+                        borderBottom: isLast ? 'none' : `1px solid #CBD3CF`,
+                        background: isSelected ? 'rgba(31,178,166,0.06)' : 'transparent',
                       }}
                       onMouseEnter={(e) => {
-                        if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = '#F9FAFB';
+                        if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(154,198,232,0.06)';
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) (e.currentTarget as HTMLTableRowElement).style.background = 'transparent';
@@ -629,18 +634,18 @@ export default function Leads() {
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           <div
-                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black"
-                            style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a' }}
+                            className="flex h-9 w-9 shrink-0 items-center justify-center text-xs font-black"
+                            style={{ background: '#1FB2A6', color: '#fff', borderRadius: 4, fontFamily: "'IBM Plex Mono', monospace" }}
                           >
                             {getInitials(lead.companyName)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-semibold text-sm truncate group-hover:text-[#14B8A6] transition-colors duration-100"
-                              style={{ color: '#111827' }}>
+                            <p className="font-semibold text-sm truncate group-hover:text-[#1FB2A6] transition-colors duration-100"
+                              style={{ color: '#101211' }}>
                               {lead.companyName}
                             </p>
                             {lead.industry && (
-                              <p className="text-xs truncate" style={{ color: '#9CA3AF' }}>{lead.industry}</p>
+                              <p className="text-xs truncate" style={{ color: '#6E7D79' }}>{lead.industry}</p>
                             )}
                             {lead.website && (
                               <a
@@ -649,9 +654,9 @@ export default function Leads() {
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
                                 className="flex items-center gap-0.5 truncate max-w-[140px] text-xs transition-colors"
-                                style={{ color: '#14B8A6' }}
-                                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#14B8A6'; }}
+                                style={{ color: '#1FB2A6' }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#189187'; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#1FB2A6'; }}
                               >
                                 <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                                 {lead.website.replace(/^https?:\/\//, '')}
@@ -662,8 +667,8 @@ export default function Leads() {
                                 {lead.tags!.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
-                                    style={{ background: '#F0FDF9', color: '#065F46', border: '1px solid #A7F3D0' }}
+                                    className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5"
+                                    style={{ background: 'rgba(31,178,166,0.1)', color: '#1FB2A6', border: '1px solid rgba(31,178,166,0.25)', borderRadius: 4 }}
                                   >
                                     <Tag className="h-2.5 w-2.5" />{tag}
                                   </span>
@@ -676,7 +681,7 @@ export default function Leads() {
 
                       {/* Contact (with email below name) */}
                       <td className="px-4 py-3.5">
-                        <p className="text-sm font-medium whitespace-nowrap" style={{ color: '#374151' }}>
+                        <p className="text-sm font-medium whitespace-nowrap" style={{ color: '#1B1F2B' }}>
                           {lead.contactName || '—'}
                         </p>
                         {lead.email ? (
@@ -684,23 +689,35 @@ export default function Leads() {
                             href={`mailto:${lead.email}`}
                             onClick={(e) => e.stopPropagation()}
                             className="flex items-center gap-1 text-xs truncate max-w-[160px] mt-0.5 transition-colors"
-                            style={{ color: '#14B8A6' }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#065F46'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#14B8A6'; }}
+                            style={{ color: '#1FB2A6' }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#189187'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#1FB2A6'; }}
                           >
                             <Mail className="h-2.5 w-2.5 shrink-0" />
                             {lead.email}
                           </a>
                         ) : (
-                          <span className="text-xs mt-0.5 block" style={{ color: '#D1D5DB' }}>No email</span>
+                          <span className="text-xs mt-0.5 block" style={{ color: '#CBD3CF' }}>No email</span>
                         )}
                       </td>
 
                       {/* Status */}
                       <td className="px-4 py-3.5">
                         <span
-                          className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap capitalize"
-                          style={{ background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}` }}
+                          style={{
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontSize: 10.5,
+                            textTransform: 'uppercase' as const,
+                            padding: '3px 9px',
+                            borderRadius: 10,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            whiteSpace: 'nowrap' as const,
+                            background: statusStyle.bg,
+                            color: statusStyle.text,
+                            border: `1px solid ${statusStyle.border}`,
+                          }}
                         >
                           <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusStyle.dot }} />
                           {lead.status?.replace(/_/g, ' ')}
@@ -719,8 +736,17 @@ export default function Leads() {
                       {/* Source */}
                       <td className="px-4 py-3.5">
                         <span
-                          className="inline-flex text-[11px] font-bold px-2.5 py-1 rounded-full capitalize"
-                          style={{ background: sourceStyle.bg, color: sourceStyle.color, border: `1px solid ${sourceStyle.border}` }}
+                          style={{
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontSize: 10.5,
+                            textTransform: 'capitalize' as const,
+                            padding: '3px 9px',
+                            borderRadius: 10,
+                            display: 'inline-flex',
+                            background: sourceStyle.bg,
+                            color: sourceStyle.color,
+                            border: `1px solid ${sourceStyle.border}`,
+                          }}
                         >
                           {lead.source}
                         </span>
@@ -734,18 +760,18 @@ export default function Leads() {
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
                             style={{ color: '#9CA3AF' }}
                             onClick={() => navigate(`/leads/${lead._id}`)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'; (e.currentTarget as HTMLButtonElement).style.background = '#F0FDF9'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#1FB2A6'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(31,178,166,0.1)'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Mail className="h-3.5 w-3.5" />
                           </button>
                           <button
                             title="View Detail"
-                            className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
-                            style={{ color: '#9CA3AF' }}
+                            className="h-7 w-7 flex items-center justify-center transition-all"
+                            style={{ color: '#6E7D79', borderRadius: 4 }}
                             onClick={() => navigate(`/leads/${lead._id}`)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#374151'; (e.currentTarget as HTMLButtonElement).style.background = '#F9FAFB'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#101211'; (e.currentTarget as HTMLButtonElement).style.background = '#E6E9E5'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
@@ -754,8 +780,8 @@ export default function Leads() {
                             className="h-7 w-7 rounded-lg flex items-center justify-center transition-all"
                             style={{ color: '#9CA3AF' }}
                             onClick={() => setDeleteId(lead._id)}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#DC2626'; (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#C23B2E'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(194,59,46,0.1)'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6E7D79'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -773,15 +799,15 @@ export default function Leads() {
       {/* ── Pagination ── */}
       {pagination.pages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>
+          <p className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: '#6E7D79' }}>
             Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total}
           </p>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page <= 1}
-              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+              className="text-xs font-semibold px-3 h-8 transition-all disabled:opacity-30"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', borderRadius: 4 }}
             >
               Prev
             </button>
@@ -789,10 +815,10 @@ export default function Leads() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className="h-8 w-8 text-xs font-bold rounded-lg transition-all"
+                className="h-8 w-8 text-xs font-bold transition-all"
                 style={page === p
-                  ? { background: 'linear-gradient(135deg, #0F766E, #14B8A6)', color: '#0a0f0a', border: 'none' }
-                  : { background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }
+                  ? { background: '#1FB2A6', color: '#fff', border: 'none', borderRadius: 4 }
+                  : { background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', borderRadius: 4 }
                 }
               >
                 {p}
@@ -801,8 +827,8 @@ export default function Leads() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= pagination.pages}
-              className="text-xs font-semibold px-3 h-8 rounded-lg transition-all disabled:opacity-30"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#4B5563' }}
+              className="text-xs font-semibold px-3 h-8 transition-all disabled:opacity-30"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', color: '#6E7D79', borderRadius: 4 }}
             >
               Next
             </button>
@@ -812,10 +838,10 @@ export default function Leads() {
 
       {/* ── Add Lead Dialog ── */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" style={{ borderRadius: 4 }}>
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
                 <Plus className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Add New Lead
@@ -823,7 +849,7 @@ export default function Leads() {
           </DialogHeader>
           <div className="space-y-3 py-1">
             {addError && (
-              <div className="text-sm rounded-xl p-3 bg-rose-50 text-rose-700 border border-rose-200">{addError}</div>
+              <div style={{ borderRadius: 4, padding: '10px 12px', fontSize: 13, background: 'rgba(194,59,46,0.1)', color: '#C23B2E', border: '1px solid rgba(194,59,46,0.3)' }}>{addError}</div>
             )}
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Company Name *</Label>
@@ -852,7 +878,7 @@ export default function Leads() {
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Source</Label>
               <Select value={addForm.source} onValueChange={(v) => setAddForm((f) => ({ ...f, source: v }))}>
-                <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent className="rounded-xl">
                   {SOURCES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
                 </SelectContent>
@@ -871,7 +897,7 @@ export default function Leads() {
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Notes / Description</Label>
               <Textarea
-                className="rounded-xl border-border/60 text-sm resize-none"
+                className="text-sm resize-none"
                 rows={3}
                 placeholder="Any additional context..."
                 value={addForm.description}
@@ -880,14 +906,14 @@ export default function Leads() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button variant="outline" className="text-sm" style={{ borderRadius: 4, borderColor: '#CBD3CF', color: '#6E7D79' }} onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button
-              className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+              className="text-sm font-bold gap-2"
+              style={{ background: '#1FB2A6', color: '#fff', borderRadius: 4 }}
               onClick={handleAdd} disabled={addLoading}
             >
               {addLoading
-                ? <><span className="h-3.5 w-3.5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin" /> Adding...</>
+                ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Adding...</>
                 : <><Plus className="h-3.5 w-3.5" /> Add Lead</>
               }
             </Button>
@@ -897,10 +923,10 @@ export default function Leads() {
 
       {/* ── Auto Import Dialog ── */}
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
-        <DialogContent className="max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-[4px]">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
                 <Download className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Auto Import Leads
@@ -908,14 +934,14 @@ export default function Leads() {
           </DialogHeader>
           <div className="space-y-3 py-1">
             {importMsg && (
-              <div className={`text-sm rounded-xl p-3 border ${importMsg.startsWith('✓') ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-700 bg-rose-50 border-rose-200'}`}>
+              <div style={{ borderRadius: 4, padding: '10px 12px', fontSize: 13, background: importMsg.startsWith('✓') ? 'rgba(62,142,90,0.1)' : 'rgba(194,59,46,0.1)', color: importMsg.startsWith('✓') ? '#3E8E5A' : '#C23B2E', border: `1px solid ${importMsg.startsWith('✓') ? 'rgba(62,142,90,0.3)' : 'rgba(194,59,46,0.3)'}` }}>
                 {importMsg}
               </div>
             )}
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Platform</Label>
               <Select value={importSource} onValueChange={setImportSource}>
-                <SelectTrigger className="h-9 rounded-xl border-border/60 text-sm"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent className="rounded-xl">
                   {SOURCES.filter((s) => s !== 'manual').map((s) => (
                     <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
@@ -933,10 +959,10 @@ export default function Leads() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setImportOpen(false)}>Cancel</Button>
+            <Button variant="outline" className="text-sm" onClick={() => setImportOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+              style={{ background: '#1FB2A6', borderRadius: 4 }}
               onClick={handleImport} disabled={importLoading}
             >
               {importLoading
@@ -950,10 +976,10 @@ export default function Leads() {
 
       {/* ── CSV Import Dialog ── */}
       <Dialog open={csvImportOpen} onOpenChange={setCsvImportOpen}>
-        <DialogContent className="max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-[4px]">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <span className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}>
+              <span className="h-6 w-6 flex items-center justify-center" style={{ background: '#1FB2A6', borderRadius: 4 }}>
                 <Upload className="h-3.5 w-3.5 text-gray-900" />
               </span>
               Import CSV
@@ -961,14 +987,14 @@ export default function Leads() {
           </DialogHeader>
           <div className="space-y-3 py-1">
             {csvImportMsg && (
-              <div className={`text-sm rounded-xl p-3 border ${csvImportMsg.startsWith('✓') ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-700 bg-rose-50 border-rose-200'}`}>
+              <div style={{ borderRadius: 4, padding: '10px 12px', fontSize: 13, background: csvImportMsg.startsWith('✓') ? 'rgba(62,142,90,0.1)' : 'rgba(194,59,46,0.1)', color: csvImportMsg.startsWith('✓') ? '#3E8E5A' : '#C23B2E', border: `1px solid ${csvImportMsg.startsWith('✓') ? 'rgba(62,142,90,0.3)' : 'rgba(194,59,46,0.3)'}` }}>
                 {csvImportMsg}
               </div>
             )}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">CSV File</Label>
-                <button className="text-xs font-semibold underline" style={{ color: '#14B8A6' }} onClick={handleDownloadTemplate}>
+                <button className="text-xs font-semibold underline" style={{ color: '#1FB2A6' }} onClick={handleDownloadTemplate}>
                   Download Template
                 </button>
               </div>
@@ -992,18 +1018,18 @@ export default function Leads() {
               </div>
             </div>
             {csvFile && csvRowCount > 0 && (
-              <div className="rounded-xl p-3" style={{ background: '#F0FDF9', border: '1px solid #A7F3D0' }}>
-                <p className="text-xs font-semibold" style={{ color: '#065F46' }}>
+              <div style={{ borderRadius: 4, padding: 10, background: 'rgba(62,142,90,0.1)', border: '1px solid rgba(62,142,90,0.3)' }}>
+                <p className="text-xs font-semibold" style={{ color: '#3E8E5A' }}>
                   Ready to import <span className="font-black">{csvRowCount}</span> lead{csvRowCount !== 1 ? 's' : ''}
                 </p>
               </div>
             )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setCsvImportOpen(false)}>Cancel</Button>
+            <Button variant="outline" className="text-sm" onClick={() => setCsvImportOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-gray-900 gap-2"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #14B8A6)' }}
+              style={{ background: '#1FB2A6', borderRadius: 4 }}
               onClick={handleCsvImport} disabled={csvImportLoading || !csvText.trim()}
             >
               {csvImportLoading
@@ -1017,16 +1043,16 @@ export default function Leads() {
 
       {/* ── Delete Confirm Dialog ── */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-sm rounded-[4px]">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">Delete Lead?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">This action is permanent and cannot be undone.</p>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setDeleteId(null)}>Cancel</Button>
+            <Button variant="outline" className="text-sm" onClick={() => setDeleteId(null)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}
+              style={{ background: '#C23B2E', borderRadius: 4 }}
               onClick={handleDelete} disabled={deleteLoading}
             >
               {deleteLoading ? 'Deleting...' : 'Delete'}
@@ -1037,7 +1063,7 @@ export default function Leads() {
 
       {/* ── Bulk Delete Dialog ── */}
       <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-sm rounded-[4px]">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">Delete {selectedIds.size} Lead{selectedIds.size !== 1 ? 's' : ''}?</DialogTitle>
           </DialogHeader>
@@ -1045,10 +1071,10 @@ export default function Leads() {
             This will permanently delete {selectedIds.size} selected lead{selectedIds.size !== 1 ? 's' : ''}. This cannot be undone.
           </p>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-xl border-border/60 text-sm" onClick={() => setBulkDeleteOpen(false)}>Cancel</Button>
+            <Button variant="outline" className="text-sm" onClick={() => setBulkDeleteOpen(false)}>Cancel</Button>
             <Button
               className="rounded-xl text-sm font-bold text-white gap-2"
-              style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}
+              style={{ background: '#C23B2E', borderRadius: 4 }}
               onClick={handleBulkDelete} disabled={bulkDeleteLoading}
             >
               {bulkDeleteLoading
