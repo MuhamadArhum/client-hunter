@@ -1,8 +1,9 @@
-﻿import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   LayoutTemplate, Plus, Trash2, Pencil, Copy, Check, Sparkles,
   X, Search, Tag, Clock, TrendingUp,
 } from 'lucide-react';
+import AppPagination, { type PaginationMeta } from '@/components/ui/AppPagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,33 +52,52 @@ function CategoryBadge({ category }: { category: Category }) {
   );
 }
 
-export default function Templates() {
-  const [templates, setTemplates]   = useState<Template[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [filterCat, setFilterCat]   = useState<'all' | Category>('all');
-  const [search, setSearch]         = useState('');
-  const [modalOpen, setModalOpen]   = useState(false);
-  const [editing, setEditing]       = useState<Template | null>(null);
-  const [form, setForm]             = useState(EMPTY_FORM);
-  const [saving, setSaving]         = useState(false);
-  const [aiLoading, setAiLoading]   = useState(false);
-  const [copied, setCopied]         = useState<string | null>(null);
-  const [deleting, setDeleting]     = useState<string | null>(null);
-  const [error, setError]           = useState('');
+const DEFAULT_PAGINATION: PaginationMeta = { total: 0, page: 1, limit: 12, pages: 1 };
 
-  const fetchTemplates = useCallback(async () => {
+export default function Templates() {
+  const [templates, setTemplates]       = useState<Template[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [filterCat, setFilterCat]       = useState<'all' | Category>('all');
+  const [search, setSearch]             = useState('');
+  const [pagination, setPagination]     = useState<PaginationMeta>(DEFAULT_PAGINATION);
+  const [catCounts, setCatCounts]       = useState<Record<string, number>>({ all: 0 });
+  const [modalOpen, setModalOpen]       = useState(false);
+  const [editing, setEditing]           = useState<Template | null>(null);
+  const [form, setForm]                 = useState(EMPTY_FORM);
+  const [saving, setSaving]             = useState(false);
+  const [aiLoading, setAiLoading]       = useState(false);
+  const [copied, setCopied]             = useState<string | null>(null);
+  const [deleting, setDeleting]         = useState<string | null>(null);
+  const [error, setError]               = useState('');
+  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const fetchTemplates = useCallback(async (page = 1, cat = filterCat, q = search) => {
     setLoading(true);
     try {
-      const res = await api.get('/templates');
+      const res = await api.get('/templates', {
+        params: { page, limit: 12, category: cat !== 'all' ? cat : undefined, search: q || undefined },
+      });
       setTemplates(Array.isArray(res.data?.data) ? res.data.data : []);
+      setPagination(res.data?.pagination || DEFAULT_PAGINATION);
+      if (res.data?.categoryCounts) setCatCounts(res.data.categoryCounts);
     } catch {
       setTemplates([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filterCat, search]);
 
-  useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
+  useEffect(() => { fetchTemplates(1, filterCat, search); }, [filterCat]);
+
+  useEffect(() => {
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => fetchTemplates(1, filterCat, search), 350);
+    return () => clearTimeout(searchTimer.current);
+  }, [search]);
+
+  const handleCatChange = (cat: 'all' | Category) => {
+    setFilterCat(cat);
+  };
 
   const openCreate = () => {
     setEditing(null);
@@ -113,6 +133,12 @@ export default function Templates() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePageChange = (p: number) => fetchTemplates(p, filterCat, search);
+  const handleLimitChange = (l: number) => {
+    setPagination((prev) => ({ ...prev, limit: l }));
+    fetchTemplates(1, filterCat, search);
   };
 
   const handleDelete = async (id: string) => {
@@ -154,14 +180,6 @@ export default function Templates() {
     }
   };
 
-  const filtered = templates.filter((t) => {
-    const matchCat = filterCat === 'all' || t.category === filterCat;
-    const matchSearch = !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchSearch;
-  });
-
-  const catCounts: Record<string, number> = { all: templates.length };
-  templates.forEach((t) => { catCounts[t.category] = (catCounts[t.category] || 0) + 1; });
 
   return (
     <div className="space-y-5 p-6">
@@ -177,7 +195,7 @@ export default function Templates() {
             </div>
             <h1 className="text-3xl font-black tracking-tight text-gradient mb-1">Email Templates</h1>
             <p className="text-sm text-muted-foreground font-medium">
-              {templates.length} template{templates.length !== 1 ? 's' : ''} — reuse your best outreach messages
+              {pagination.total.toLocaleString()} template{pagination.total !== 1 ? 's' : ''} — reuse your best outreach messages
             </p>
           </div>
           <Button
@@ -198,7 +216,7 @@ export default function Templates() {
           return (
             <button
               key={cat}
-              onClick={() => setFilterCat(cat as 'all' | Category)}
+              onClick={() => handleCatChange(cat as 'all' | Category)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
               style={active ? {
                 background: meta.bg, color: meta.color,
@@ -248,7 +266,7 @@ export default function Templates() {
             </div>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
                style={{ background: 'rgba(99,102,241,0.1)' }}>
@@ -266,19 +284,28 @@ export default function Templates() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((t) => (
-            <TemplateCard
-              key={t._id}
-              template={t}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              onCopy={handleCopy}
-              deleting={deleting === t._id}
-              copied={copied === t._id}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {templates.map((t) => (
+              <TemplateCard
+                key={t._id}
+                template={t}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+                onCopy={handleCopy}
+                deleting={deleting === t._id}
+                copied={copied === t._id}
+              />
+            ))}
+          </div>
+          <AppPagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onLimitChange={handleLimitChange}
+            limitOptions={[12, 24, 48, 96]}
+            className="border-t border-border/40 mt-2"
+          />
+        </>
       )}
 
       {/* Create / Edit Modal */}

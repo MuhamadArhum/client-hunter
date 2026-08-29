@@ -131,15 +131,22 @@ const sendWhatsApp = async (req, res) => {
 const getOutreachHistory = async (req, res) => {
   try {
     const { leadId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
 
     const lead = await Lead.findById(leadId);
-    if (!lead) {
-      return res.status(404).json({ success: false, message: 'Lead not found' });
-    }
+    if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' });
 
-    const logs = await OutreachLog.find({ lead: leadId }).sort({ createdAt: -1 });
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [logs, total] = await Promise.all([
+      OutreachLog.find({ lead: leadId }).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)),
+      OutreachLog.countDocuments({ lead: leadId }),
+    ]);
 
-    res.status(200).json({ success: true, data: logs, total: logs.length });
+    res.status(200).json({
+      success: true,
+      data: logs,
+      pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

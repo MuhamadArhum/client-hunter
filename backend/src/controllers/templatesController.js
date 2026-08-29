@@ -2,11 +2,34 @@ const EmailTemplate = require('../models/EmailTemplate');
 
 exports.getTemplates = async (req, res) => {
   try {
-    const { category } = req.query;
+    const { category, search, page = 1, limit = 12 } = req.query;
     const filter = { user: req.user._id };
-    if (category) filter.category = category;
-    const templates = await EmailTemplate.find(filter).sort({ usageCount: -1, createdAt: -1 });
-    res.json({ success: true, data: templates });
+    if (category && category !== 'all') filter.category = category;
+    if (search) filter.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { subject: { $regex: search, $options: 'i' } },
+    ];
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [templates, total] = await Promise.all([
+      EmailTemplate.find(filter).sort({ usageCount: -1, createdAt: -1 }).skip(skip).limit(parseInt(limit)),
+      EmailTemplate.countDocuments(filter),
+    ]);
+
+    // Category counts (unfiltered by search/category for tab badges)
+    const allCounts = await EmailTemplate.aggregate([
+      { $match: { user: req.user._id } },
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+    ]);
+    const categoryCounts = { all: await EmailTemplate.countDocuments({ user: req.user._id }) };
+    allCounts.forEach(({ _id, count }) => { categoryCounts[_id] = count; });
+
+    res.json({
+      success: true,
+      data: templates,
+      categoryCounts,
+      pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) },
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

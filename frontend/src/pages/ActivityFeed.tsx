@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import api from '@/services/api';
 import { useSocket } from '@/hooks/useSocket';
+import AppPagination, { type PaginationMeta } from '@/components/ui/AppPagination';
 
 interface ActivityItem {
   id: string;
@@ -113,32 +114,41 @@ function SkeletonRow() {
   );
 }
 
+const DEFAULT_PAGI: PaginationMeta = { total: 0, page: 1, limit: 20, pages: 1 };
+
 export default function ActivityFeed() {
-  const [items, setItems]       = useState<ActivityItem[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [liveCount, setLiveCount] = useState(0);
+  const [items, setItems]           = useState<ActivityItem[]>([]);
+  const [loading, setLoading]       = useState(true);
+  const [liveCount, setLiveCount]   = useState(0);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [pagination, setPagination] = useState<PaginationMeta>(DEFAULT_PAGI);
+  const [page, setPage]             = useState(1);
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const newIdsRef = useRef<Set<string>>(new Set());
 
-  const fetchActivity = useCallback(async (silent = false) => {
+  const fetchActivity = useCallback(async (p = page, type = typeFilter, silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const res = await api.get('/activity');
+      const res = await api.get('/activity', {
+        params: { page: p, limit: 20, type: type !== 'all' ? type : undefined },
+      });
       const data: ActivityItem[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setItems(data);
+      setPagination(res.data?.pagination || DEFAULT_PAGI);
       setLastRefresh(new Date());
     } catch {
       // silent
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, typeFilter]);
+
+  useEffect(() => { fetchActivity(page, typeFilter); }, [page, typeFilter]);
 
   useEffect(() => {
-    fetchActivity();
-    const interval = setInterval(() => fetchActivity(true), 30000);
+    const interval = setInterval(() => fetchActivity(1, typeFilter, true), 30000);
     return () => clearInterval(interval);
-  }, [fetchActivity]);
+  }, [typeFilter]);
 
   // Real-time socket events
   useSocket((event, data) => {
@@ -153,7 +163,7 @@ export default function ActivityFeed() {
         isNew: true,
       };
       newIdsRef.current.add(newItem.id);
-      setItems((prev) => [newItem, ...prev].slice(0, 80));
+      setItems((prev) => [newItem, ...prev].slice(0, 20));
       setLiveCount((c) => c + 1);
       setTimeout(() => {
         newIdsRef.current.delete(newItem.id);
@@ -169,7 +179,7 @@ export default function ActivityFeed() {
         timestamp: new Date().toISOString(),
         isNew: true,
       };
-      setItems((prev) => [newItem, ...prev].slice(0, 80));
+      setItems((prev) => [newItem, ...prev].slice(0, 20));
       setLiveCount((c) => c + 1);
     }
     if (event === 'outreach:sent') {
@@ -182,7 +192,7 @@ export default function ActivityFeed() {
         timestamp: new Date().toISOString(),
         isNew: true,
       };
-      setItems((prev) => [newItem, ...prev].slice(0, 80));
+      setItems((prev) => [newItem, ...prev].slice(0, 20));
       setLiveCount((c) => c + 1);
     }
   });
@@ -191,6 +201,7 @@ export default function ActivityFeed() {
     acc[i.type] = (acc[i.type] || 0) + 1;
     return acc;
   }, {});
+  const totalCount = pagination.total;
 
   return (
     <div className="space-y-5 p-6">
@@ -225,7 +236,7 @@ export default function ActivityFeed() {
             variant="outline"
             size="sm"
             className="h-8 gap-2 text-xs border-border/60"
-            onClick={() => fetchActivity()}
+            onClick={() => fetchActivity(1, typeFilter)}
             disabled={loading}
           >
             <RefreshCw className={cn('h-3.5 w-3.5', loading && 'animate-spin')} />
@@ -259,7 +270,7 @@ export default function ActivityFeed() {
 
       {/* Activity timeline */}
       <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Zap className="h-4 w-4 text-primary" />
             <span className="text-sm font-bold text-foreground">Recent Activity</span>
@@ -267,7 +278,29 @@ export default function ActivityFeed() {
               · Last updated {timeAgo(lastRefresh.toISOString())}
             </span>
           </div>
-          <span className="text-xs font-semibold text-muted-foreground/60">{items.length} events</span>
+          {/* Type filter */}
+          <div className="flex items-center gap-1">
+            {[
+              { key: 'all', label: 'All' },
+              { key: 'outreach', label: 'Emails' },
+              { key: 'lead_new', label: 'New Leads' },
+              { key: 'lead_update', label: 'Updates' },
+            ].map((f) => (
+              <button
+                key={f.key}
+                onClick={() => { setTypeFilter(f.key); setPage(1); }}
+                className={cn(
+                  'px-2.5 py-1 rounded-[4px] text-[11px] font-semibold transition-colors border',
+                  typeFilter === f.key
+                    ? 'text-white border-transparent'
+                    : 'border-border text-muted-foreground hover:text-foreground bg-background',
+                )}
+                style={typeFilter === f.key ? { background: '#1FB2A6' } : {}}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
@@ -289,6 +322,12 @@ export default function ActivityFeed() {
             {items.map((item, idx) => (
               <ActivityRow key={item.id} item={item} isFirst={idx === 0} />
             ))}
+            <div className="border-t border-border/40 px-4">
+              <AppPagination
+                pagination={pagination}
+                onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              />
+            </div>
           </div>
         )}
       </div>

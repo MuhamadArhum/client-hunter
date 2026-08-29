@@ -4,8 +4,19 @@ const Lead = require('../models/Lead');
 
 exports.getSequences = async (req, res) => {
   try {
-    const sequences = await Sequence.find({ user: req.user._id }).sort({ createdAt: -1 });
-    res.json({ success: true, data: sequences });
+    const { page = 1, limit = 10, search } = req.query;
+    const filter = { user: req.user._id };
+    if (search) filter.name = { $regex: search, $options: 'i' };
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [sequences, total] = await Promise.all([
+      Sequence.find(filter).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)),
+      Sequence.countDocuments(filter),
+    ]);
+    res.json({
+      success: true,
+      data: sequences,
+      pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) },
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -71,11 +82,24 @@ exports.enrollLead = async (req, res) => {
 
 exports.getEnrollments = async (req, res) => {
   try {
-    const enrollments = await SequenceEnrollment.find({ user: req.user._id })
-      .populate('sequence', 'name steps')
-      .populate('lead', 'companyName email')
-      .sort({ createdAt: -1 });
-    res.json({ success: true, data: enrollments });
+    const { page = 1, limit = 10, status } = req.query;
+    const filter = { user: req.user._id };
+    if (status && status !== 'all') filter.status = status;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [enrollments, total] = await Promise.all([
+      SequenceEnrollment.find(filter)
+        .populate('sequence', 'name steps')
+        .populate('lead', 'companyName email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      SequenceEnrollment.countDocuments(filter),
+    ]);
+    res.json({
+      success: true,
+      data: enrollments,
+      pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) },
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

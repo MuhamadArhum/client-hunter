@@ -1,7 +1,8 @@
 ﻿import { useEffect, useState, useCallback } from 'react';
-import { GitBranch, Plus, Trash2, Play, Pause, Users, ChevronDown, ChevronUp, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { GitBranch, Plus, Trash2, Play, Pause, Users, ChevronDown, ChevronUp, X, Search } from 'lucide-react';
+import AppPagination, { type PaginationMeta } from '@/components/ui/AppPagination';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -41,42 +42,65 @@ interface Enrollment {
   nextSendAt: string;
 }
 
+const DEFAULT_PAGI: PaginationMeta = { total: 0, page: 1, limit: 10, pages: 1 };
+
 export default function Sequences() {
-  const [sequences, setSequences] = useState<Sequence[]>([]);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'sequences' | 'enrollments'>('sequences');
+  const [sequences, setSequences]       = useState<Sequence[]>([]);
+  const [seqPagination, setSeqPagination] = useState<PaginationMeta>(DEFAULT_PAGI);
+  const [seqSearch, setSeqSearch]       = useState('');
+  const [seqPage, setSeqPage]           = useState(1);
 
-  const [showCreate, setShowCreate] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newDesc, setNewDesc] = useState('');
-  const [newSteps, setNewSteps] = useState<Step[]>([{ stepNumber: 1, delayDays: 0, subject: '', body: '' }]);
-  const [creating, setCreating] = useState(false);
+  const [enrollments, setEnrollments]   = useState<Enrollment[]>([]);
+  const [enrPagination, setEnrPagination] = useState<PaginationMeta>(DEFAULT_PAGI);
+  const [enrPage, setEnrPage]           = useState(1);
+  const [enrStatus, setEnrStatus]       = useState('all');
 
-  const [enrollSeqId, setEnrollSeqId] = useState('');
+  const [leads, setLeads]               = useState<Lead[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [enrLoading, setEnrLoading]     = useState(false);
+  const [activeTab, setActiveTab]       = useState<'sequences' | 'enrollments'>('sequences');
+
+  const [showCreate, setShowCreate]     = useState(false);
+  const [newName, setNewName]           = useState('');
+  const [newDesc, setNewDesc]           = useState('');
+  const [newSteps, setNewSteps]         = useState<Step[]>([{ stepNumber: 1, delayDays: 0, subject: '', body: '' }]);
+  const [creating, setCreating]         = useState(false);
+
+  const [enrollSeqId, setEnrollSeqId]   = useState('');
   const [enrollLeadId, setEnrollLeadId] = useState('');
-  const [enrolling, setEnrolling] = useState(false);
-  const [enrollAlert, setEnrollAlert] = useState('');
+  const [enrolling, setEnrolling]       = useState(false);
+  const [enrollAlert, setEnrollAlert]   = useState('');
+  const [expandedId, setExpandedId]     = useState<string | null>(null);
 
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const fetchAll = useCallback(async () => {
+  const fetchSequences = useCallback(async (page = seqPage, q = seqSearch) => {
     setLoading(true);
     try {
-      const [seqRes, enrRes, leadsRes] = await Promise.all([
-        api.get('/sequences'),
-        api.get('/sequences/enrollments/all'),
+      const [seqRes, leadsRes] = await Promise.all([
+        api.get('/sequences', { params: { page, limit: 10, search: q || undefined } }),
         api.get('/leads', { params: { limit: 100 } }),
       ]);
       setSequences(Array.isArray(seqRes.data?.data) ? seqRes.data.data : []);
-      setEnrollments(Array.isArray(enrRes.data?.data) ? enrRes.data.data : []);
+      setSeqPagination(seqRes.data?.pagination || DEFAULT_PAGI);
       setLeads(Array.isArray(leadsRes.data?.data) ? leadsRes.data.data : []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, []);
+  }, [seqPage, seqSearch]);
 
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  const fetchEnrollments = useCallback(async (page = enrPage, status = enrStatus) => {
+    setEnrLoading(true);
+    try {
+      const res = await api.get('/sequences/enrollments/all', {
+        params: { page, limit: 10, status: status !== 'all' ? status : undefined },
+      });
+      setEnrollments(Array.isArray(res.data?.data) ? res.data.data : []);
+      setEnrPagination(res.data?.pagination || DEFAULT_PAGI);
+    } catch (err) { console.error(err); }
+    finally { setEnrLoading(false); }
+  }, [enrPage, enrStatus]);
+
+  useEffect(() => { fetchSequences(seqPage, seqSearch); }, [seqPage]);
+  useEffect(() => { fetchSequences(1, seqSearch); setSeqPage(1); }, [seqSearch]);
+  useEffect(() => { if (activeTab === 'enrollments') fetchEnrollments(enrPage, enrStatus); }, [enrPage, enrStatus, activeTab]);
 
   const addStep = () => {
     setNewSteps((prev) => [...prev, { stepNumber: prev.length + 1, delayDays: 1, subject: '', body: '' }]);
@@ -97,14 +121,14 @@ export default function Sequences() {
       await api.post('/sequences', { name: newName, description: newDesc, steps: newSteps });
       setShowCreate(false); setNewName(''); setNewDesc('');
       setNewSteps([{ stepNumber: 1, delayDays: 0, subject: '', body: '' }]);
-      fetchAll();
+      fetchSequences(seqPage, seqSearch);
     } catch (err) { console.error(err); }
     finally { setCreating(false); }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this sequence and all its enrollments?')) return;
-    try { await api.delete(`/sequences/${id}`); fetchAll(); } catch (err) { console.error(err); }
+    try { await api.delete(`/sequences/${id}`); fetchSequences(seqPage, seqSearch); } catch (err) { console.error(err); }
   };
 
   const handleEnroll = async () => {
@@ -114,7 +138,7 @@ export default function Sequences() {
       await api.post(`/sequences/${enrollSeqId}/enroll`, { leadId: enrollLeadId });
       setEnrollAlert('Lead enrolled successfully!');
       setEnrollLeadId('');
-      fetchAll();
+      fetchSequences(seqPage, seqSearch);
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setEnrollAlert(err?.response?.data?.message || 'Failed to enroll');
@@ -124,7 +148,7 @@ export default function Sequences() {
   const handlePause = async (enrollmentId: string, currentStatus: string) => {
     try {
       await api.patch(`/sequences/enrollments/${enrollmentId}`, { status: currentStatus === 'active' ? 'paused' : 'active' });
-      fetchAll();
+      fetchSequences(seqPage, seqSearch);
     } catch (err) { console.error(err); }
   };
 
@@ -241,6 +265,19 @@ export default function Sequences() {
         ))}
       </div>
 
+      {/* Search bar (sequences tab only) */}
+      {activeTab === 'sequences' && (
+        <div className="relative max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+          <Input
+            value={seqSearch}
+            onChange={(e) => setSeqSearch(e.target.value)}
+            placeholder="Search sequences..."
+            className="pl-8 h-9 text-sm rounded-lg border-border/60"
+          />
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'rgba(15,118,110,0.3)', borderTopColor: '#0F766E' }} />
@@ -254,7 +291,7 @@ export default function Sequences() {
               </div>
               <p className="text-sm text-muted-foreground">No sequences yet. Create one to get started.</p>
             </div>
-          ) : sequences.map((seq) => (
+          ) : (<>{sequences.map((seq) => (
             <div key={seq._id} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpandedId(expandedId === seq._id ? null : seq._id)}>
                 <div className="flex items-center gap-3">
@@ -318,13 +355,18 @@ export default function Sequences() {
                 </div>
               )}
             </div>
-          ))}
+          ))}</>)}
+          <AppPagination
+            pagination={seqPagination}
+            onPageChange={(p) => setSeqPage(p)}
+            className="border-t border-border/40 pt-1"
+          />
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-border/60">
             <h3 className="text-sm font-semibold">Active Enrollments</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{enrollments.length} total</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{enrPagination.total.toLocaleString()} total</p>
           </div>
           <table className="w-full text-sm">
             <thead>
@@ -369,6 +411,14 @@ export default function Sequences() {
               ))}
             </tbody>
           </table>
+          {enrPagination.pages > 1 && (
+            <div className="border-t border-border/40 px-5">
+              <AppPagination
+                pagination={enrPagination}
+                onPageChange={(p) => setEnrPage(p)}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
