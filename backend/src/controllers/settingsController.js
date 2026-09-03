@@ -8,6 +8,7 @@ const INTEGRATION_KEYS = [
   { key: 'WHATSAPP_PHONE_ID',    label: 'WhatsApp Phone ID',     group: 'whatsapp',      sensitive: false },
   { key: 'HUNTER_API_KEY',       label: 'Hunter.io API Key',     group: 'enrichment',    sensitive: true  },
   { key: 'SLACK_WEBHOOK_URL',    label: 'Slack Webhook URL',     group: 'notifications', sensitive: true  },
+  { key: 'APOLLO_API_KEY',       label: 'Apollo.io API Key',     group: 'apollo',        sensitive: true  },
 ];
 
 const ALLOWED_KEYS = new Set(INTEGRATION_KEYS.map((i) => i.key));

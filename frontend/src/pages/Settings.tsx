@@ -92,6 +92,18 @@ const INTEGRATION_GROUPS: IntegrationGroup[] = [
       { key: 'SLACK_WEBHOOK_URL', label: 'Webhook URL', placeholder: 'https://hooks.slack.com/services/...', sensitive: true },
     ],
   },
+  {
+    id: 'apollo',
+    title: 'Lead Search — Apollo.io',
+    description: 'Search and import leads from Apollo.io 275M+ contact database',
+    color: '#7C3AED',
+    bg: 'rgba(124,58,237,0.08)',
+    icon: GitBranch,
+    docUrl: 'https://developer.apollo.io/keys/',
+    fields: [
+      { key: 'APOLLO_API_KEY', label: 'Apollo.io API Key', placeholder: 'apollo_key_xxxx', sensitive: true },
+    ],
+  },
 ];
 
 // ─── Password field helper ───────────────────────────────────────────────────

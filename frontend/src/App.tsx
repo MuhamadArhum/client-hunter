@@ -17,6 +17,7 @@ const Sequences     = lazy(() => import('@/pages/Sequences'));
 const Chat          = lazy(() => import('@/pages/Chat'));
 const ActivityFeed  = lazy(() => import('@/pages/ActivityFeed'));
 const Templates     = lazy(() => import('@/pages/Templates'));
+const ApolloSearch  = lazy(() => import('@/pages/ApolloSearch'));
 const Login          = lazy(() => import('@/pages/auth/Login'));
 const SignUp         = lazy(() => import('@/pages/auth/SignUp'));
 const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
@@ -72,6 +73,7 @@ export default function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/activity" element={<ActivityFeed />} />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/apollo" element={<ApolloSearch />} />
           </Route>
         </Route>
 

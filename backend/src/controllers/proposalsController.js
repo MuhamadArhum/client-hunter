@@ -1,4 +1,4 @@
-﻿const crypto = require('crypto');
+const crypto = require('crypto');
 const Proposal = require('../models/Proposal');
 const Lead = require('../models/Lead');
 const groqService = require('../services/aiService');
@@ -13,11 +13,21 @@ const serverError = (res, error) =>
 // @access  Private
 const getProposals = async (req, res) => {
   try {
-    const { status, leadId, page = 1, limit = 10 } = req.query;
+    const { status, leadId, page = 1, limit = 10, dateFrom, dateTo } = req.query;
     const query = {};
 
     if (status) query.status = status;
     if (leadId) query.lead = leadId;
+
+    if (dateFrom || dateTo) {
+      query.createdAt = {};
+      if (dateFrom) query.createdAt.$gte = new Date(dateFrom);
+      if (dateTo) {
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 

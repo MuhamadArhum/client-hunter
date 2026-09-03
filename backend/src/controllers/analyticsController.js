@@ -241,6 +241,75 @@ const getMonthlyTrend = async (req, res) => {
   }
 };
 
+// @desc    Export analytics summary as CSV
+// @route   GET /api/analytics/export/csv
+const exportAnalyticsCSV = async (req, res) => {
+  try {
+    const [
+      totalLeads,
+      statusCounts,
+      emailSent,
+      emailFailed,
+      whatsappSent,
+      whatsappFailed,
+      sentProposals,
+      acceptedProposals,
+      emailOpened,
+      emailClicked,
+    ] = await Promise.all([
+      Lead.countDocuments({ status: { $ne: 'deleted' } }),
+      Lead.aggregate([
+        { $match: { status: { $ne: 'deleted' } } },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ]),
+      OutreachLog.countDocuments({ type: 'email', status: { $in: ['sent', 'delivered'] } }),
+      OutreachLog.countDocuments({ type: 'email', status: { $in: ['failed', 'bounced'] } }),
+      OutreachLog.countDocuments({ type: 'whatsapp', status: 'sent' }),
+      OutreachLog.countDocuments({ type: 'whatsapp', status: 'failed' }),
+      Proposal.countDocuments({ status: { $in: ['sent', 'accepted', 'rejected'] } }),
+      Proposal.countDocuments({ status: 'accepted' }),
+      OutreachLog.countDocuments({ type: 'email', openedAt: { $ne: null } }),
+      OutreachLog.countDocuments({ type: 'email', clickedAt: { $ne: null } }),
+    ]);
+
+    const convertedCount = statusCounts.find((s) => s._id === 'converted')?.count || 0;
+    const conversionRate = totalLeads > 0 ? ((convertedCount / totalLeads) * 100).toFixed(1) : 0;
+    const proposalAcceptRate = sentProposals > 0 ? ((acceptedProposals / sentProposals) * 100).toFixed(1) : 0;
+    const openRate = emailSent > 0 ? ((emailOpened / emailSent) * 100).toFixed(1) : 0;
+    const clickRate = emailSent > 0 ? ((emailClicked / emailSent) * 100).toFixed(1) : 0;
+
+    const rows = [
+      ['Metric', 'Value'],
+      ['--- LEADS ---', ''],
+      ['Total Leads', totalLeads],
+      ['Conversion Rate (%)', conversionRate],
+      ...statusCounts.map((s) => [`Leads — ${s._id}`, s.count]),
+      ['--- OUTREACH ---', ''],
+      ['Emails Sent', emailSent],
+      ['Emails Failed/Bounced', emailFailed],
+      ['Email Open Rate (%)', openRate],
+      ['Email Click Rate (%)', clickRate],
+      ['WhatsApp Sent', whatsappSent],
+      ['WhatsApp Failed', whatsappFailed],
+      ['--- PROPOSALS ---', ''],
+      ['Proposals Sent', sentProposals],
+      ['Proposals Accepted', acceptedProposals],
+      ['Proposal Accept Rate (%)', proposalAcceptRate],
+      ['--- META ---', ''],
+      ['Exported At', new Date().toISOString()],
+    ];
+
+    const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="analytics-${Date.now()}.csv"`,
+    });
+    res.send(csv);
+  } catch (error) {
+    serverError(res, error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getLeadsBySource,
@@ -250,4 +319,5 @@ module.exports = {
   getAIBreakdown,
   getEmailTrackingStats,
   getMonthlyTrend,
+  exportAnalyticsCSV,
 };

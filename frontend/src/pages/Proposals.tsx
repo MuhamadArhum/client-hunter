@@ -1,5 +1,5 @@
-﻿import { useEffect, useState, useCallback } from 'react';
-import { FileText, Trash2, Eye, Sparkles, Calendar, Building2, Share2, Copy, X, Pencil, Clock, FileDown } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { FileText, Trash2, Eye, Sparkles, Calendar, Building2, Share2, Copy, X, Pencil, Clock, FileDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -90,17 +90,21 @@ export default function Proposals() {
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
 
+  // Date range filter state
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+
   const fetchProposals = useCallback(() => {
     setLoading(true);
     api
-      .get('/proposals', { params: { page, limit: 10 } })
+      .get('/proposals', { params: { page, limit: 10, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined } })
       .then((res) => {
         setProposals(Array.isArray(res.data?.data) ? res.data.data : []);
         setPagination(res.data?.pagination || { total: 0, page: 1, limit: 10, pages: 1 });
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, dateFrom, dateTo]);
 
   useEffect(() => { fetchProposals(); }, [fetchProposals]);
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [page]);
@@ -245,6 +249,36 @@ export default function Proposals() {
             Generate with AI
           </Button>
         </div>
+      </div>
+
+      {/* Date range filter */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5">
+          <Filter className="h-3.5 w-3.5" style={{ color: '#6E7D79' }} />
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: '#6E7D79', fontWeight: 600, textTransform: 'uppercase' }}>Date Range</span>
+        </div>
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => setDateFrom(e.target.value)}
+          className="h-8 px-2 text-sm"
+          style={{ borderRadius: 4, border: '1px solid #CBD3CF', background: '#F1F4F0', color: '#1B1F2B', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, outline: 'none' }}
+        />
+        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#9CADB0' }}>to</span>
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(e) => setDateTo(e.target.value)}
+          className="h-8 px-2 text-sm"
+          style={{ borderRadius: 4, border: '1px solid #CBD3CF', background: '#F1F4F0', color: '#1B1F2B', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, outline: 'none' }}
+        />
+        {(dateFrom || dateTo) && (
+          <button
+            onClick={() => { setDateFrom(''); setDateTo(''); }}
+            className="h-8 px-2.5 text-xs font-semibold"
+            style={{ borderRadius: 4, background: 'rgba(194,59,46,0.08)', border: '1px solid rgba(194,59,46,0.2)', color: '#C23B2E', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace" }}
+          >Clear</button>
+        )}
       </div>
 
       {/* Cards */}

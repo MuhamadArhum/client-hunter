@@ -238,4 +238,76 @@ const trackClick = async (req, res) => {
   res.redirect(url);
 };
 
-module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp, getAllOutreachLogs, trackOpen, trackClick };
+// @desc    Handle Resend webhook delivery events
+// @route   POST /api/outreach/webhook/resend
+// @access  Public
+const handleResendWebhook = async (req, res) => {
+  try {
+    const event = req.body;
+    const trackingId = event?.data?.tags?.find?.((t) => t.name === 'trackingId')?.value || null;
+    const type = event?.type;
+
+    if (trackingId) {
+      if (type === 'email.delivered') {
+        await OutreachLog.findOneAndUpdate({ trackingId }, { deliveredAt: new Date(), status: 'delivered' });
+      } else if (type === 'email.bounced') {
+        await OutreachLog.findOneAndUpdate({ trackingId }, { bouncedAt: new Date(), status: 'bounced' });
+      } else if (type === 'email.complained') {
+        await OutreachLog.findOneAndUpdate({ trackingId }, { spamAt: new Date(), status: 'bounced' });
+      }
+    }
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error('[Resend Webhook]', error.message);
+    res.status(200).json({ received: true });
+  }
+};
+
+// @desc    Retry a failed outreach
+// @route   POST /api/outreach/retry/:logId
+// @access  Private
+const retryOutreach = async (req, res) => {
+  try {
+    const log = await OutreachLog.findById(req.params.logId).populate('lead');
+    if (!log) return res.status(404).json({ success: false, message: 'Outreach log not found' });
+    if (log.status !== 'failed') {
+      return res.status(400).json({ success: false, message: 'Only failed outreach can be retried' });
+    }
+
+    let newStatus = 'sent';
+    let errorMessage = '';
+
+    if (log.type === 'email') {
+      try {
+        const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+        const pixelTag = `<img src="${baseUrl}/api/outreach/track/open/${log.trackingId}" width="1" height="1" style="display:none" />`;
+        await emailService.sendEmail({
+          to: log.lead?.email,
+          subject: log.subject,
+          text: log.message,
+          html: `<div style="font-family:Arial,sans-serif">${log.message.replace(/\n/g, '<br/>')}</div>${pixelTag}`,
+          trackingId: log.trackingId,
+        });
+      } catch (e) { newStatus = 'failed'; errorMessage = e.message; }
+    } else if (log.type === 'whatsapp') {
+      try {
+        await whatsappService.sendMessage({ to: log.lead?.phone, message: log.message });
+      } catch (e) { newStatus = 'failed'; errorMessage = e.message; }
+    }
+
+    await OutreachLog.findByIdAndUpdate(log._id, {
+      status: newStatus,
+      sentAt: newStatus === 'sent' ? new Date() : log.sentAt,
+      response: errorMessage,
+    });
+
+    if (newStatus === 'failed') {
+      return res.status(500).json({ success: false, message: `Retry failed: ${errorMessage}` });
+    }
+    res.status(200).json({ success: true, message: 'Outreach retried successfully' });
+  } catch (error) {
+    serverError(res, error);
+  }
+};
+
+module.exports = { sendEmail, sendWhatsApp, getOutreachHistory, scheduleFollowUp, getAllOutreachLogs, trackOpen, trackClick, handleResendWebhook, retryOutreach };

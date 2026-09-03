@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FileText, Send, BarChart3,
-  LogOut, Zap, Kanban, GitBranch, MessageSquare, Bell, LayoutTemplate, Activity,
+  LogOut, Zap, Kanban, GitBranch, MessageSquare, Bell, LayoutTemplate, Activity, Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -11,8 +11,9 @@ const NAV_SECTIONS = [
     label: 'Overview',
     items: [
       { title: 'Dashboard', path: '/', icon: LayoutDashboard, exact: true },
-      { title: 'Leads',     path: '/leads',     icon: Users },
-      { title: 'Kanban',    path: '/kanban',    icon: Kanban },
+      { title: 'Leads',         path: '/leads',   icon: Users },
+      { title: 'Apollo Search', path: '/apollo', icon: Search },
+      { title: 'Kanban',        path: '/kanban', icon: Kanban },
       { title: 'Proposals', path: '/proposals', icon: FileText },
     ],
   },

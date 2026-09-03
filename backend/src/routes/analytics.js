@@ -9,6 +9,7 @@ const {
   getAIBreakdown,
   getEmailTrackingStats,
   getMonthlyTrend,
+  exportAnalyticsCSV,
 } = require('../controllers/analyticsController');
 const { protect } = require('../middleware/auth');
 
@@ -22,5 +23,6 @@ router.get('/proposal-stats', getProposalStats);
 router.get('/ai-breakdown', getAIBreakdown);
 router.get('/email-tracking', getEmailTrackingStats);
 router.get('/monthly-trend', getMonthlyTrend);
+router.get('/export/csv', exportAnalyticsCSV);
 
 module.exports = router;

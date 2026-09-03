@@ -22,7 +22,7 @@ const outreachLogSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['sent', 'failed', 'pending'],
+      enum: ['sent', 'failed', 'pending', 'delivered', 'bounced'],
       default: 'pending',
     },
     sentAt: {
@@ -37,9 +37,12 @@ const outreachLogSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    openedAt: { type: Date, default: null },
-    clickedAt: { type: Date, default: null },
-    trackingId: { type: String, default: null },
+    openedAt:    { type: Date, default: null },
+    clickedAt:   { type: Date, default: null },
+    trackingId:  { type: String, default: null },
+    deliveredAt: { type: Date, default: null },
+    bouncedAt:   { type: Date, default: null },
+    spamAt:      { type: Date, default: null },
   },
   { timestamps: true }
 );

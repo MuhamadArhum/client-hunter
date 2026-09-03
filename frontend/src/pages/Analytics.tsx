@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink, Eye, MousePointerClick } from 'lucide-react';
+import { Users, TrendingUp, FileText, Mail, Brain, Target, ArrowUpRight, ExternalLink, Eye, MousePointerClick, FileDown } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line,
@@ -187,12 +187,29 @@ export default function Analytics() {
     <div className="space-y-5 p-6" style={{ background: '#E6E9E5', minHeight: '100vh' }}>
       {/* Header */}
       <div style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, borderTop: '3px solid #1FB2A6', padding: '20px 24px' }}>
-        <div className="flex items-center gap-2 mb-1">
-          <Target className="h-4 w-4" style={{ color: '#1FB2A6' }} />
-          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Performance</span>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Target className="h-4 w-4" style={{ color: '#1FB2A6' }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1FB2A6' }}>Performance</span>
+            </div>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Analytics</h1>
+            <p style={{ fontSize: 13, color: '#6E7D79' }}>Performance metrics and pipeline insights</p>
+          </div>
+          <button
+            onClick={async () => {
+              const res = await api.get('/analytics/export/csv', { responseType: 'blob' });
+              const url = URL.createObjectURL(new Blob([res.data as BlobPart]));
+              const a = document.createElement('a');
+              a.href = url; a.download = `analytics-${Date.now()}.csv`; a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="h-9 px-4 gap-2 flex items-center text-sm font-semibold text-white shrink-0"
+            style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+          >
+            <FileDown className="h-3.5 w-3.5" /> Export CSV
+          </button>
         </div>
-        <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#1B1F2B', marginBottom: 4 }}>Analytics</h1>
-        <p style={{ fontSize: 13, color: '#6E7D79' }}>Performance metrics and pipeline insights</p>
       </div>
 
       {/* Stat Cards */}

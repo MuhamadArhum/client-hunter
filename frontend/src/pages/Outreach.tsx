@@ -8,6 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import api from '@/services/api';
 
 interface Lead {
@@ -97,6 +100,7 @@ export default function Outreach() {
   const [emailMessage, setEmailMessage] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailAlert, setEmailAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [waPhone, setWaPhone] = useState('');
   const [waMessage, setWaMessage] = useState('');
@@ -147,6 +151,15 @@ export default function Outreach() {
       .catch(console.error)
       .finally(() => setTemplatesLoading(false));
   }, []);
+
+  const handleRetry = async (logId: string) => {
+    try {
+      await api.post(`/outreach/retry/${logId}`);
+      fetchHistory();
+    } catch (e: unknown) {
+      console.error('Retry failed:', (e as { response?: { data?: { message?: string } } })?.response?.data?.message);
+    }
+  };
 
   const handleSendEmail = async () => {
     if (!selectedLeadId) { setEmailAlert({ type: 'error', msg: 'Please select a lead.' }); return; }
@@ -282,16 +295,26 @@ export default function Outreach() {
                     <Label style={labelStyle}>Message</Label>
                     <Textarea className="text-sm resize-none" style={inputStyle} rows={8} placeholder="Write your email message..." value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
                   </div>
-                  <button
-                    className="h-10 px-5 gap-2 flex items-center font-semibold text-sm text-white"
-                    style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: emailLoading ? 0.7 : 1 }}
-                    onClick={handleSendEmail}
-                    disabled={emailLoading}
-                  >
-                    {emailLoading
-                      ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
-                      : <><Mail className="h-3.5 w-3.5" /> Send Email</>}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      className="h-10 px-5 gap-2 flex items-center font-semibold text-sm"
+                      style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, cursor: 'pointer', color: '#1B1F2B', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                      onClick={() => setShowPreview(true)}
+                      disabled={!emailSubject.trim() && !emailMessage.trim()}
+                    >
+                      <Eye className="h-3.5 w-3.5" /> Preview
+                    </button>
+                    <button
+                      className="h-10 px-5 gap-2 flex items-center font-semibold text-sm text-white"
+                      style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif", opacity: emailLoading ? 0.7 : 1 }}
+                      onClick={handleSendEmail}
+                      disabled={emailLoading}
+                    >
+                      {emailLoading
+                        ? <><span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>
+                        : <><Mail className="h-3.5 w-3.5" /> Send Email</>}
+                    </button>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="whatsapp" className="p-5 space-y-4">
@@ -452,7 +475,7 @@ export default function Outreach() {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: '1px solid #CBD3CF', background: 'rgba(203,211,207,0.3)' }}>
-                  {['Company', 'Type', 'Status', 'Subject', 'Tracking', 'Sent At'].map((h) => (
+                  {['Company', 'Type', 'Status', 'Subject', 'Tracking', 'Sent At', ''].map((h) => (
                     <th key={h} className="text-left px-5 py-3" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6E7D79' }}>{h}</th>
                   ))}
                 </tr>
@@ -553,6 +576,17 @@ export default function Outreach() {
                         <td className="px-5 py-3 whitespace-nowrap" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
                           {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </td>
+                        <td className="px-5 py-3">
+                          {item.status === 'failed' && (
+                            <button
+                              onClick={() => handleRetry(item._id)}
+                              className="h-7 px-2.5 text-xs font-semibold text-white flex items-center gap-1"
+                              style={{ background: '#C98A1E', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                            >
+                              Retry
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })
@@ -580,6 +614,48 @@ export default function Outreach() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Email Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-2xl" style={{ borderRadius: 4 }}>
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, textTransform: 'uppercase', color: '#1B1F2B' }}>
+              Email Preview
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {/* Meta info */}
+            <div className="p-3 space-y-1.5" style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4 }}>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
+                <strong style={{ color: '#1B1F2B' }}>To:</strong> {selectedLead?.email || waPhone || 'No recipient'}
+              </p>
+              <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#6E7D79' }}>
+                <strong style={{ color: '#1B1F2B' }}>Subject:</strong> {emailSubject || '(no subject)'}
+              </p>
+            </div>
+            {/* Rendered email body */}
+            <div
+              style={{ background: '#fff', border: '1px solid #CBD3CF', borderRadius: 4, padding: '20px 24px', minHeight: 200, fontFamily: 'Arial, sans-serif', fontSize: 14, lineHeight: 1.6, color: '#222' }}
+              dangerouslySetInnerHTML={{ __html: emailMessage.replace(/\n/g, '<br/>') }}
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowPreview(false)}
+              className="h-9 px-4 text-sm font-semibold"
+              style={{ background: '#F1F4F0', border: '1px solid #CBD3CF', borderRadius: 4, color: '#6E7D79', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+            >Close</button>
+            <button
+              onClick={() => { setShowPreview(false); handleSendEmail(); }}
+              disabled={emailLoading}
+              className="h-9 px-5 gap-2 flex items-center font-semibold text-sm text-white"
+              style={{ background: '#1FB2A6', borderRadius: 4, border: 'none', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif" }}
+            >
+              <Mail className="h-3.5 w-3.5" /> Send Now
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
