@@ -31,14 +31,14 @@
   --warning-foreground:   0 0% 100%;
   --radius: 0.25rem;
 
-  /* Sidebar — dark blueprint */
-  --sidebar-background:         222 24% 9%;    /* #101318 blueprint-deep */
-  --sidebar-foreground:         174 51% 75%;   /* #7FD8CE line-cyan */
-  --sidebar-primary:            174 79% 41%;   /* #1FB2A6 accent */
+  /* Sidebar — light mode */
+  --sidebar-background:         150 7% 97%;    /* #F5F7F6 near-white */
+  --sidebar-foreground:         165 8% 20%;    /* #2B3330 dark-ink */
+  --sidebar-primary:            174 79% 41%;   /* #1FB2A6 teal accent */
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent:             222 20% 15%;   /* #2A2F3F blueprint-light */
-  --sidebar-accent-foreground:  150 7% 95%;    /* paper-light */
-  --sidebar-border:             174 51% 75%;   /* line-cyan-dim */
+  --sidebar-accent:             160 6% 90%;    /* #E2E8E5 hover bg */
+  --sidebar-accent-foreground:  165 8% 7%;     /* ink */
+  --sidebar-border:             160 6% 82%;    /* #C8D0CC subtle border */
   --sidebar-ring:               174 79% 41%;
 
   /* Semantic (kept for badge/status utilities) */
