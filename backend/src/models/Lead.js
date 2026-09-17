@@ -30,7 +30,7 @@ const leadSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      enum: ['upwork', 'linkedin', 'freelancer', 'crunchbase', 'clutch', 'manual', 'scraped'],
+      enum: ['upwork', 'linkedin', 'freelancer', 'crunchbase', 'clutch', 'manual', 'scraped', 'apollo'],
       default: 'manual',
     },
     status: {

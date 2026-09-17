@@ -173,9 +173,11 @@ const shareProposal = async (req, res) => {
 // @access  Private
 const revokeShare = async (req, res) => {
   try {
+    // $unset (not `publicToken: null`) so the field goes fully absent again -
+    // the sparse unique index only excludes truly-missing values, not nulls.
     const proposal = await Proposal.findByIdAndUpdate(
       req.params.id,
-      { publicToken: null, isPublic: false },
+      { $unset: { publicToken: '' }, $set: { isPublic: false } },
       { new: true }
     );
     if (!proposal) {

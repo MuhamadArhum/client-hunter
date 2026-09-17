@@ -53,7 +53,7 @@ const createLeadRules = validate([
   body('email').optional({ checkFalsy: true }).isEmail().withMessage('Please provide a valid email').normalizeEmail(),
   body('website').optional({ checkFalsy: true }).isURL({ require_protocol: false }).withMessage('Please provide a valid website URL'),
   body('status').optional().isIn(['new', 'contacted', 'proposal_sent', 'follow_up', 'converted', 'lost']).withMessage('Invalid status value'),
-  body('source').optional().isIn(['LinkedIn', 'Upwork', 'Fiverr', 'Referral', 'Website', 'Cold Outreach', 'Apify Scraped', 'Other']).withMessage('Invalid source value'),
+  body('source').optional().isIn(['upwork', 'linkedin', 'freelancer', 'crunchbase', 'clutch', 'manual', 'scraped', 'apollo']).withMessage('Invalid source value'),
 ]);
 
 const updateLeadRules = validate([

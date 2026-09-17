@@ -25,7 +25,8 @@ const { startFollowUpCron, startProposalFollowUpCron } = require('./services/fol
 const { startDigestCron } = require('./services/digestService');
 const { startSequenceCron } = require('./services/sequenceService');
 
-connectDB();
+const isTest = process.env.NODE_ENV === 'test';
+if (!isTest) connectDB();
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -110,13 +111,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  startFollowUpCron();
-  startProposalFollowUpCron();
-  startDigestCron();
-  startSequenceCron();
-});
+if (!isTest) {
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    startFollowUpCron();
+    startProposalFollowUpCron();
+    startDigestCron();
+    startSequenceCron();
+  });
+}
 
 module.exports = app;

@@ -92,4 +92,4 @@ const startProposalFollowUpCron = () => {
   console.log('[Proposal Follow-up] Cron started â€” runs daily at 9am');
 };
 
-module.exports = { startFollowUpCron, processFollowUps, startProposalFollowUpCron };
+module.exports = { startFollowUpCron, processFollowUps, startProposalFollowUpCron, processProposalFollowUps };

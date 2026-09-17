@@ -26,7 +26,13 @@ const proposalSchema = new mongoose.Schema(
       enum: ['openai', 'groq', 'manual'],
       default: 'manual',
     },
-    publicToken: { type: String, default: null, unique: true, sparse: true },
+    // No `default: null` here on purpose: a sparse unique index only skips
+    // documents where the field is truly absent, not ones explicitly set to
+    // null. With a default of null, every proposal would get an explicit
+    // `publicToken: null`, and the second one ever created would collide on
+    // the unique index. Leaving it undefined-by-default keeps the field
+    // absent until a real share token is set.
+    publicToken: { type: String, unique: true, sparse: true },
     isPublic: { type: Boolean, default: false },
     clientDecision: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
     clientMessage: { type: String, default: '' },

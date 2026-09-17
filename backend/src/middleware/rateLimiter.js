@@ -1,11 +1,16 @@
 const rateLimit = require('express-rate-limit');
 
+// Rate limiting is disabled under automated tests so test suites can hit
+// auth/API endpoints repeatedly without tripping production-tuned limits.
+const skip = () => process.env.NODE_ENV === 'test';
+
 // General API limit: 100 requests per 15 minutes per IP
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  skip,
   message: { success: false, message: 'Too many requests, please try again after 15 minutes.' },
 });
 
@@ -15,6 +20,7 @@ const authLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip,
   message: { success: false, message: 'Too many authentication attempts, please try again after 15 minutes.' },
 });
 
@@ -24,6 +30,7 @@ const aiLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip,
   message: { success: false, message: 'Too many AI requests, please try again after 15 minutes.' },
 });
 
@@ -33,6 +40,7 @@ const scrapeLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip,
   message: { success: false, message: 'Too many scrape requests, please try again after 1 hour.' },
 });
 
@@ -42,6 +50,7 @@ const resetLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip,
   message: { success: false, message: 'Too many password reset attempts, please try again after 1 hour.' },
 });
 

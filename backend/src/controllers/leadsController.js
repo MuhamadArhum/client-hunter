@@ -42,7 +42,7 @@ const getLeads = async (req, res) => {
     if (status && status !== 'all') query.status = status;
     if (source && source !== 'all') query.source = source;
 
-    if (search) {
+    if (search && typeof search === 'string') {
       query.$or = [
         { companyName: { $regex: search, $options: 'i' } },
         { contactName: { $regex: search, $options: 'i' } },

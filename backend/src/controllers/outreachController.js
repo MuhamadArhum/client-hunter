@@ -227,14 +227,23 @@ const trackOpen = async (req, res) => {
 };
 
 const trackClick = async (req, res) => {
-  try {
-    await OutreachLog.findOneAndUpdate(
-      { trackingId: req.params.trackingId, clickedAt: null },
-      { clickedAt: new Date() }
-    );
-  } catch (_) {}
   const url = req.query.url;
   if (!url || !/^https?:\/\//i.test(url)) return res.status(400).json({ success: false, message: 'Invalid URL' });
+
+  // Require a real, existing tracking id so this endpoint can't be used as an
+  // open redirect through our domain with an arbitrary/fake trackingId.
+  let log = null;
+  try {
+    log = await OutreachLog.findOne({ trackingId: req.params.trackingId });
+  } catch (_) {}
+  if (!log) return res.status(404).json({ success: false, message: 'Invalid or expired tracking link' });
+
+  if (!log.clickedAt) {
+    try {
+      await OutreachLog.updateOne({ _id: log._id }, { clickedAt: new Date() });
+    } catch (_) {}
+  }
+
   res.redirect(url);
 };
 
