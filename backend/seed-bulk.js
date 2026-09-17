@@ -342,7 +342,7 @@ async function seed() {
   console.log(`   Sequence Enrollments: ${eCount.toLocaleString()}`);
   console.log('');
   console.log('   Login → demo@abyte.io / Demo@1234');
-  console.log('   URL   → http://localhost:5174/login');
+  console.log('   URL   → http://localhost:5187/login');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   await mongoose.disconnect();

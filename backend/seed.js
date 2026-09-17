@@ -262,7 +262,7 @@ async function seed() {
   console.log('🎉 Seed complete! Login credentials:');
   console.log('   Email    → demo@abyte.io');
   console.log('   Password → Demo@1234');
-  console.log('   URL      → http://localhost:5174/login');
+  console.log('   URL      → http://localhost:5187/login');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   await mongoose.disconnect();

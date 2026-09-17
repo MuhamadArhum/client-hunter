@@ -24,7 +24,7 @@ async function processSequenceEmails() {
 
       const apiKey   = await configService.get('RESEND_API_KEY');
       const fromAddr = (await configService.get('EMAIL_FROM')) || 'noreply@example.com';
-      const baseUrl  = process.env.BACKEND_URL || 'http://localhost:5000';
+      const baseUrl  = process.env.BACKEND_URL || 'http://localhost:3014';
 
       if (lead.email && apiKey) {
         const resend     = new Resend(apiKey);

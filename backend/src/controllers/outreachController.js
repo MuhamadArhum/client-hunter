@@ -32,7 +32,7 @@ const sendEmail = async (req, res) => {
     let logStatus = 'sent';
     let errorMessage = '';
     const trackingId = crypto.randomBytes(16).toString('hex');
-    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const baseUrl = process.env.BACKEND_URL || 'http://localhost:3014';
     const pixelTag = `<img src="${baseUrl}/api/outreach/track/open/${trackingId}" width="1" height="1" style="display:none" />`;
 
     try {
@@ -288,7 +288,7 @@ const retryOutreach = async (req, res) => {
 
     if (log.type === 'email') {
       try {
-        const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+        const baseUrl = process.env.BACKEND_URL || 'http://localhost:3014';
         const pixelTag = `<img src="${baseUrl}/api/outreach/track/open/${log.trackingId}" width="1" height="1" style="display:none" />`;
         await emailService.sendEmail({
           to: log.lead?.email,

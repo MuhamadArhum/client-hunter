@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
 
-const publicApi = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api' });
+const publicApi = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3014/api' });
 
 interface Proposal {
   _id: string;
